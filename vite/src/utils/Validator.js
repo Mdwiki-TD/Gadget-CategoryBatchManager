@@ -20,14 +20,31 @@ class Validator {
     }
 
     /**
-     * TODO: use it in the workflow or remove if not needed
      * Check if a search pattern is valid
      * @param {string} pattern - Search pattern to validate
      * @returns {boolean} True if valid
      */
     static isValidSearchPattern(pattern) {
         if (!pattern || typeof pattern !== 'string') return false;
-        return pattern.trim().length > 0;
+        const trimmed = pattern.trim();
+        // Check length limits
+        if (trimmed.length === 0 || trimmed.length > 200) return false;
+        return true;
+    }
+
+    /**
+     * Sanitize search pattern to prevent injection attacks
+     * @param {string} pattern - Raw search pattern
+     * @returns {string} Sanitized pattern
+     */
+    static sanitizeSearchPattern(pattern) {
+        if (!pattern || typeof pattern !== 'string') return '';
+        // Limit length and trim
+        const maxLength = 200;
+        let sanitized = pattern.trim().slice(0, maxLength);
+        // Remove null bytes and other control characters
+        sanitized = sanitized.replace(/[\x00-\x1F\x7F]/g, '');
+        return sanitized;
     }
     /**
      * TODO: use it in the workflow or remove if not needed

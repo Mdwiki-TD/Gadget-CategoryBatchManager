@@ -17,6 +17,9 @@ class PreviewHandler {
         this.validator = new ValidationHelper();
     }
     createElement() {
+        // @primary="onPrimaryAction"
+        // :primary-action="primaryAction"
+        // :default-action="defaultAction"
         return `
         <cdx-button @click="handlePreview" action="default" weight="normal"
             :disabled="isProcessing">
@@ -26,24 +29,27 @@ class PreviewHandler {
             v-model:open="openPreviewHandler"
             class="cbm-preview-dialog"
             title="Preview Changes"
-            subtitle="{{ changesCount }} files will be modified"
             :use-close-button="true"
-            :primary-action="primaryAction"
-            :default-action="defaultAction"
-            @primary="onPrimaryAction"
             @default="openPreviewHandler = false"
         >
-            <table v-if="previewRows.length > 0" class="cbm-preview-table">
+            <p v-if="changesCount > 0">
+                {{ changesCount }} file(s) will be updated. Review the changes below before saving.
+            </p>
+            <p v-else>
+                No changes detected. Please adjust your categories to add/remove and preview again.
+            </p>
+            <table class="cbm-preview-table">
                 <thead>
                     <tr>
                         <th>File</th>
                         <th>Current Categories</th>
                         <th>New Categories</th>
+                        <th>Diff</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    <tr v-for="(row, index) in previewRows" :key="index">
+                    <tr v-if="previewRows.length > 0" v-for="(row, index) in previewRows" :key="index">
                         <td>{{ row.file }}</td>
 
                         <td>
@@ -57,6 +63,9 @@ class PreviewHandler {
                                 {{ cat }}
                             </div>
                         </td>
+                        <td>
+                            {{ row.diff }}
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -64,39 +73,6 @@ class PreviewHandler {
             </template>
         </cdx-dialog>
     `;
-    }
-    // Preview changes before executing
-    previewTheChanges(self) {
-        console.log('[CBM-P] Preview button clicked');
-
-        const selectedCount = self.selectedCount;
-
-        if (selectedCount === 0) {
-            self.showWarningMessage('Please select at least one file.');
-            return;
-        }
-
-        if (self.addCategories.length === 0 && self.removeCategories.length === 0) {
-            self.showWarningMessage('Please specify categories to add or remove.');
-            return;
-        }
-
-        const validation = this.validator.validateBatchOperation(self);
-        if (!validation) return;
-
-        const { selectedFiles, toAdd, toRemove } = validation;
-
-        // Placeholder - implement preview logic
-        let previewMessage = `Preview for ${selectedFiles.length} file(s):\n`;
-        if (toAdd.length > 0) {
-            previewMessage += `\nAdding: ${toAdd.join(', ')}`;
-        }
-        if (toRemove.length > 0) {
-            previewMessage += `\nRemoving: ${toRemove.join(', ')}`;
-        }
-
-        // should be replaced by showPreviewModal
-        alert(previewMessage);
     }
     /**
      * Handle preview button click
@@ -107,29 +83,35 @@ class PreviewHandler {
 
         const selectedCount = self.selectedCount;
 
-        if (selectedCount === 0) {
+        if (selectedCount === 0 || !self.selectedFiles || self.selectedFiles.length === 0) {
             self.showWarningMessage('Please select at least one file.');
             return;
         }
 
-        if (self.addCategories.length === 0 && self.removeCategories.length === 0) {
+        if (self.addCategory.selected.length === 0 && self.removeCategory.selected.length === 0) {
             self.showWarningMessage('Please specify categories to add or remove.');
             return;
         }
 
-        // Use ValidationHelper for common validation
-        const validation = this.validator.validateBatchOperation(self);
-        if (!validation) return;
+        // Filter out circular categories (returns null if ALL are circular)
+        const filteredToAdd = this.validator.filterCircularCategories(self);
 
-        const { selectedFiles, toAdd, toRemove } = validation;
+        if (filteredToAdd === null) return null; // All categories were circular
+
+        // Check if there are any valid operations remaining
+        if (filteredToAdd.length === 0 && self.removeCategory.selected.length === 0) {
+            console.log('[CBM-V] No valid categories after filtering');
+            self.displayCategoryMessage('No valid categories to add or remove.', 'warning', 'add');
+            return;
+        }
 
         // Generate preview without affecting file list - no loading indicator
         try {
             console.log('[CBM-P] Calling batchProcessor.previewChanges');
             const preview = await this.previewChanges(
-                selectedFiles,
-                toAdd,
-                toRemove
+                self.selectedFiles,
+                filteredToAdd,
+                self.removeCategory.selected
             );
             console.log('[CBM-P] Preview result:', preview);
             this.showPreviewModal(self, preview);
@@ -156,32 +138,19 @@ class PreviewHandler {
             .map(item => ({
                 file: item.file,
                 currentCategories: [...item.currentCategories],
-                newCategories: [...item.newCategories]
+                newCategories: [...item.newCategories],
+                diff: item.currentCategories.length - item.newCategories.length
             }));
-
-        self.openPreviewHandler = true;
-
-        /*
-        let html = '';
-        preview.forEach(item => {
-            if (item.willChange) {
-                html += `
-                    <tr>
-                        <td>${item.file}</td>
-                        <td>${item.currentCategories.join('<br>')}</td>
-                        <td>${item.newCategories.join('<br>')}</td>
-                    </tr>
-                `;
-            }
-        });*/
 
         self.changesCount = preview.filter(p => p.willChange).length;
 
         if (self.changesCount === 0) {
             console.log('[CBM] No changes detected');
-            self.displayCategoryMessage('ℹ️ No changes detected. The categories you are trying to add/remove result in the same category list.', 'notice', 'add');
-            return;
+            self.displayCategoryMessage('ℹ️ No changes detected.', 'notice', 'add');
+            // return;
         }
+        self.openPreviewHandler = true;
+
     }
     /**
      * Check if a category exists in a list (with normalization)

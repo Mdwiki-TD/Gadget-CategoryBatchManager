@@ -25,7 +25,7 @@ class ValidationHelper {
     filterCircularCategories(self) {
         const circularCategories = [];
         const validCategories = [];
-        for (const category of self.addCategories) {
+        for (const category of self.addCategory.selected) {
             if (Validator.isCircularCategory(self.sourceCategory, category)) {
                 console.log('[CBM-V] Circular category detected (silently removed):', category);
                 circularCategories.push(category);
@@ -46,32 +46,6 @@ class ValidationHelper {
 
         // Silently filter circular categories if there are valid ones
         return validCategories;
-    }
-
-    /**
-     * Perform all validation steps before a batch operation
-     * @returns {Object|null} Object with selectedFiles, toAdd, toRemove, or null if validation fails
-     */
-    validateBatchOperation(self) {
-        if (!self.selectedFiles) return null;
-        if (!self.addCategories && !self.removeCategories) return null;
-
-        // Filter out circular categories (returns null if ALL are circular)
-        const filteredToAdd = this.filterCircularCategories(self);
-        if (filteredToAdd === null) return null; // All categories were circular
-
-        // Check if there are any valid operations remaining
-        if (filteredToAdd.length === 0 && self.removeCategories.length === 0) {
-            console.log('[CBM-V] No valid categories after filtering');
-            self.displayCategoryMessage('No valid categories to add or remove.', 'warning', 'add');
-            return null;
-        }
-
-        return {
-            selectedFiles: self.selectedFiles,
-            toAdd: filteredToAdd,
-            toRemove: self.removeCategories
-        };
     }
 }
 

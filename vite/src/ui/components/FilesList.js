@@ -16,7 +16,7 @@ class FilesList {
      */
     createElement() {
         return `
-        <div v-if="selectedFiles.length > 0" class="cbm-files-list">
+        <div v-if="workFiles.length > 0" class="cbm-files-list">
             <!-- Results Header -->
             <div class="cbm-files-header">
                 <div class="cbm-count-badge">
@@ -34,15 +34,18 @@ class FilesList {
 
             <!-- File List -->
             <div class="cbm-files-scrollable">
-                <div v-for="(file, index) in selectedFiles" :key="index" class="cbm-file-row">
-                    <cdx-checkbox v-model="file.selected" :input-id="'file-' + index" />
-                    <label :for="'file-' + index">
+                <div v-for="(file, index) in workFiles" :key="index" class="cbm-file-row">
+                    <cdx-checkbox v-model="file.selected" :input-id="'file-' + index" aria-label="{{ file.title }}" />
+                    <cdx-label :for="'file-' + index">
                         {{ file.title }}
-                    </label>
+                    </cdx-label>
                     <button @click="removeFile(index)" class="cbm-file-remove-btn" title="Remove from list">
                         ×
                     </button>
                 </div>
+            </div>
+            <div class="cbm-selected-info">
+                Selected: <strong>{{ selectedCount }}</strong> files
             </div>
         </div>
 
@@ -54,15 +57,15 @@ class FilesList {
     }
 
     // Select all files
-    selectAll(selectedFiles) {
-        selectedFiles.forEach(file => {
+    selectAll(workFiles) {
+        workFiles.forEach(file => {
             file.selected = true;
         });
     }
 
     // Deselect all files
-    deselectAll(selectedFiles) {
-        selectedFiles.forEach(file => {
+    deselectAll(workFiles) {
+        workFiles.forEach(file => {
             file.selected = false;
         });
     }

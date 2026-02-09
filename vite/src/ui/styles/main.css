@@ -1,14 +1,19 @@
-.cbm-preview-dialog .cdx-dialog__surface {
+.cbm-preview-dialog {
     width: 90vw;
+    max-width: 90%;
+    max-height: 80vh;
 }
+
 /* Container styles */
 .cbm-container {
-    max-width: 1200px;
+    width: 80vw;
+    max-width: 1400px;
+    max-height: 95vh;
     margin: 30px auto;
     padding: 30px;
-    border: 1px solid #a2a9b1;
+    border: 1px solid var(--border-color-base, #a2a9b1);
     border-radius: 4px;
-    background-color: #f8f9fa;
+    background-color: var(--background-color-base, #f8f9fa);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -17,16 +22,34 @@
     margin-top: 0;
     margin-bottom: 25px;
     font-size: 1.5em;
-    color: #202122;
     border-bottom: 2px solid #0645ad;
     padding-bottom: 10px;
 }
 
-/* Grid layout */
-.cbm-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+/* ── Main Layout: Two Column ── */
+.cbm-main-layout {
+    display: flex;
     gap: 20px;
+    height: 100%;
+}
+
+.cbm-left-panel {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+    min-width: 0;
+}
+
+.cbm-right-panel {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color-base, #eaecf0);
+    border-radius: 2px;
+    background-color: var(--background-color-base, #f8f9fa);
 }
 
 /* Label styles */
@@ -38,9 +61,10 @@
 
 /* Selected files info box */
 .cbm-selected-info {
-    margin-bottom: 15px;
+    margin-top: 15px;
+    border-top: 1px solid #c8ccd1;
     padding: 10px;
-    background-color: #eaecf0;
+    background-color: var(--background-color-neutral, #eaecf0);
     border-radius: 4px;
 }
 
@@ -77,7 +101,6 @@
 
 .cbm-help-text {
     display: block;
-    color: #54595d;
     font-size: 0.875em;
     margin-bottom: 5px;
 }
@@ -102,10 +125,10 @@
 
 /* ==================== FilesList ==================== */
 .cbm-files-list {
-    background-color: #ffffff;
+    background-color: var(--background-color-base, #ffffff);
     padding: 20px;
     border-radius: 4px;
-    border: 1px solid #c8ccd1;
+    border: 1px solid var(--border-color-base, #c8ccd1);
     height: fit-content;
 }
 
@@ -115,12 +138,12 @@
     justify-content: space-between;
     margin-bottom: 15px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #c8ccd1;
+    border-bottom: 1px solid var(--border-color-base, #c8ccd1);
 }
 
 .cbm-count-badge {
-    background-color: #eaf3ff;
-    color: #36c;
+    background-color: var(--background-color-neutral, #eaf3ff);
+    color: var(--color-primary, #36c);
     padding: 6px 12px;
     border-radius: 4px;
     font-weight: 600;
@@ -141,7 +164,7 @@
     display: flex;
     align-items: center;
     padding: 8px;
-    border-bottom: 1px solid #eaecf0;
+    border-bottom: 1px solid var(--border-color-base, #eaecf0);
     gap: 10px;
 }
 
@@ -157,9 +180,9 @@
 
 .cbm-file-remove-btn {
     flex-shrink: 0;
-    background: none;
+    background-color: none;
     border: none;
-    color: #d33;
+    color: var(--color-error, #d33);
     font-size: 1.5em;
     cursor: pointer;
     padding: 0 8px;
@@ -167,10 +190,10 @@
 }
 
 .cbm-empty-state {
-    background-color: #ffffff;
+    background-color: var(--background-color-base, #ffffff);
     padding: 40px;
     border-radius: 4px;
-    border: 1px solid #c8ccd1;
+    border: 1px solid var(--border-color-base, #c8ccd1);
     text-align: center;
     color: #72777d;
 }
@@ -184,14 +207,14 @@
 .cbm-progress-section {
     margin-top: 20px;
     padding: 15px;
-    background-color: #ffffff;
-    border: 1px solid #c8ccd1;
+    background-color: var(--background-color-base, #ffffff);
+    border: 1px solid var(--border-color-base, #c8ccd1);
     border-radius: 4px;
 }
 
 .cbm-progress-bar-bg {
     width: 100%;
-    background-color: #eaecf0;
+    background-color: var(--background-color-neutral, #eaecf0);
     border-radius: 2px;
     height: 20px;
     overflow: hidden;
@@ -200,17 +223,29 @@
 
 .cbm-progress-bar-fill {
     height: 100%;
-    background-color: #36c;
+    background-color: var(--color-primary, #36c);
     transition: width 0.3s ease;
 }
 
 .cbm-progress-text {
     text-align: center;
-    color: #202122;
     font-weight: 500;
 }
 
 /* Utility classes */
 .margin-bottom-20 {
     margin-bottom: 20px;
+}
+
+@media screen and (prefers-color-scheme: dark) {
+
+    html.skin-theme-clientpref-os .cbm-progress-section {
+        /* background-color: #212529; */
+    }
+}
+
+@media screen {
+    html.skin-theme-clientpref-night .cbm-progress-section {
+        /* background-color: #212529; */
+    }
 }
