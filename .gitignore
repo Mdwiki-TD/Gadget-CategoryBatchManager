@@ -1,0 +1,7 @@
+node_modules/
+/coverage
+plans/cdx.md
+/.claude
+/dist
+/vite/dist
+/vite/.claude
