@@ -266,32 +266,27 @@ function BatchManager() {
 
             // Message handlers
             resetMessageState: function () {
-                this.showMessage = false;
-                this.messageType = '';
-                this.messageContent = '';
+                this.message_display.resetMessageState();
             },
 
             renderMessage: function (message, type = 'info') {
-                console.warn(`'[CBM] ${type}:`, message);
-                this.messageType = type;
-                this.messageContent = message;
-                this.showMessage = true;
+                this.message_display.renderMessage(message, type);
             },
 
             showWarningMessage: function (message) {
-                this.renderMessage(message, 'warning');
+                this.message_display.showWarningMessage(message);
             },
 
             showErrorMessage: function (message) {
-                this.renderMessage(message, 'error');
+                this.message_display.showErrorMessage(message);
             },
 
             showSuccessMessage: function (message) {
-                this.renderMessage(message, 'success');
+                this.message_display.showSuccessMessage(message);
             },
 
             handleMessageDismiss: function () {
-                this.showMessage = false;
+                this.message_display.handleMessageDismiss();
             }
         },
         template: template

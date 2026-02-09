@@ -38,13 +38,20 @@ class Validator {
      * @returns {string} Sanitized pattern
      */
     static sanitizeSearchPattern(pattern) {
-        if (!pattern || typeof pattern !== 'string') return '';
-        // Limit length and trim
+        if (!pattern || typeof pattern !== 'string') {
+            return '';
+        }
+
+        // Limit input length to prevent abuse
         const maxLength = 200;
-        let sanitized = pattern.trim().slice(0, maxLength);
-        // Remove null bytes and other control characters
-        sanitized = sanitized.replace(/[\x00-\x1F\x7F]/g, '');
-        return sanitized;
+        const trimmed = pattern.trim().slice(0, maxLength);
+
+        // Escape quotes and backslashes to prevent search syntax injection
+        // MediaWiki search uses quotes for exact phrases and backslashes for escapes
+        return trimmed
+            .replace(/\\/g, '\\\\')  // Escape backslashes first
+            .replace(/"/g, '\\"')     // Escape double quotes
+            .replace(/'/g, "\\'");    // Escape single quotes
     }
     /**
      * TODO: use it in the workflow or remove if not needed

@@ -200,7 +200,7 @@ class APIService {
 
         // Sanitize the pattern to prevent search syntax injection
         // MediaWiki search uses special characters like /, ", ", etc.
-        const sanitizedPattern = this.sanitizeSearchPattern(pattern);
+        const sanitizedPattern = Validator.sanitizeSearchPattern(pattern);
 
         do {
             // Replace spaces with underscores in category name for search API
@@ -266,28 +266,6 @@ class APIService {
                 ...options
             };
         });
-    }
-
-    /**
-     * Sanitize search pattern to prevent MediaWiki search syntax injection
-     * @param {string} pattern - Raw search pattern
-     * @returns {string} Sanitized pattern safe for MediaWiki search API
-     */
-    sanitizeSearchPattern(pattern) {
-        if (!pattern || typeof pattern !== 'string') {
-            return '';
-        }
-
-        // Limit input length to prevent abuse
-        const maxLength = 200;
-        const trimmed = pattern.trim().slice(0, maxLength);
-
-        // Escape quotes and backslashes to prevent search syntax injection
-        // MediaWiki search uses quotes for exact phrases and backslashes for escapes
-        return trimmed
-            .replace(/\\/g, '\\\\')  // Escape backslashes first
-            .replace(/"/g, '\\"')     // Escape double quotes
-            .replace(/'/g, "\\'");    // Escape single quotes
     }
 
     /* ------------------------------------------------------------------ */

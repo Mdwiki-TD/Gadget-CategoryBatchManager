@@ -51,45 +51,6 @@ class ExecuteHandler {
     }
 
     // Execute batch operation
-    executeOperationOld(self) {
-        const selectedCount = self.selectedCount;
-
-        if (selectedCount === 0 || !self.selectedFiles || self.selectedFiles.length === 0) {
-            self.showWarningMessage('Please select at least one file.');
-            return;
-        }
-
-        if (self.addCategory.selected.length === 0 && self.removeCategory.selected.length === 0) {
-            self.showWarningMessage('Please specify categories to add or remove.');
-            return;
-        }
-
-        // Filter out circular categories (returns null if ALL are circular)
-        const filteredToAdd = this.validator.filterCircularCategories(self);
-
-        if (filteredToAdd === null) return null; // All categories were circular
-
-        // Check if there are any valid operations remaining
-        if (filteredToAdd.length === 0 && self.removeCategory.selected.length === 0) {
-            console.log('[CBM-V] No valid categories after filtering');
-            self.displayCategoryMessage('No valid categories to add or remove.', 'warning', 'add');
-            return;
-        }
-
-        if (!confirm(`Are you sure you want to process ${selectedCount} file(s)?`)) {
-            return;
-        }
-
-        self.isProcessing = true;
-        self.shouldStopProgress = false;
-        self.showExecutionProgress = true;
-
-        // Placeholder - implement actual batch processing
-        const selectedFilesToProcess = self.workFiles.filter(f => f.selected);
-        self.processBatch(selectedFilesToProcess, 0);
-    }
-
-    // Execute batch operation
     executeOperation(self) {
         const selectedCount = self.selectedCount;
 

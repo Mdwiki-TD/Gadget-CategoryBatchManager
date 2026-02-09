@@ -203,7 +203,7 @@ const SearchPanelComponent = {
 // Before: Everything in PreviewHandler
 class PreviewHandler {
     async handlePreview(self) {
-        const validation = this.validator.validateBatchOperation(self, workFiles, addCategory.selected, removeCategory.selected);
+        const validation = this.validator.validateBatchOperation(self, self.workFiles, addCategory.selected, removeCategory.selected);
         const preview = await this.previewChanges(...);
         this.showPreviewModal(self, preview);
     }
