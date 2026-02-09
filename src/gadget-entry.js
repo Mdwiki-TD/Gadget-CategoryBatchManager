@@ -44,6 +44,8 @@ mw.loader.using(['@wikimedia/codex', 'mediawiki.api', 'vue']).then(function (req
         );
         const mountPoint = document.body.appendChild(document.createElement('div'));
         mountPoint.id = 'category-batch-manager2';
+        mountPoint.style.display = 'none';
+        categoryBatchManager.api = new mw.Api();
         newFunction(require, '#category-batch-manager2');
         portletLink.addEventListener('click', function (e) {
             e.preventDefault();
