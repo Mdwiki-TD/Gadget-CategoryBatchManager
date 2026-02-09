@@ -3,5 +3,3 @@ node_modules/
 plans/cdx.md
 /.claude
 /dist
-/vite/dist
-/vite/.claude
