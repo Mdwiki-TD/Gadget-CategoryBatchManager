@@ -13,32 +13,32 @@ const SOURCE_FILES = [
     'src/utils/WikitextParser.js',
     'src/models/FileModel.js',
     'src/models/CategoryOperation.js',
-    'vite/src/services/APIService.js',
-    'vite/src/services/BatchProcessor.js',
-    'vite/src/services/CategoryService.js',
-    'vite/src/services/FileService.js',
+    'src/services/APIService.js',
+    'src/services/BatchProcessor.js',
+    'src/services/CategoryService.js',
+    'src/services/FileService.js',
 
-    'vite/src/ui/components/CategoryInputs.js',
-    'vite/src/ui/components/CategoryInputsMessages.js',
-    'vite/src/ui/components/FilesList.js',
-    'vite/src/ui/components/SearchProgressBar.js',
-    'vite/src/ui/components/MessageDisplay.js',
+    'src/ui/components/CategoryInputs.js',
+    'src/ui/components/CategoryInputsMessages.js',
+    'src/ui/components/FilesList.js',
+    'src/ui/components/SearchProgressBar.js',
+    'src/ui/components/MessageDisplay.js',
 
-    'vite/src/ui/handlers/ExecuteHandler.js',
-    'vite/src/ui/handlers/PreviewHandler.js',
-    'vite/src/ui/handlers/SearchHandler.js',
+    'src/ui/handlers/ExecuteHandler.js',
+    'src/ui/handlers/PreviewHandler.js',
+    'src/ui/handlers/SearchHandler.js',
 
-    'vite/src/ui/helpers/ValidationHelper.js',
+    'src/ui/helpers/ValidationHelper.js',
 
-    'vite/src/BatchManager.js',
-    'vite/src/gadget-entry.js',
+    'src/BatchManager.js',
+    'src/gadget-entry.js',
 ];
 
-const DIST_DIR = 'vite/dist';
-const OUTPUT_JS = 'vite/dist/test2.js';
+const DIST_DIR = 'dist';
+const OUTPUT_JS = 'dist/test2.js';
 
-const CSS_SOURCE = 'vite/src/ui/styles/main.css';
-const OUTPUT_CSS = 'vite/dist/test2.css';
+const CSS_SOURCE = 'src/ui/styles/main.css';
+const OUTPUT_CSS = 'dist/test2.css';
 
 /**
  * Strip module.exports blocks from JavaScript code
@@ -88,7 +88,7 @@ function processFile(filePath) {
     content = stripGlobalComments(content);
 
     // For gadget-entry.js, we need to wrap it differently since it's the entry point
-    if (filePath === 'vite/src/gadget-entry.js') {
+    if (filePath === 'src/gadget-entry.js') {
         // Remove the outer wrapper
         content = content.replace(/\/\/ <nowiki>\n\nif \(typeof categoryBatchManager === 'undefined'\) \{\s*var categoryBatchManager = \{\};\s*\}\n\n/m, '');
         content = content.replace(/\n\n\/\/ <\/nowiki>\n$/, '');
