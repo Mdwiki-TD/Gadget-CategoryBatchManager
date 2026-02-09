@@ -12,6 +12,21 @@ class BatchProcessor {
     constructor(categoryService) {
         this.categoryService = categoryService;
         this.rateLimiter = new RateLimiter();
+        this.shouldStop = false;
+    }
+
+    /**
+     * Stop the current batch processing
+     */
+    stop() {
+        this.shouldStop = true;
+    }
+
+    /**
+     * Reset the stop flag for a new batch operation
+     */
+    reset() {
+        this.shouldStop = false;
     }
 
     /**
@@ -30,7 +45,11 @@ class BatchProcessor {
             onProgress = () => { },
             onFileComplete = () => { },
             onError = () => { }
-        } = callbacks; const results = {
+        } = callbacks;
+
+        this.reset();
+
+        const results = {
             total: files.length,
             processed: 0,
             successful: 0,
@@ -41,6 +60,12 @@ class BatchProcessor {
 
         // Process files sequentially with throttling
         for (const file of files) {
+            // Check if we should stop
+            if (this.shouldStop) {
+                console.log('[CBM-BP] Batch processing stopped by user');
+                break;
+            }
+
             try {
                 // Wait to respect rate limits (1 edit per 2 seconds)
                 await this.rateLimiter.wait(2000);

@@ -41,17 +41,15 @@ class SearchHandler {
                 </div>
             </div>
         </div>
-        <!-- Results Message -->
-        <div v-if="showResultsMessage" class="margin-bottom-20">
-            <cdx-message type="success" :inline="false">
-                {{ resultsMessageText }}
-            </cdx-message>
-        </div>
         `;
     }
 
     async searchFiles(self) {
         self.isSearching = true;
+        // Clear all files and messages from previous search
+        self.workFiles = [];
+        self.previewRows = [];
+        self.searchResults = [];
         self.resetMessageState();
 
         if (self.sourceCategory.trim() === '') {
@@ -64,21 +62,27 @@ class SearchHandler {
             { title: 'File:Life-expectancy,BLR.svg', selected: false }
         ];
 
-        self.showProgress = true;
-        self.progressText = 'Searching for files...';
+        self.showSearchProgress = true;
+        self.searchProgressText = 'Searching for files...';
 
         self.searchResults = await self.file_service.searchFiles(self.sourceCategory, self.searchPattern);
-        self.selectedFiles = [...self.searchResults];
-        self.showProgress = false;
-        self.showResultsMessage = true;
+        // self.workFiles = [...self.searchResults];
+        self.workFiles = self.searchResults;
+        self.showSearchProgress = false;
         self.isSearching = false;
-        self.resultsMessageText = `Found ${self.searchResults.length} files matching the pattern.`;
     }
 
     stopSearch(self) {
         self.isSearching = false;
         self.shouldStopSearch = true;
-        // Implement logic to stop ongoing search like in `class stopOperation`
+        self.showSearchProgress = false;
+
+        // Tell the file service to stop the ongoing search
+        if (self.file_service) {
+            self.file_service.stopSearch();
+        }
+
+        self.showWarningMessage('Search stopped by user.');
     }
 
 }

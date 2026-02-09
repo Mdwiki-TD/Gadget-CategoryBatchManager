@@ -7,15 +7,20 @@
 class CategoryInputs {
     /**
      * @param {APIService} apiService - API service for category search
+     * @param {CategoryInputsMessages} messagesComponent - Component for managing category input messages
      */
-    constructor(apiService) {
+    constructor(apiService, messagesComponent) {
         this.apiService = apiService;
+        this.messages_component = messagesComponent;
     }
 
     /**
      * Create the category inputs HTML element with Codex components.
      */
     createElement() {
+        const addElement = this.messages_component.createAddElement();
+        const removeElement = this.messages_component.createRemoveElement();
+
         return `
             <div class="cbm-category-input-group">
                 <cdx-label input-id="cbm-add-cats" class="cbm-label">
@@ -26,11 +31,11 @@ class CategoryInputs {
                 </span>
                 <cdx-multiselect-lookup
                     id="cdx-category-add"
-                    v-model:input-chips="addCategoryChips"
-                    v-model:selected="addCategories"
-		            v-model:input-value="addInputValue"
-                    :menu-items="addCategoryMenuItems"
-                    :menu-config="addCategoryMenuConfig"
+                    v-model:input-chips="addCategory.chips"
+                    v-model:selected="addCategory.selected"
+		            v-model:input-value="addCategory.input"
+                    :menu-items="addCategory.menuItems"
+                    :menu-config="addCategory.menuConfig"
                     aria-label="Add categories"
                     placeholder="Type to search categories"
                     @update:input-value="onAddCategoryInput"
@@ -43,11 +48,7 @@ class CategoryInputs {
             </div>
 
             <!-- Category Add Message -->
-            <div v-if="showAddCategoryMessage" class="margin-bottom-20">
-                <cdx-message type="{{ addCategoryMessageType }}" :inline="false">
-                    {{ addCategoryMessageText }}
-                </cdx-message>
-            </div>
+            ${addElement}
 
             <div class="cbm-category-input-group">
                 <cdx-label input-id="cbm-remove-cats" class="cbm-label">
@@ -55,11 +56,11 @@ class CategoryInputs {
                 </cdx-label>
                 <cdx-multiselect-lookup
                     id="cdx-category-remove"
-                    v-model:input-chips="removeCategoryChips"
-                    v-model:selected="removeCategories"
-		            v-model:input-value="removeInputValue"
-                    :menu-items="removeCategoryMenuItems"
-                    :menu-config="removeCategoryMenuConfig"
+                    v-model:input-chips="removeCategory.chips"
+                    v-model:selected="removeCategory.selected"
+		            v-model:input-value="removeCategory.input"
+                    :menu-items="removeCategory.menuItems"
+                    :menu-config="removeCategory.menuConfig"
                     aria-label="Remove categories"
                     placeholder="Type to search categories"
                     @update:input-value="onRemoveCategoryInput"
@@ -70,34 +71,10 @@ class CategoryInputs {
                     </template>
                 </cdx-multiselect-lookup>
             </div>
-            <!-- Category Remove Message -->
-            <div v-if="showRemoveCategoryMessage" class="margin-bottom-20">
-                <cdx-message type="{{ removeCategoryMessageType }}" :inline="false">
-                    {{ removeCategoryMessageText }}
-                </cdx-message>
-            </div>
-    `;
-    }
-    displayCategoryMessage(self, text, type = 'error', msg_type = 'add') {
-        if (msg_type === 'add') {
-            self.showAddCategoryMessage = true;
-            self.addCategoryMessageType = type;
-            self.addCategoryMessageText = text;
-        } else if (msg_type === 'remove') {
-            self.showRemoveCategoryMessage = true;
-            self.removeCategoryMessageType = type;
-            self.removeCategoryMessageText = text;
-        }
-    }
 
-    hideCategoryMessage(self, msg_type = 'add') {
-        if (msg_type === 'add') {
-            self.showAddCategoryMessage = false;
-            self.addCategoryMessageText = '';
-        } else if (msg_type === 'remove') {
-            self.showRemoveCategoryMessage = false;
-            self.removeCategoryMessageText = '';
-        }
+            <!-- Category Remove Message -->
+            ${removeElement}
+    `;
     }
     deduplicateResults(items1, results) {
         const seen = new Set(items1.map((result) => result.value));
@@ -109,26 +86,26 @@ class CategoryInputs {
      * @param {string} value - The input value to search for
      */
     async onAddCategoryInput(self, value) {
-        this.hideCategoryMessage(self, 'add');
+        self.hideCategoryMessage('add');
 
         // Clear menu items if the input was cleared.
         if (!value) {
             console.warn('Add category input cleared, clearing menu items.');
-            self.addCategoryMenuItems = [];
+            self.addCategory.menuItems = [];
             return;
         }
 
         // If empty, clear menu items
         if (!value || value.trim().length < 2) {
             console.warn('Add category input too short, clearing menu items.');
-            self.addCategoryMenuItems = [];
+            self.addCategory.menuItems = [];
             return;
         }
 
         const data = await this.apiService.fetchCategories(value);
 
         // Make sure this data is still relevant first.
-        if (self.addInputValue !== value) {
+        if (self.addCategory.input !== value) {
             console.warn('Add category input value changed during fetch, discarding results.');
             return;
         }
@@ -136,12 +113,12 @@ class CategoryInputs {
         // Reset the menu items if there are no results.
         if (!data || data.length === 0) {
             console.warn('No results for add category input, clearing menu items.');
-            self.addCategoryMenuItems = [];
+            self.addCategory.menuItems = [];
             return;
         }
 
-        // Update addCategoryMenuItems.
-        self.addCategoryMenuItems = data;
+        // Update addCategory.menuItems.
+        self.addCategory.menuItems = data;
     }
 
     /**
@@ -149,25 +126,25 @@ class CategoryInputs {
      * @param {string} value - The input value to search for
      */
     async onRemoveCategoryInput(self, value) {
-        this.hideCategoryMessage(self, 'remove');
+        self.hideCategoryMessage('remove');
         // Clear menu items if the input was cleared.
         if (!value) {
             console.warn('Remove category input cleared, clearing menu items.');
-            self.removeCategoryMenuItems = [];
+            self.removeCategory.menuItems = [];
             return;
         }
 
         // If empty, clear menu items
         if (!value || value.trim().length < 2) {
             console.warn('Remove category input too short, clearing menu items.');
-            self.removeCategoryMenuItems = [];
+            self.removeCategory.menuItems = [];
             return;
         }
 
         const data = await this.apiService.fetchCategories(value);
 
         // Make sure this data is still relevant first.
-        if (self.removeInputValue !== value) {
+        if (self.removeCategory.input !== value) {
             console.warn('Remove category input value changed during fetch, discarding results.');
             return;
         }
@@ -175,48 +152,48 @@ class CategoryInputs {
         // Reset the menu items if there are no results.
         if (!data || data.length === 0) {
             console.warn('No results for remove category input, clearing menu items.');
-            self.removeCategoryMenuItems = [];
+            self.removeCategory.menuItems = [];
             return;
         }
 
-        // Update removeCategoryMenuItems.
-        self.removeCategoryMenuItems = data;
+        // Update removeCategory.menuItems.
+        self.removeCategory.menuItems = data;
     }
 
     async addOnLoadMore(self) {
-        if (!self.addInputValue) {
+        if (!self.addCategory.input) {
             console.warn('No input value for add categories, cannot load more.');
             return;
         }
 
-        const data = await this.apiService.fetchCategories(self.addInputValue, { offset: self.addCategoryMenuItems.length });
+        const data = await this.apiService.fetchCategories(self.addCategory.input, { offset: self.addCategory.menuItems.length });
 
         if (!data || data.length === 0) {
             console.warn('No more results to load for add categories.');
             return;
         }
 
-        // Update self.addCategoryMenuItems.
-        const deduplicatedResults = this.deduplicateResults(self.addCategoryMenuItems, data);
-        self.addCategoryMenuItems.push(...deduplicatedResults);
+        // Update self.addCategory.menuItems.
+        const deduplicatedResults = this.deduplicateResults(self.addCategory.menuItems, data);
+        self.addCategory.menuItems.push(...deduplicatedResults);
     }
 
     async removeOnLoadMore(self) {
-        if (!self.removeInputValue) {
+        if (!self.removeCategory.input) {
             console.warn('No input value for remove categories, cannot load more.');
             return;
         }
 
-        const data = await this.apiService.fetchCategories(self.removeInputValue, { offset: self.removeCategoryMenuItems.length });
+        const data = await this.apiService.fetchCategories(self.removeCategory.input, { offset: self.removeCategory.menuItems.length });
 
         if (!data || data.length === 0) {
             console.warn('No more results to load for remove categories.');
             return;
         }
 
-        // Update self.removeCategoryMenuItems.
-        const deduplicatedResults = this.deduplicateResults(self.removeCategoryMenuItems, data);
-        self.removeCategoryMenuItems.push(...deduplicatedResults);
+        // Update self.removeCategory.menuItems.
+        const deduplicatedResults = this.deduplicateResults(self.removeCategory.menuItems, data);
+        self.removeCategory.menuItems.push(...deduplicatedResults);
     }
 
 }

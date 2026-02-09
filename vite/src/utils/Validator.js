@@ -20,14 +20,38 @@ class Validator {
     }
 
     /**
-     * TODO: use it in the workflow or remove if not needed
      * Check if a search pattern is valid
      * @param {string} pattern - Search pattern to validate
      * @returns {boolean} True if valid
      */
     static isValidSearchPattern(pattern) {
         if (!pattern || typeof pattern !== 'string') return false;
-        return pattern.trim().length > 0;
+        const trimmed = pattern.trim();
+        // Check length limits
+        if (trimmed.length === 0 || trimmed.length > 200) return false;
+        return true;
+    }
+
+    /**
+     * Sanitize search pattern to prevent injection attacks
+     * @param {string} pattern - Raw search pattern
+     * @returns {string} Sanitized pattern
+     */
+    static sanitizeSearchPattern(pattern) {
+        if (!pattern || typeof pattern !== 'string') {
+            return '';
+        }
+
+        // Limit input length to prevent abuse
+        const maxLength = 200;
+        const trimmed = pattern.trim().slice(0, maxLength);
+
+        // Escape quotes and backslashes to prevent search syntax injection
+        // MediaWiki search uses quotes for exact phrases and backslashes for escapes
+        return trimmed
+            .replace(/\\/g, '\\\\')  // Escape backslashes first
+            .replace(/"/g, '\\"')     // Escape double quotes
+            .replace(/'/g, "\\'");    // Escape single quotes
     }
     /**
      * TODO: use it in the workflow or remove if not needed

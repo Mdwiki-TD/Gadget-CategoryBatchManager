@@ -11,6 +11,22 @@ class FileService {
      */
     constructor(apiService) {
         this.api = apiService;
+        this.shouldStopSearch = false;
+    }
+
+    /**
+     * Stop the current search operation
+     */
+    stopSearch() {
+        this.shouldStopSearch = true;
+        console.log('[CBM-FS] Search stop requested');
+    }
+
+    /**
+     * Reset the search stop flag
+     */
+    resetSearchFlag() {
+        this.shouldStopSearch = false;
     }
 
     /**
@@ -21,11 +37,19 @@ class FileService {
      * @returns {Promise<Array<FileModel>>} Array of matching file models
      */
     async searchFiles(categoryName, searchPattern) {
+        this.resetSearchFlag();
+
         // Normalize category name
         const cleanCategoryName = categoryName.replace(/^Category:/i, '');
 
         // Use search API to find files matching the pattern in the category
         const searchResults = await this.api.searchInCategory(cleanCategoryName, searchPattern);
+
+        // Check if search was stopped
+        if (this.shouldStopSearch) {
+            console.log('[CBM-FS] Search stopped after API call');
+            return [];
+        }
 
         // Get detailed info for matching files
         const filesWithInfo = await this.getFilesDetails(searchResults);
@@ -46,6 +70,12 @@ class FileService {
 
         const results = [];
         for (const batch of batches) {
+            // Check if search was stopped
+            if (this.shouldStopSearch) {
+                console.log('[CBM-FS] Search stopped during file details fetch');
+                return results; // Return partial results
+            }
+
             const titles = batch.map(f => f.title);
             const info = await this.api.getFileInfo(titles);
             results.push(...this.parseFileInfo(info));
@@ -82,11 +112,8 @@ class FileService {
             if (parseInt(pageId) < 0) continue; // Skip missing pages
 
             const categories = (page.categories || []).map(cat => cat.title);
-            const FileModelClass = typeof FileModel !== 'undefined' ? FileModel : function (d) {
-                return d;
-            };
 
-            fileModels.push(new FileModelClass({
+            fileModels.push(new FileModel({
                 title: page.title,
                 pageid: page.pageid,
                 selected: true,

@@ -19,8 +19,10 @@ const SOURCE_FILES = [
     'vite/src/services/FileService.js',
 
     'vite/src/ui/components/CategoryInputs.js',
+    'vite/src/ui/components/CategoryInputsMessages.js',
     'vite/src/ui/components/FilesList.js',
-    'vite/src/ui/components/ProgressBar.js',
+    'vite/src/ui/components/SearchProgressBar.js',
+    'vite/src/ui/components/MessageDisplay.js',
 
     'vite/src/ui/handlers/ExecuteHandler.js',
     'vite/src/ui/handlers/PreviewHandler.js',
@@ -33,10 +35,10 @@ const SOURCE_FILES = [
 ];
 
 const DIST_DIR = 'vite/dist';
-const OUTPUT_JS = 'vite/dist/Gadget-CategoryBatchManager.js';
+const OUTPUT_JS = 'vite/dist/test2.js';
 
 const CSS_SOURCE = 'vite/src/ui/styles/main.css';
-const OUTPUT_CSS = 'vite/dist/Gadget-CategoryBatchManager.css';
+const OUTPUT_CSS = 'vite/dist/test2.css';
 
 /**
  * Strip module.exports blocks from JavaScript code
