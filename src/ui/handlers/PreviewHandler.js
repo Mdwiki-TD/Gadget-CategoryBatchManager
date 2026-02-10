@@ -139,7 +139,7 @@ class PreviewHandler {
                 file: item.file,
                 currentCategories: [...item.currentCategories],
                 newCategories: [...item.newCategories],
-                diff: item.currentCategories.length - item.newCategories.length
+                diff: item.newCategories.length - item.currentCategories.length
             }));
 
         self.changesCount = preview.filter(p => p.willChange).length;

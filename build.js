@@ -86,13 +86,6 @@ function processFile(filePath) {
     // Strip global comments
     content = stripGlobalComments(content);
 
-    // For gadget-entry.js, we need to wrap it differently since it's the entry point
-    if (filePath === 'src/gadget-entry.js') {
-        // Remove the outer wrapper
-        content = content.replace(/\/\/ <nowiki>\n\nif \(typeof categoryBatchManager === 'undefined'\) \{\s*var categoryBatchManager = \{\};\s*\}\n\n/m, '');
-        content = content.replace(/\n\n\/\/ <\/nowiki>\n$/, '');
-    }
-
     // Trim trailing whitespace and ensure proper ending
     content = content.trim();
 
