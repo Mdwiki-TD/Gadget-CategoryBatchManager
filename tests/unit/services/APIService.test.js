@@ -1,13 +1,14 @@
-// Mock console before requiring APIService
-const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-
 const APIService = require('../../../src/services/APIService');
 
 describe('APIService', () => {
   let service;
   let mockMwApi;
+  let mockConsoleError;
 
   beforeEach(() => {
+    // Mock console.error to suppress error messages during tests
+    mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+
     // Mock mw.Api
     mockMwApi = {
       get: jest.fn(),

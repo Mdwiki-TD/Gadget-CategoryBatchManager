@@ -1,0 +1,4 @@
+# TODO: Implement testing workflow when PR is created
+# main command: npm test
+name: Run Tests
+
