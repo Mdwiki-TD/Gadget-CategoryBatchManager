@@ -12,8 +12,8 @@ function BatchManager() {
     const files_list = new FilesList(mwApi);
     const progress_section = new SearchProgressBar();
 
-    const preview_handler = new PreviewHandler();
     const validator = new ValidationHelper();
+    const preview_handler = new PreviewHandler(validator);
     const categoryService = new CategoryService(mwApi);
     const batchProcessor = new BatchProcessor(categoryService);
 
