@@ -1,6 +1,11 @@
 /**
  * Creates the Vue app definition for the Category Batch Manager tool.
  * @returns {Object} Vue app definition object.
+ *
+ * TODO: fix the diff between Preview Changes and Execute Batch, Execute should filter before acting.
+ * messages:
+ * - Preview Changes: 520 file(s) will be updated. Review the changes below before saving.
+ * - Confirm Batch Update: You are about to update 1033 file(s)
  */
 /* global APIService, SearchHandler, FilesList, SearchProgressBar, FileService, ValidationHelper, CategoryService, BatchProcessor, ExecutePanel, PreviewHandler, CategoryInputs, MessageDisplay
 */
