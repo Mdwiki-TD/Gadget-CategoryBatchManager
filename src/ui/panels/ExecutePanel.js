@@ -1,17 +1,18 @@
 /**
  * Execute Panel Vue app factory
- * Handles batch operations for category updates
- * @param {Object} validator - ValidationHelper instance
- * @param {Object} batchProcessor - BatchProcessor instance
+ * UI component only - delegates business logic to handlers
+ * @see https://doc.wikimedia.org/codex/latest/
+ * @param {Object} execute_operation_handler - ExecuteOperationHandler instance
+ * @param {Object} progress_handler - ProgressHandler instance
  * @returns {Object} Vue app configuration
  */
 
-function ExecutePanel(validator, batchProcessor) {
+function ExecutePanel(execute_operation_handler, progress_handler) {
     const app = {
         data: function () {
             return {
-                validator: validator,
-                batchProcessor: batchProcessor,
+                execute_operation_handler: execute_operation_handler,
+                progress_handler: progress_handler,
 
                 // Processing state
                 isProcessing: false,
@@ -78,43 +79,38 @@ function ExecutePanel(validator, batchProcessor) {
         methods: {
             /**
              * Execute batch operation
-             * Validates selection and shows confirmation dialog
+             * Validates and shows confirmation dialog
              */
             executeOperation() {
-                const selectedCount = this.selectedCount;
+                // Validate
+                const validation = execute_operation_handler.validateOperation(
+                    this.selectedFiles,
+                    this.addCategory.selected,
+                    this.removeCategory.selected
+                );
 
-                if (selectedCount === 0 || !this.selectedFiles || this.selectedFiles.length === 0) {
-                    this.showWarningMessage('Please select at least one file.');
+                if (!validation.valid) {
+                    this.showWarningMessage(validation.error);
                     return;
                 }
 
-                if (this.addCategory.selected.length === 0 && this.removeCategory.selected.length === 0) {
-                    this.showWarningMessage('Please specify categories to add or remove.');
-                    return;
-                }
+                // Prepare operation
+                const preparation = execute_operation_handler.prepareOperation(this);
 
-                // Filter out circular categories (returns null if ALL are circular)
-                const filteredToAdd = this.validator.filterCircularCategories(this); // TODO: `this` changed from `self` check if issues arise
-
-                if (filteredToAdd === null) {
-                    return;
-                }
-                // Check if there are any valid operations remaining
-                if (filteredToAdd.length === 0 && this.removeCategory.selected.length === 0) {
+                if (!preparation.valid) {
                     console.log('[CBM-V] No valid categories after filtering');
-                    this.displayCategoryMessage('No valid categories to add or remove.', 'warning', 'add');
+                    this.displayCategoryMessage(preparation.error, 'warning', 'add');
                     return;
                 }
 
-                // Show confirmation dialog
+                // Generate confirmation message
+                this.confirmMessage = execute_operation_handler.generateConfirmMessage(
+                    preparation.filesCount,
+                    preparation.filteredToAdd,
+                    preparation.removeCategories
+                );
 
-                this.confirmMessage =
-                    `You are about to update ${this.selectedFiles.length} file(s).\n\n` +
-                    `Categories to add: ${filteredToAdd.length > 0 ? filteredToAdd.join(', ') : 'none'}\n` +
-                    `Categories to remove: ${this.removeCategory.selected.length > 0 ? this.removeCategory.selected.join(', ') : 'none'}\n\n` +
-                    'Do you want to proceed?';
-
-                // trigger confirm dialog
+                // Show dialog
                 this.openConfirmDialog = true;
             },
 
@@ -128,55 +124,45 @@ function ExecutePanel(validator, batchProcessor) {
                 this.isProcessing = true;
                 this.showExecutionProgress = true;
 
-                // Filter out circular categories again
-                const filteredToAdd = this.validator.filterCircularCategories(this);// TODO: `this` changed from `self` check if issues arise
+                const preparation = execute_operation_handler.prepareOperation(this);
 
-                if (filteredToAdd === null) {
+                if (!preparation.valid) {
                     this.isProcessing = false;
                     this.showExecutionProgress = false;
                     return;
                 }
 
-                // Process the batch
-                this.processBatch(filteredToAdd);
+                await this.processBatch(preparation);
             },
 
             /**
-             * Process files using this.batchProcessor
-             * @param {Array} filteredToAdd - Categories to add
+             * Process batch with progress tracking
+             * @param {Object} preparation - Prepared operation data
              */
-            async processBatch(filteredToAdd) {
+            async processBatch(preparation) {
                 try {
-                    const results = await this.batchProcessor.processBatch(
+                    const callbacks = progress_handler.createCallbacks(this);
+
+                    const results = await execute_operation_handler.executeBatch(
                         this.selectedFiles,
-                        filteredToAdd,
-                        this.removeCategory.selected,
-                        {
-                            onProgress: (percent, results) => {
-                                this.executionProgressPercent = percent;
-                                this.executionProgressText = `Processing ${results.processed} of ${results.total}... (${results.successful} successful, ${results.failed} failed)`;
-                            },
-                            onFileComplete: (file, success) => {
-                                console.log(`[CBM-E] ${success ? '✓' : '⊘'} ${file.title}`);
-                            },
-                            onError: (file, error) => {
-                                console.error(`[CBM-E] ✗ ${file.title}:`, error.message);
-                            }
-                        }
+                        preparation.filteredToAdd,
+                        preparation.removeCategories,
+                        callbacks
                     );
 
                     this.isProcessing = false;
                     this.showExecutionProgress = false;
 
-                    if (this.batchProcessor.shouldStop) {
-                        this.showWarningMessage(`Operation stopped by user. Processed ${results.processed} of ${results.total} files (${results.successful} successful, ${results.failed} failed).`);
+                    // Format and show completion message
+                    const completion = progress_handler.formatCompletionMessage(
+                        results,
+                        execute_operation_handler.batchProcessor.shouldStop
+                    );
+
+                    if (completion.type === 'warning') {
+                        this.showWarningMessage(completion.message);
                     } else {
-                        const message = `Batch operation completed! Processed ${results.total} files: ${results.successful} successful, ${results.skipped} skipped, ${results.failed} failed.`;
-                        if (results.failed > 0) {
-                            this.showWarningMessage(message);
-                        } else {
-                            this.showSuccessMessage(message);
-                        }
+                        this.showSuccessMessage(completion.message);
                     }
 
                 } catch (error) {
@@ -188,10 +174,10 @@ function ExecutePanel(validator, batchProcessor) {
             },
 
             /**
-             * Stop ongoing operation
+             * Stop ongoing batch operation
              */
             stopOperation() {
-                this.batchProcessor.stop();
+                execute_operation_handler.stopBatch();
             }
         }
     };
