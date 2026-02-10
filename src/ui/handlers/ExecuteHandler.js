@@ -120,7 +120,7 @@ function ExecuteHandler(validator, batchProcessor) {
             /**
              * Handle confirmation dialog primary action
              */
-            confirmOnPrimaryAction() {
+            async confirmOnPrimaryAction() {
                 this.openConfirmDialog = false;
                 console.log('[CBM-E] User confirmed operation');
 
