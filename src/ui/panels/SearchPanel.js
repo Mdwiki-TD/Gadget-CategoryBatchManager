@@ -68,8 +68,8 @@ function SearchPanel(search_handler) {
                         Or Search Pattern
                     </cdx-label>
                     <span class="cbm-help-text">
-                        (e.g., "incategory:Category:2025 intitle:/example/
-                        -incategory:"Uploaded by OWID importer tool")</span
+                        (e.g., <code>
+                        incategory:"CC-BY-4.0" "This chart is intentionally showing old data" Our World in Data -incategory:"Uploaded by OWID importer tool"</code>)</span
                     >
                     <div class="cbm-input-button-group">
                         <cdx-text-input
