@@ -8,32 +8,32 @@ const path = require('path');
 
 // File order according to dependency requirements
 const SOURCE_FILES = [
-    'src/utils/Validator.js',
     'src/utils/ChangeCalculator.js',
     'src/utils/RateLimiter.js',
+    'src/utils/Validator.js',
     'src/utils/WikitextParser.js',
+
     'src/models/FileModel.js',
     'src/models/CategoryOperation.js',
+
     'src/services/APIService.js',
     'src/services/BatchProcessor.js',
     'src/services/CategoryService.js',
     'src/services/FileService.js',
 
-    'src/ui/panels/ExecutePanel.js',        // from ExecuteHandler
-    'src/ui/panels/SearchPanel.js',         // from SearchHandler
-    'src/ui/panels/PreviewPanel.js',
-    'src/ui/panels/FilesListPanel.js',
     'src/ui/panels/CategoryInputsPanel.js',
+    'src/ui/panels/ExecutePanel.js',
+    'src/ui/panels/FilesListPanel.js',
+    'src/ui/panels/MessageDisplayPanel.js',
+    'src/ui/panels/PreviewPanel.js',
+    'src/ui/panels/SearchPanel.js',
 
-    'src/ui/components/MessageDisplay.js',
-
-    'src/ui/handlers/PreviewHandler.js',
-    'src/ui/handlers/SearchHandler.js',
-
-    'src/ui/handlers/ProgressHandler.js',           // from ExecuteHandler
-    'src/ui/handlers/ExecuteOperationHandler.js',   // from ExecuteHandler
-    'src/ui/handlers/FileListHandler.js',
     'src/ui/handlers/CategoryInputsHandler.js',
+    'src/ui/handlers/ExecuteOperationHandler.js',
+    'src/ui/handlers/FileListHandler.js',
+    'src/ui/handlers/PreviewHandler.js',
+    'src/ui/handlers/ProgressHandler.js',
+    'src/ui/handlers/SearchHandler.js',
 
     'src/ui/helpers/ValidationHelper.js',
 

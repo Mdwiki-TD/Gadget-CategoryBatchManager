@@ -21,7 +21,7 @@ function BatchManager() {
     const execute_panel = ExecutePanel(execute_operation_handler, progress_handler);
     const preview_panel_app = PreviewPanel(preview_handler);
     const category_inputs_app = CategoryInputsPanel(category_inputs_handler);
-    const message_display_app = MessageDisplay();
+    const message_display_app = MessageDisplayPanel();
     const search_panel_app = SearchPanel(search_handler);
     const files_list_app = FilesListPanel(files_list);
 
@@ -80,7 +80,7 @@ function BatchManager() {
                 // SearchPanel state
                 ...search_panel_app.data(),
 
-                // MessageDisplay state
+                // MessageDisplayPanel state
                 ...message_display_app.data(),
 
                 // ExecutePanel state

@@ -80,7 +80,6 @@ function SearchPanel(search_handler) {
                 // Clear all files and messages from previous search
                 this.workFiles = [];
                 this.previewRows = [];
-                this.resetMessageState();
 
                 const searchResults = await this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
                 this.workFiles = searchResults || [];

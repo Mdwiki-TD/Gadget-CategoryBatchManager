@@ -129,7 +129,6 @@ const CategoryInputsComponent = {
 class SearchHandler {
     async searchFiles(self) {
         self.isSearching = true;
-        self.resetMessageState();
         self.searchResults = await self.file_service.searchFiles(...);
         self.workFiles = [...self.searchResults];
         self.showProgress = false;
@@ -622,7 +621,7 @@ class BatchOperationService {
         />
 
         <!-- Messages -->
-        <MessageDisplay
+        <MessageDisplayPanel
             :messages="store.messages"
             @dismiss="handleDismissMessage"
         />
@@ -890,7 +889,7 @@ src/
 │   ├── ActionPanel.vue
 │   ├── ProgressBar.vue
 │   ├── PreviewDialog.vue
-│   └── MessageDisplay.vue
+│   └── MessageDisplayPanel.vue
 │
 ├── utils/
 │   └── Validator.js

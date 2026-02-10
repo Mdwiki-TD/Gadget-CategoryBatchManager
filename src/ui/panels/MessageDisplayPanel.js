@@ -3,7 +3,7 @@
  * @see https://doc.wikimedia.org/codex/latest/
  */
 
-function MessageDisplay() {
+function MessageDisplayPanel() {
     const app = {
         data: function () {
             return {
@@ -29,7 +29,11 @@ function MessageDisplay() {
             </div>
         `,
         methods: {
-            // Message handlers
+            handleMessageDismiss: function () {
+                this.showMessage = false;
+                this.messageContent = '';
+            },
+
             resetMessageState: function () {
                 this.showMessage = false;
                 this.messageType = '';
@@ -54,10 +58,6 @@ function MessageDisplay() {
 
             showSuccessMessage: function (message) {
                 this.renderMessage(message, 'success');
-            },
-
-            handleMessageDismiss: function () {
-                this.showMessage = false;
             }
         }
     }
@@ -65,5 +65,5 @@ function MessageDisplay() {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = MessageDisplay
+    module.exports = MessageDisplayPanel
 }
