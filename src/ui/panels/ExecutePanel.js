@@ -16,7 +16,6 @@ function ExecutePanel(execute_operation_handler, progress_handler) {
 
                 // Processing state
                 isProcessing: false,
-                showExecutionProgress: false,
 
                 // Progress tracking
                 executionProgressPercent: 0,
@@ -62,7 +61,7 @@ function ExecutePanel(execute_operation_handler, progress_handler) {
         `,
         progress_template: `
             <div
-                v-if="showExecutionProgress"
+                v-if="isProcessing || executionProgressText !== ''"
                 class="cbm-progress-section">
                 <div class="cbm-progress-bar-bg">
                     <div
@@ -122,13 +121,12 @@ function ExecutePanel(execute_operation_handler, progress_handler) {
                 console.log('[CBM-E] User confirmed operation');
 
                 this.isProcessing = true;
-                this.showExecutionProgress = true;
 
                 const preparation = execute_operation_handler.prepareOperation(this);
 
                 if (!preparation.valid) {
                     this.isProcessing = false;
-                    this.showExecutionProgress = false;
+                    this.executionProgressText = "";
                     return;
                 }
 
@@ -151,7 +149,7 @@ function ExecutePanel(execute_operation_handler, progress_handler) {
                     );
 
                     this.isProcessing = false;
-                    this.showExecutionProgress = false;
+                    this.executionProgressText = "";
 
                     // Format and show completion message
                     const completion = progress_handler.formatCompletionMessage(
@@ -168,7 +166,7 @@ function ExecutePanel(execute_operation_handler, progress_handler) {
                 } catch (error) {
                     console.error('[CBM-E] Batch processing error:', error);
                     this.isProcessing = false;
-                    this.showExecutionProgress = false;
+                    this.executionProgressText = "";
                     this.showErrorMessage(`Batch processing failed: ${error.message}`);
                 }
             },
