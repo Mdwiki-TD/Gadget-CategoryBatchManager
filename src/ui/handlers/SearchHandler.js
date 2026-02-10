@@ -66,7 +66,11 @@ class SearchHandler {
         self.showSearchProgress = true;
         self.searchProgressText = 'Searching for files...';
 
-        self.searchResults = await this.file_service.searchFiles(self.sourceCategory, self.searchPattern);
+        // TODO: searchProgressText updates via callbacks from file_service
+        self.searchResults = await this.file_service.searchFiles(
+            self.sourceCategory,
+            self.searchPattern
+        );
         // self.workFiles = [...self.searchResults];
         self.workFiles = self.searchResults;
         self.showSearchProgress = false;
