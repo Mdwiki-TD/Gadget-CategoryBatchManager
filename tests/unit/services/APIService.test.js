@@ -479,4 +479,154 @@ describe('APIService', () => {
       );
     });
   });
+
+  describe('searchInCategoryWithPattern', () => {
+    test('should search files using raw srsearch pattern', async () => {
+      mockMwApi.get.mockResolvedValue({
+        query: {
+          search: [
+            { title: 'File:Chart,BLR.svg', pageid: 1, size: 1000 },
+            { title: 'File:Chart,BLR_2.svg', pageid: 3, size: 2000 }
+          ]
+        }
+      });
+
+      const result = await service.searchInCategoryWithPattern('incategory:Belarus intitle:/^Chart/');
+
+      expect(result).toHaveLength(2);
+      expect(result[0].title).toBe('File:Chart,BLR.svg');
+      expect(mockMwApi.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'query',
+          list: 'search',
+          srsearch: 'incategory:Belarus intitle:/^Chart/',
+          srnamespace: 6
+        })
+      );
+    });
+
+    test('should handle pagination in search results', async () => {
+      mockMwApi.get
+        .mockResolvedValueOnce({
+          query: {
+            search: [
+              { title: 'File:Chart1.svg', pageid: 1, size: 1000 }
+            ]
+          },
+          continue: { sroffset: 1 }
+        })
+        .mockResolvedValueOnce({
+          query: {
+            search: [
+              { title: 'File:Chart2.svg', pageid: 2, size: 2000 }
+            ]
+          }
+        });
+
+      const result = await service.searchInCategoryWithPattern('incategory:Test');
+
+      expect(result).toHaveLength(2);
+      expect(mockMwApi.get).toHaveBeenCalledTimes(2);
+    });
+
+    test('should handle empty search results', async () => {
+      mockMwApi.get.mockResolvedValue({
+        query: { search: [] }
+      });
+
+      const result = await service.searchInCategoryWithPattern('incategory:Empty');
+
+      expect(result).toEqual([]);
+    });
+
+    test('should handle complex search patterns', async () => {
+      mockMwApi.get.mockResolvedValue({
+        query: { search: [] }
+      });
+
+      const complexPattern = 'incategory:Belarus intitle:/^Charts/ incategory:Maps -intitle:/draft/';
+      await service.searchInCategoryWithPattern(complexPattern);
+
+      expect(mockMwApi.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          srsearch: complexPattern
+        })
+      );
+    });
+
+    test('should use srlimit max for efficiency', async () => {
+      mockMwApi.get.mockResolvedValue({
+        query: { search: [] }
+      });
+
+      await service.searchInCategoryWithPattern('incategory:Test');
+
+      expect(mockMwApi.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          srlimit: 'max'
+        })
+      );
+    });
+
+    test('should include file properties in search', async () => {
+      mockMwApi.get.mockResolvedValue({
+        query: { search: [] }
+      });
+
+      await service.searchInCategoryWithPattern('incategory:Test');
+
+      expect(mockMwApi.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          srprop: 'size|wordcount|timestamp'
+        })
+      );
+    });
+
+    test('should handle API errors gracefully', async () => {
+      mockMwApi.get.mockRejectedValue(new Error('Network error'));
+
+      await expect(
+        service.searchInCategoryWithPattern('incategory:Test')
+      ).rejects.toThrow('Network error');
+    });
+  });
+
+  describe('searchInCategory', () => {
+    test('should sanitize pattern and delegate to searchInCategoryWithPattern', async () => {
+      global.Validator = {
+        sanitizeTitlePattern: jest.fn().mockReturnValue('Test')
+      };
+
+      mockMwApi.get.mockResolvedValue({
+        query: { search: [] }
+      });
+
+      await service.searchInCategory('Test Category', 'Test');
+
+      expect(global.Validator.sanitizeTitlePattern).toHaveBeenCalledWith('Test');
+      expect(mockMwApi.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          srsearch: 'incategory:Test_Category intitle:/Test/'
+        })
+      );
+    });
+
+    test('should replace spaces with underscores in category name', async () => {
+      global.Validator = {
+        sanitizeTitlePattern: jest.fn().mockReturnValue(',BLR')
+      };
+
+      mockMwApi.get.mockResolvedValue({
+        query: { search: [] }
+      });
+
+      await service.searchInCategory('Life expectancy maps', ',BLR');
+
+      expect(mockMwApi.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          srsearch: 'incategory:Life_expectancy_maps intitle:/,BLR/'
+        })
+      );
+    });
+  });
 });

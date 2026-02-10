@@ -86,6 +86,87 @@ describe('Validator', () => {
     });
   });
 
+  describe('sanitizeTitlePattern', () => {
+    test('should trim whitespace', () => {
+      expect(Validator.sanitizeTitlePattern('  hello  ')).toBe('hello');
+    });
+
+    test('should escape backslashes', () => {
+      expect(Validator.sanitizeTitlePattern('test\\pattern')).toBe('test\\\\pattern');
+    });
+
+    test('should escape double quotes', () => {
+      expect(Validator.sanitizeTitlePattern('test"pattern')).toBe('test\\"pattern');
+    });
+
+    test('should escape single quotes', () => {
+      expect(Validator.sanitizeTitlePattern("test'pattern")).toBe("test\\'pattern");
+    });
+
+    test('should escape multiple special characters', () => {
+      expect(Validator.sanitizeTitlePattern('test\\"pattern\\')).toBe('test\\\\\\"pattern\\\\');
+    });
+
+    test('should escape backslashes first', () => {
+      // This test ensures backslashes are escaped before quotes
+      const result = Validator.sanitizeTitlePattern('\\test');
+      expect(result).toBe('\\\\test');
+    });
+
+    test('should return empty string for null', () => {
+      expect(Validator.sanitizeTitlePattern(null)).toBe('');
+    });
+
+    test('should return empty string for undefined', () => {
+      expect(Validator.sanitizeTitlePattern(undefined)).toBe('');
+    });
+
+    test('should return empty string for non-string', () => {
+      expect(Validator.sanitizeTitlePattern(123)).toBe('');
+    });
+
+    test('should handle empty string', () => {
+      expect(Validator.sanitizeTitlePattern('')).toBe('');
+    });
+
+    test('should limit input length to 200 characters', () => {
+      const longPattern = 'a'.repeat(250);
+      const result = Validator.sanitizeTitlePattern(longPattern);
+      expect(result.length).toBe(200);
+    });
+
+    test('should handle pattern with common search characters', () => {
+      expect(Validator.sanitizeTitlePattern(',BLR')).toBe(',BLR');
+      expect(Validator.sanitizeTitlePattern('^Chart')).toBe('^Chart');
+      expect(Validator.sanitizeTitlePattern('Test*')).toBe('Test*');
+    });
+
+    test('should handle mixed special characters', () => {
+      const result = Validator.sanitizeTitlePattern("test's \"pattern\"");
+      // Expected: test\'s \"pattern\" - escaped single and double quotes
+      expect(result).toContain('\\');
+      expect(result).toContain('test');
+      expect(result).toContain('s');
+      expect(result).toContain('pattern');
+    });
+
+    test('should preserve regex patterns', () => {
+      expect(Validator.sanitizeTitlePattern('^[A-Z]')).toBe('^[A-Z]');
+      expect(Validator.sanitizeTitlePattern('[0-9]+')).toBe('[0-9]+');
+    });
+
+    test('should trim before processing', () => {
+      const result = Validator.sanitizeTitlePattern('  test  ');
+      expect(result).toBe('test');
+    });
+
+    test('should handle very long input after trim', () => {
+      const longPattern = '  ' + 'a'.repeat(250) + '  ';
+      const result = Validator.sanitizeTitlePattern(longPattern);
+      expect(result.length).toBeLessThanOrEqual(200);
+    });
+  });
+
   describe('normalizeCategoryName', () => {
     test('should remove Category: prefix', () => {
       expect(Validator.normalizeCategoryName('Category:Test')).toBe('Test');
