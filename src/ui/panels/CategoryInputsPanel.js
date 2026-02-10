@@ -170,17 +170,16 @@ function CategoryInputsPanel(category_inputs_handler) {
             },
 
             async addOnLoadMore() {
-                const results = this.category_inputs_handler.onLoadMore(this.addCategory, 'add');
-                if (results) {
-                    // Spread syntax requires ...iterable[Symbol.iterator] to be a function
+                const results = await this.category_inputs_handler.onLoadMore(this.addCategory, 'add');
+                if (results && results.length > 0) {
                     this.addCategory.menuItems.push(...results);
                 }
             },
 
             async removeOnLoadMore() {
-                const results = this.category_inputs_handler.onLoadMore(this.removeCategory, 'remove');
-                if (results) {
-                    // Spread syntax requires ...iterable[Symbol.iterator] to be a function
+                const results = await this.category_inputs_handler.onLoadMore(this.removeCategory, 'remove');
+
+                if (results && results.length > 0) {
                     this.removeCategory.menuItems.push(...results);
                 }
             },

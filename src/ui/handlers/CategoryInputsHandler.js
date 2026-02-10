@@ -47,14 +47,14 @@ class CategoryInputsHandler {
     async onLoadMore(Category, input_type = 'add') {
         if (!Category.input) {
             console.warn(`No input value for ${input_type} categories, cannot load more.`);
-            return;
+            return [];
         }
 
         const data = await this.apiService.fetchCategories(Category.input, { offset: Category.menuItems.length });
 
         if (!data || data.length === 0) {
             console.warn(`No more results to load for ${input_type} categories.`);
-            return;
+            return [];
         }
 
         // Update Category.menuItems.
