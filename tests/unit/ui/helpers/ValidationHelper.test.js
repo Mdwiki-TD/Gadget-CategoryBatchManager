@@ -21,131 +21,131 @@ describe('ValidationHelper', () => {
 
   describe('hasDuplicateCategories', () => {
     test('should return valid when add list is empty', () => {
-      const vueInstance = {
+      const self = {
         addCategory: { selected: [] },
         removeCategory: { selected: ['Category:A'] }
       };
 
-      const result = validationHelper.hasDuplicateCategories(vueInstance);
+      const result = validationHelper.hasDuplicateCategories(self);
 
       expect(result.valid).toBe(true);
       expect(result.duplicates).toBeUndefined();
     });
 
     test('should return valid when remove list is empty', () => {
-      const vueInstance = {
+      const self = {
         addCategory: { selected: ['Category:A'] },
         removeCategory: { selected: [] }
       };
 
-      const result = validationHelper.hasDuplicateCategories(vueInstance);
+      const result = validationHelper.hasDuplicateCategories(self);
 
       expect(result.valid).toBe(true);
       expect(result.duplicates).toBeUndefined();
     });
 
     test('should return valid when both lists are empty', () => {
-      const vueInstance = {
+      const self = {
         addCategory: { selected: [] },
         removeCategory: { selected: [] }
       };
 
-      const result = validationHelper.hasDuplicateCategories(vueInstance);
+      const result = validationHelper.hasDuplicateCategories(self);
 
       expect(result.valid).toBe(true);
       expect(result.duplicates).toBeUndefined();
     });
 
     test('should detect exact duplicate in add and remove lists', () => {
-      const vueInstance = {
+      const self = {
         addCategory: { selected: ['Category:Test'] },
         removeCategory: { selected: ['Category:Test'] }
       };
 
-      const result = validationHelper.hasDuplicateCategories(vueInstance);
+      const result = validationHelper.hasDuplicateCategories(self);
 
       expect(result.valid).toBe(false);
       expect(result.duplicates).toEqual(['Category:Test']);
     });
 
     test('should detect duplicate with underscores vs spaces', () => {
-      const vueInstance = {
+      const self = {
         addCategory: { selected: ['Category:Test_Category'] },
         removeCategory: { selected: ['Category:Test Category'] }
       };
 
-      const result = validationHelper.hasDuplicateCategories(vueInstance);
+      const result = validationHelper.hasDuplicateCategories(self);
 
       expect(result.valid).toBe(false);
       expect(result.duplicates).toEqual(['Category:Test_Category']);
     });
 
     test('should detect duplicate with case insensitivity', () => {
-      const vueInstance = {
+      const self = {
         addCategory: { selected: ['Category:test'] },
         removeCategory: { selected: ['Category:TEST'] }
       };
 
-      const result = validationHelper.hasDuplicateCategories(vueInstance);
+      const result = validationHelper.hasDuplicateCategories(self);
 
       expect(result.valid).toBe(false);
       expect(result.duplicates).toEqual(['Category:test']);
     });
 
     test('should detect duplicate without Category prefix', () => {
-      const vueInstance = {
+      const self = {
         addCategory: { selected: ['Test'] },
         removeCategory: { selected: ['Category:Test'] }
       };
 
-      const result = validationHelper.hasDuplicateCategories(vueInstance);
+      const result = validationHelper.hasDuplicateCategories(self);
 
       expect(result.valid).toBe(false);
       expect(result.duplicates).toEqual(['Test']);
     });
 
     test('should detect multiple duplicates', () => {
-      const vueInstance = {
+      const self = {
         addCategory: { selected: ['Category:A', 'Category:B', 'Category:C'] },
         removeCategory: { selected: ['Category:X', 'Category:B', 'Category:A'] }
       };
 
-      const result = validationHelper.hasDuplicateCategories(vueInstance);
+      const result = validationHelper.hasDuplicateCategories(self);
 
       expect(result.valid).toBe(false);
       expect(result.duplicates).toEqual(['Category:A', 'Category:B']);
     });
 
     test('should return valid when no duplicates exist', () => {
-      const vueInstance = {
+      const self = {
         addCategory: { selected: ['Category:A', 'Category:B'] },
         removeCategory: { selected: ['Category:C', 'Category:D'] }
       };
 
-      const result = validationHelper.hasDuplicateCategories(vueInstance);
+      const result = validationHelper.hasDuplicateCategories(self);
 
       expect(result.valid).toBe(true);
       expect(result.duplicates).toBeUndefined();
     });
 
     test('should handle undefined selected arrays', () => {
-      const vueInstance = {
+      const self = {
         addCategory: { selected: undefined },
         removeCategory: { selected: undefined }
       };
 
-      const result = validationHelper.hasDuplicateCategories(vueInstance);
+      const result = validationHelper.hasDuplicateCategories(self);
 
       expect(result.valid).toBe(true);
     });
 
     test('should handle missing selected property', () => {
-      const vueInstance = {
+      const self = {
         addCategory: {},
         removeCategory: {}
       };
 
-      const result = validationHelper.hasDuplicateCategories(vueInstance);
+      const result = validationHelper.hasDuplicateCategories(self);
 
       expect(result.valid).toBe(true);
     });
@@ -158,44 +158,37 @@ describe('ValidationHelper', () => {
         return toAdd === 'Category:Circular';
       };
 
-      const vueInstance = {
-        sourceCategory: 'Category:Source',
-        addCategory: { selected: ['Category:Valid', 'Category:Circular'] },
-        displayCategoryMessage: jest.fn()
-      };
+      const addCategories = ['Category:Valid', 'Category:Circular'];
+      const sourceCategory = 'Category:Source';
 
-      const result = validationHelper.filterCircularCategories(vueInstance);
+      const result = validationHelper.filterCircularCategories(addCategories, sourceCategory);
 
-      expect(result).toEqual(['Category:Valid']);
+      expect(result.validCategories).toEqual(['Category:Valid']);
+      expect(result.circularCategories).toEqual(['Category:Circular']);
     });
 
-    test('should return null if all categories are circular', () => {
+    test('should return all as circular if all are circular', () => {
       global.Validator.isCircularCategory = () => true;
 
-      const vueInstance = {
-        sourceCategory: 'Category:Source',
-        addCategory: { selected: ['Category:Circular1', 'Category:Circular2'] },
-        displayCategoryMessage: jest.fn()
-      };
+      const addCategories = ['Category:Circular1', 'Category:Circular2'];
+      const sourceCategory = 'Category:Source';
 
-      const result = validationHelper.filterCircularCategories(vueInstance);
+      const result = validationHelper.filterCircularCategories(addCategories, sourceCategory);
 
-      expect(result).toBeNull();
-      expect(vueInstance.displayCategoryMessage).toHaveBeenCalled();
+      expect(result.validCategories).toEqual([]);
+      expect(result.circularCategories).toEqual(['Category:Circular1', 'Category:Circular2']);
     });
 
     test('should return all categories if none are circular', () => {
       global.Validator.isCircularCategory = () => false;
 
-      const vueInstance = {
-        sourceCategory: 'Category:Source',
-        addCategory: { selected: ['Category:A', 'Category:B'] },
-        displayCategoryMessage: jest.fn()
-      };
+      const addCategories = ['Category:A', 'Category:B'];
+      const sourceCategory = 'Category:Source';
 
-      const result = validationHelper.filterCircularCategories(vueInstance);
+      const result = validationHelper.filterCircularCategories(addCategories, sourceCategory);
 
-      expect(result).toEqual(['Category:A', 'Category:B']);
+      expect(result.validCategories).toEqual(['Category:A', 'Category:B']);
+      expect(result.circularCategories).toEqual([]);
     });
   });
 });

@@ -97,6 +97,13 @@ function ExecutePanel(execute_operation_handler, progress_handler) {
                 const preparation = execute_operation_handler.prepareOperation(this);
 
                 if (!preparation.valid) {
+                    if (preparation?.message) {
+                        this.displayCategoryMessage(
+                            preparation.message,
+                            'error',
+                            'add'
+                        );
+                    }
                     console.log('[CBM-V] No valid categories after filtering');
                     this.displayCategoryMessage(preparation.error, 'warning', 'add');
                     return;
@@ -125,6 +132,13 @@ function ExecutePanel(execute_operation_handler, progress_handler) {
                 const preparation = execute_operation_handler.prepareOperation(this);
 
                 if (!preparation.valid) {
+                    if (preparation?.message) {
+                        this.displayCategoryMessage(
+                            preparation.message,
+                            'error',
+                            'add'
+                        );
+                    }
                     this.isProcessing = false;
                     this.executionProgressText = "";
                     return;

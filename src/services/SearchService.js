@@ -1,5 +1,7 @@
 /**
- * Service for file operations
+ * Service for file operations — data layer only.
+ * Responsible for API communication and raw data parsing.
+ * Has no knowledge of UI state or progress reporting.
  * @class SearchService
  */
 
@@ -15,7 +17,8 @@ class SearchService {
     }
 
     /**
-     * Stop the current search operation
+     * Signal the service to abort the current search at the next checkpoint.
+     * Called exclusively by SearchHandler — never directly from UI.
      */
     stopSearch() {
         this.shouldStopSearch = true;
@@ -23,55 +26,54 @@ class SearchService {
     }
 
     /**
-     * Reset the search stop flag
+     * Reset the stop flag before starting a new search.
+     * @private
      */
     resetSearchFlag() {
         this.shouldStopSearch = false;
     }
 
     /**
-     * Search files by pattern within a category
-     * Uses MediaWiki search API for efficiency instead of loading all category members
-     * @param {string} categoryName - Category to search in
-     * @param {string} searchPattern - Pattern to match against file titles
-     * @returns {Promise<Array<FileModel>>} Array of matching file models
+     * Search files by pattern within a category.
+     * Uses the MediaWiki search API for efficiency instead of loading all
+     * category members.
+     *
+     * @param {string} categoryName   - Category to search in
+     * @param {string} searchPattern  - Pattern to match against file titles
+     * @returns {Promise<Array<FileModel>>} Matching file models
      */
     async search(categoryName, searchPattern) {
+        this.resetSearchFlag();
         // Normalize category name
         const cleanCategoryName = categoryName.replace(/^Category:/i, '');
-
-        // Use search API to find files matching the pattern in the category
         const searchResults = await this.api.searchInCategory(cleanCategoryName, searchPattern);
 
-        // Check if search was stopped
         if (this.shouldStopSearch) {
             console.log('[CBM-FS] Search stopped after API call');
             return [];
         }
 
-        // Get detailed info for matching files
-        const filesWithInfo = await this.getFilesDetails(searchResults);
-
-        return filesWithInfo;
+        return await this.getFilesDetails(searchResults);
     }
 
     /**
-     * Get detailed information for a batch of files
-     * @param {Array} files - Array of file objects with title property
-     * @returns {Promise<Array<FileModel>>} Array of file models with details
+     * Fetch detailed information for a list of files.
+     * Processes files in batches to respect the API limit.
+     *
+     * @param {Array<{title: string}>} files - Files to enrich
+     * @returns {Promise<Array<FileModel>>} Enriched file models (may be partial if stopped)
      */
     async getFilesDetails(files) {
         if (files.length === 0) return [];
 
-        const batchSize = 50; // API limit
-        const batches = this.createBatches(files, batchSize);
-
+        const batches = this.createBatches(files, 50); // 50 = API limit
         const results = [];
+
         for (const batch of batches) {
             // Check if search was stopped
             if (this.shouldStopSearch) {
                 console.log('[CBM-FS] Search stopped during file details fetch');
-                return results; // Return partial results
+                return results; // return whatever was collected so far
             }
 
             const titles = batch.map(f => f.title);
@@ -83,10 +85,11 @@ class SearchService {
     }
 
     /**
-     * Split an array into batches
-     * @param {Array} array - Array to split
-     * @param {number} size - Batch size
-     * @returns {Array<Array>} Array of batches
+     * Split an array into fixed-size batches.
+     *
+     * @param {Array}  array - Source array
+     * @param {number} size  - Maximum items per batch
+     * @returns {Array<Array>}
      */
     createBatches(array, size) {
         const batches = [];
@@ -97,27 +100,29 @@ class SearchService {
     }
 
     /**
-     * Parse API response into FileModel objects
-     * @param {Object} apiResponse - Raw API response
-     * @returns {Array<FileModel>} Array of file models
+     * Map a raw API response to an array of FileModel objects.
+     *
+     * @param {Object} apiResponse - Raw response from getFileInfo
+     * @returns {Array<FileModel>}
      */
     parseFileInfo(apiResponse) {
         const pages = apiResponse.query.pages;
         const fileModels = [];
 
         for (const pageId of Object.keys(pages)) {
-            const page = pages[pageId];
-            if (parseInt(pageId) < 0) continue; // Skip missing pages
+            if (parseInt(pageId) < 0) continue; // skip missing / invalid pages
 
+            const page = pages[pageId];
             const categories = (page.categories || []).map(cat => cat.title);
+            const imageinfo = page.imageinfo && page.imageinfo[0];
 
             fileModels.push(new FileModel({
                 title: page.title,
                 pageid: page.pageid,
                 selected: true,
                 currentCategories: categories,
-                thumbnail: page.imageinfo && page.imageinfo[0] ? page.imageinfo[0].url : '',
-                size: page.imageinfo && page.imageinfo[0] ? page.imageinfo[0].size : 0
+                thumbnail: imageinfo ? imageinfo.url : '',
+                size: imageinfo ? imageinfo.size : 0,
             }));
         }
 

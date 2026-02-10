@@ -38,12 +38,12 @@ class ExecuteOperationHandler {
 
     /**
      * Prepare batch operation data
-     * @param {Object} vueInstance - Vue component instance
+     * @param {Object} self - Vue component instance
      * @returns {Object} Preparation result
      */
-    prepareOperation(vueInstance) {
+    prepareOperation(self) {
         // Check for duplicate categories in both add and remove lists
-        const duplicateCheck = this.validator.hasDuplicateCategories(vueInstance);
+        const duplicateCheck = this.validator.hasDuplicateCategories(self);
         if (!duplicateCheck.valid) {
             return {
                 valid: false,
@@ -51,29 +51,31 @@ class ExecuteOperationHandler {
             };
         }
 
-        const filteredToAdd = this.validator.filterCircularCategories(vueInstance);
+        // Filter out circular categories (returns null if ALL are circular)
+        const { filteredToAdd, circularCategories } = this.validator.filterCircularCategories(self.addCategory.selected, self.sourceCategory);
 
-        if (filteredToAdd === null) {
-            return { valid: false, error: 'Circular categories detected.' };
+        // If all categories are circular, show error
+        if (circularCategories.length > 0 && filteredToAdd.length === 0) {
+            const message = `❌ Cannot add: all categorie(s) are circular references to the current page. Cannot add "${circularCategories.join(', ')}" to itself.`;
+            return { valid: false, error: 'Circular categories detected.', message: message };
         }
-
         // Check if there are any valid operations remaining
-        if (filteredToAdd.length === 0 && vueInstance.removeCategory.selected.length === 0) {
+        if (filteredToAdd.length === 0 && self.removeCategory.selected.length === 0) {
             return { valid: false, error: 'No valid categories to add or remove.' };
         }
 
         // Filter files to only those that will actually change
         // This ensures the confirmation message shows the correct count
         const filesThatWillChange = ChangeCalculator.filterFilesThatWillChange(
-            vueInstance.selectedFiles,
+            self.selectedFiles,
             filteredToAdd,
-            vueInstance.removeCategory.selected
+            self.removeCategory.selected
         );
 
         return {
             valid: true,
             filteredToAdd,
-            removeCategories: vueInstance.removeCategory.selected,
+            removeCategories: self.removeCategory.selected,
             filesCount: filesThatWillChange.length,
             filesToProcess: filesThatWillChange
         };

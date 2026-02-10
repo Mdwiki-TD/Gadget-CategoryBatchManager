@@ -21,6 +21,26 @@ class PreviewHandler {
      * Handle preview button click
      * Generates and displays a preview of category changes
      */
+    /**
+     * Validate operation before execution
+     * @param {Array} selectedFiles - Array of selected files
+     * @param {Array} addCategories - Categories to add
+     * @param {Array} removeCategories - Categories to remove
+     * @returns {Object} Validation result {valid: boolean, error?: string}
+     */
+    validateOperation(selectedFiles, addCategories, removeCategories) {
+        // selectedCount === 0 ||
+        if (!selectedFiles || selectedFiles.length === 0) {
+            return { valid: false, error: 'Please select at least one file.' };
+        }
+
+        if (addCategories.length === 0 && removeCategories.length === 0) {
+            return { valid: false, error: 'Please specify categories to add or remove.' };
+        }
+
+        return { valid: true };
+    }
+
     async handlePreview(self) {
         console.log('[CBM-P] Preview button clicked');
 
@@ -46,9 +66,17 @@ class PreviewHandler {
         }
 
         // Filter out circular categories (returns null if ALL are circular)
-        const filteredToAdd = this.validator.filterCircularCategories(self);
+        const { filteredToAdd, circularCategories } = this.validator.filterCircularCategories(self.addCategory.selected, self.sourceCategory);
 
-        if (filteredToAdd === null) return null; // All categories were circular
+        // If all categories are circular, show error
+        if (circularCategories.length > 0 && filteredToAdd.length === 0) {
+            self.displayCategoryMessage(
+                `❌ Cannot add: all categorie(s) are circular references to the current page. Cannot add "${circularCategories.join(', ')}" to itself.`,
+                'error',
+                'add'
+            );
+            return;
+        }
 
         // Check if there are any valid operations remaining
         if (filteredToAdd.length === 0 && self.removeCategory.selected.length === 0) {

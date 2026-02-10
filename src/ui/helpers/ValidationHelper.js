@@ -18,12 +18,12 @@ class ValidationHelper {
 
     /**
      * Check if any category appears in both add and remove lists
-     * @param {Object} vueInstance - Vue component instance
+     * @param {Object} self - Vue component instance
      * @returns {Object} Validation result {valid: boolean, duplicates?: Array<string>}
      */
-    hasDuplicateCategories(vueInstance) {
-        const addCategories = vueInstance.addCategory.selected || [];
-        const removeCategories = vueInstance.removeCategory.selected || [];
+    hasDuplicateCategories(self) {
+        const addCategories = self.addCategory.selected || [];
+        const removeCategories = self.removeCategory.selected || [];
 
         if (addCategories.length === 0 || removeCategories.length === 0) {
             return { valid: true };
@@ -53,13 +53,13 @@ class ValidationHelper {
     /**
      * Check for circular category references and filter them out silently
      * Only shows error if ALL categories are circular
-     * @returns {Array<string>|null} Filtered categories, or null if all are circular
+     * @returns {Object} Object with validCategories and circularCategories arrays
      */
-    filterCircularCategories(self) {
+    filterCircularCategories(addCategory_selected, sourceCategory) {
         const circularCategories = [];
         const validCategories = [];
-        for (const category of self.addCategory.selected) {
-            if (Validator.isCircularCategory(self.sourceCategory, category)) {
+        for (const category of addCategory_selected) {
+            if (Validator.isCircularCategory(sourceCategory, category)) {
                 console.log('[CBM-V] Circular category detected (silently removed):', category);
                 circularCategories.push(category);
             } else {
@@ -67,18 +67,7 @@ class ValidationHelper {
             }
         }
 
-        // If all categories are circular, show error
-        if (circularCategories.length > 0 && validCategories.length === 0) {
-            self.displayCategoryMessage(
-                `❌ Cannot add: all categorie(s) are circular references to the current page. Cannot add "${circularCategories.join(', ')}" to itself.`,
-                'error',
-                'add'
-            );
-            return null;
-        }
-
-        // Silently filter circular categories if there are valid ones
-        return validCategories;
+        return { validCategories, circularCategories };
     }
 }
 
