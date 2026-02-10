@@ -1,8 +1,13 @@
 /**
  * Execute Operation Handler
  * Handles business logic for batch operations
+ * @class ExecuteOperationHandler
  */
 class ExecuteOperationHandler {
+    /**
+     * @param {Object} validator - ValidationHelper instance
+     * @param {Object} batchProcessor - BatchProcessor instance
+     */
     constructor(validator, batchProcessor) {
         this.validator = validator;
         this.batchProcessor = batchProcessor;
@@ -10,6 +15,10 @@ class ExecuteOperationHandler {
 
     /**
      * Validate operation before execution
+     * @param {Array} selectedFiles - Array of selected files
+     * @param {Array} addCategories - Categories to add
+     * @param {Array} removeCategories - Categories to remove
+     * @returns {Object} Validation result {valid: boolean, error?: string}
      */
     validateOperation(selectedFiles, addCategories, removeCategories) {
         if (!selectedFiles || selectedFiles.length === 0) {
@@ -25,6 +34,8 @@ class ExecuteOperationHandler {
 
     /**
      * Prepare batch operation data
+     * @param {Object} vueInstance - Vue component instance
+     * @returns {Object} Preparation result
      */
     prepareOperation(vueInstance) {
         const filteredToAdd = this.validator.filterCircularCategories(vueInstance);
@@ -43,6 +54,10 @@ class ExecuteOperationHandler {
 
     /**
      * Generate confirmation message
+     * @param {number} filesCount - Number of files to process
+     * @param {Array} addCategories - Categories to add
+     * @param {Array} removeCategories - Categories to remove
+     * @returns {string} Formatted confirmation message
      */
     generateConfirmMessage(filesCount, addCategories, removeCategories) {
         return `You are about to update ${filesCount} file(s).\n\n` +
@@ -53,6 +68,11 @@ class ExecuteOperationHandler {
 
     /**
      * Execute batch processing
+     * @param {Array} files - Files to process
+     * @param {Array} addCategories - Categories to add
+     * @param {Array} removeCategories - Categories to remove
+     * @param {Object} callbacks - Progress callbacks
+     * @returns {Promise<Object>} Processing results
      */
     async executeBatch(files, addCategories, removeCategories, callbacks) {
         return await this.batchProcessor.processBatch(
