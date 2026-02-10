@@ -51,12 +51,14 @@ class ExecuteOperationHandler {
             };
         }
 
-        const filteredToAdd = this.validator.filterCircularCategories(vueInstance);
+        // Filter out circular categories (returns null if ALL are circular)
+        const { filteredToAdd, circularCategories } = this.validator.filterCircularCategoriesNew(vueInstance.addCategory.selected, vueInstance.sourceCategory);
 
-        if (filteredToAdd === null) {
-            return { valid: false, error: 'Circular categories detected.' };
+        // If all categories are circular, show error
+        if (circularCategories.length > 0 && filteredToAdd.length === 0) {
+            const message = `❌ Cannot add: all categorie(s) are circular references to the current page. Cannot add "${circularCategories.join(', ')}" to itself.`;
+            return { valid: false, error: 'Circular categories detected.', message: message };
         }
-
         // Check if there are any valid operations remaining
         if (filteredToAdd.length === 0 && vueInstance.removeCategory.selected.length === 0) {
             return { valid: false, error: 'No valid categories to add or remove.' };

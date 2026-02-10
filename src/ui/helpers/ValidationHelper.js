@@ -53,8 +53,22 @@ class ValidationHelper {
     /**
      * Check for circular category references and filter them out silently
      * Only shows error if ALL categories are circular
-     * @returns {Array<string>|null} Filtered categories, or null if all are circular
+     * @returns {Object} Object with validCategories and circularCategories arrays
      */
+    filterCircularCategoriesNew(addCategory_selected, sourceCategory) {
+        const circularCategories = [];
+        const validCategories = [];
+        for (const category of addCategory_selected) {
+            if (Validator.isCircularCategory(sourceCategory, category)) {
+                console.log('[CBM-V] Circular category detected (silently removed):', category);
+                circularCategories.push(category);
+            } else {
+                validCategories.push(category);
+            }
+        }
+
+        return { validCategories, circularCategories };
+    }
     filterCircularCategories(self) {
         const circularCategories = [];
         const validCategories = [];

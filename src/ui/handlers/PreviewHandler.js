@@ -46,9 +46,17 @@ class PreviewHandler {
         }
 
         // Filter out circular categories (returns null if ALL are circular)
-        const filteredToAdd = this.validator.filterCircularCategories(self);
+        const { filteredToAdd, circularCategories } = this.validator.filterCircularCategoriesNew(self.addCategory.selected, self.sourceCategory);
 
-        if (filteredToAdd === null) return null; // All categories were circular
+        // If all categories are circular, show error
+        if (circularCategories.length > 0 && filteredToAdd.length === 0) {
+            self.displayCategoryMessage(
+                `❌ Cannot add: all categorie(s) are circular references to the current page. Cannot add "${circularCategories.join(', ')}" to itself.`,
+                'error',
+                'add'
+            );
+            return;
+        }
 
         // Check if there are any valid operations remaining
         if (filteredToAdd.length === 0 && self.removeCategory.selected.length === 0) {
