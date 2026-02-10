@@ -1,10 +1,10 @@
-const FileService = require('../../../src/services/FileService');
+const SearchService = require('../../../src/services/SearchService');
 const FileModel = require('../../../src/models/FileModel');
 
-// Mock global FileModel for FileService
+// Mock global FileModel for SearchService
 global.FileModel = FileModel;
 
-describe('FileService', () => {
+describe('SearchService', () => {
   let service;
   let mockApi;
 
@@ -14,7 +14,7 @@ describe('FileService', () => {
       getFileInfo: jest.fn(),
       searchInCategory: jest.fn()
     };
-    service = new FileService(mockApi);
+    service = new SearchService(mockApi);
   });
 
   describe('createBatches', () => {

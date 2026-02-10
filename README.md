@@ -8,7 +8,7 @@
 - [x] APIService
 - [ ] BatchProcessor
 - [x] CategoryService
-- [x] FileService
+- [x] SearchService
 
 ## UI/components
 - [x] CategoryInputs

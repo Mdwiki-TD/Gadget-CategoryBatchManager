@@ -19,7 +19,7 @@ const SOURCE_FILES = [
     'src/services/APIService.js',
     'src/services/BatchProcessor.js',
     'src/services/CategoryService.js',
-    'src/services/FileService.js',
+    'src/services/SearchService.js',
 
     'src/ui/panels/CategoryInputsPanel.js',
     'src/ui/panels/ExecutePanel.js',

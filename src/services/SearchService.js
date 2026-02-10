@@ -1,11 +1,11 @@
 /**
  * Service for file operations
- * @class FileService
+ * @class SearchService
  */
 
 /* global FileModel */
 
-class FileService {
+class SearchService {
     /**
      * @param {APIService} apiService - API service instance
      */
@@ -128,5 +128,5 @@ class FileService {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = FileService;
+    module.exports = SearchService;
 }

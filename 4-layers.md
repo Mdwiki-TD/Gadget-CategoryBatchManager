@@ -779,7 +779,7 @@ function createServices() {
         new CategoryService(c.get('apiService'))
     );
     container.register('fileService', (c) =>
-        new FileService(c.get('apiService'))
+        new SearchService(c.get('apiService'))
     );
 
     // Application Services
@@ -867,7 +867,7 @@ src/
 │   │
 │   ├── domain/
 │   │   ├── CategoryService.js
-│   │   └── FileService.js
+│   │   └── SearchService.js
 │   │
 │   ├── application/
 │   │   ├── SearchService.js

@@ -15,6 +15,7 @@ function SearchPanel(search_handler) {
                 sourceCategory: 'Category:Our World in Data graphs of Austria',
                 searchPattern: '1990',
 
+                workFiles: [],
                 // Processing state
                 isSearching: false,
                 searchProgressText: '',
@@ -61,7 +62,7 @@ function SearchPanel(search_handler) {
                     {{ searchProgressText }}
                 </div>
             </div>
-            `,
+        `,
         methods: {
             /**
              * Start file search operation
@@ -79,28 +80,28 @@ function SearchPanel(search_handler) {
 
                 // Clear all files and messages from previous search
                 this.workFiles = [];
-                this.previewRows = [];
 
                 const searchResults = await this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
                 this.workFiles = searchResults || [];
-                this.isSearching = false;
-                this.searchProgressText = '';
-                this.searchProgressPercent = 0;
+
+                this.clearStatus();
             },
 
             /**
              * Stop ongoing batch operation
              */
             stopSearch() {
-                this.isSearching = false;
-                this.shouldStopSearch = true;
-                this.searchProgressText = '';
-                this.searchProgressPercent = 0;
+                this.clearStatus();
 
                 this.search_handler.stop();
 
                 this.showWarningMessage('Search stopped by user.');
-            }
+            },
+            clearStatus() {
+                this.isSearching = false;
+                this.searchProgressText = '';
+                this.searchProgressPercent = 0;
+            },
         }
     };
 

@@ -5,7 +5,7 @@
 
 function BatchManager() {
     const mwApi = new APIService();
-    const file_service = new FileService(mwApi);
+    const file_service = new SearchService(mwApi);
     const validator = new ValidationHelper();
     const categoryService = new CategoryService(mwApi);
     const batchProcessor = new BatchProcessor(categoryService);
