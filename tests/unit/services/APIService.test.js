@@ -1,7 +1,7 @@
 // Mock console before requiring APIService
 const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-const APIService = require('../../src/services/APIService');
+const APIService = require('../../../src/services/APIService');
 
 describe('APIService', () => {
   let service;
