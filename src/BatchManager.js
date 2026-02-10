@@ -2,13 +2,11 @@
  * Creates the Vue app definition for the Category Batch Manager tool.
  * @returns {Object} Vue app definition object.
  */
-/* global APIService, SearchHandler, FilesList, FileService, ValidationHelper, CategoryService, BatchProcessor, ExecutePanel, PreviewHandler, CategoryInputs, MessageDisplay
-*/
 
 function BatchManager() {
     const mwApi = new APIService();
     const file_service = new FileService(mwApi);
-    const files_list = new FilesList(mwApi);
+    const files_list = new FileListHandler(mwApi);
 
     const search_handler = new SearchHandler(file_service);
 
@@ -22,14 +20,12 @@ function BatchManager() {
     const progress_handler = new ProgressHandler();
     const execute_panel = new ExecutePanel(execute_operation_handler, progress_handler);
 
-    // Generate HTML for components
-    const FilesListHtml = files_list.createElement();
-
     // vue apps
     const preview_panel_app = PreviewPanel(preview_handler);    // function
     const category_inputs_app = CategoryInputs(mwApi);          // function
     const message_display_app = MessageDisplay();               // function
     const search_panel_app = SearchPanel(search_handler);       // function
+    const files_list_app = FilesListPanel(files_list);          // function
 
     const template = `
         <div class="cbm-container">
@@ -62,7 +58,7 @@ function BatchManager() {
 
                 <!-- Right Panel: File List -->
                 <div class="cbm-right-panel">
-                    ${FilesListHtml}
+                    ${files_list_app.template}
 
                     <!-- Progress Section -->
                     ${search_panel_app.progress_template}
@@ -83,9 +79,6 @@ function BatchManager() {
 
                 editSummary: 'Batch category update via Category Batch Manager',
 
-                // FilesList state
-                workFiles: [],
-
                 // SearchPanel state
                 ...search_panel_app.data(),
 
@@ -100,19 +93,14 @@ function BatchManager() {
 
                 // PreviewPanel state
                 ...preview_panel_app.data(),
+
+                // FilesListPanel state
+                ...files_list_app.data(),
             };
             return app_data;
         },
         computed: {
-            selectedCount: function () {
-                return this.workFiles.filter(f => f.selected).length;
-            },
-            selectedFiles: function () {
-                return this.workFiles.filter(f => f.selected);
-            },
-            totalFilesCount: function () {
-                return this.workFiles.length;
-            }
+            ...files_list_app.computed,
         },
         methods: {
 
@@ -131,28 +119,8 @@ function BatchManager() {
             // PreviewPanel methods
             ...preview_panel_app.methods,
 
-            /* *************************
-            **      FilesList
-            ** *************************
-            */
-
-            // should be moved to `class FilesList` at `ui/components/FilesList.js`
-            // Select all files
-            selectAll: function () {
-                return this.files_list.selectAll(this.workFiles);
-            },
-
-            // should be moved to `class FilesList` at `ui/components/FilesList.js`
-            // Deselect all files
-            deselectAll: function () {
-                return this.files_list.deselectAll(this.workFiles);
-            },
-
-            // should be moved to `class FilesList` at `ui/components/FilesList.js`
-            // Remove individual file from list
-            removeFile: function (index) {
-                this.workFiles.splice(index, 1);
-            }
+            // FilesListPanel methods
+            ...files_list_app.methods,
         },
         template: template
     };
