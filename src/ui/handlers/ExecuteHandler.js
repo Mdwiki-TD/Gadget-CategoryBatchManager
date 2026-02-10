@@ -1,22 +1,38 @@
 /**
- * Search panel UI component using Codex CSS-only classes.
- * @see https://doc.wikimedia.org/codex/latest/
- * @class ExecuteHandler
+ * Execute Handler Vue app factory
+ * Handles batch operations for category updates
+ * @param {Object} validator - ValidationHelper instance
+ * @param {Object} batchProcessor - BatchProcessor instance
+ * @returns {Object} Vue app configuration
  */
-class ExecuteHandler {
-    /**
-     */
-    constructor(validator, batchProcessor) {
 
-        this.validator = validator
-        this.batchProcessor = batchProcessor
-    }
+function ExecuteHandler(validator, batchProcessor) {
+    const app = {
+        data: function () {
+            return {
 
-    /**
-     * Create the search panel HTML element with Codex components.
-     */
-    createElement() {
-        return `
+                // Processing state
+                isProcessing: false,
+                shouldStopProgress: false,
+                showExecutionProgress: false,
+
+                // Progress tracking
+                executionProgressPercent: 0,
+                executionProgressText: '',
+
+                // Confirmation dialog
+                openConfirmDialog: false,
+                confirmMessage: '',
+                confirmPrimaryAction: {
+                    label: 'Confirm',
+                    actionType: 'progressive'
+                },
+                confirmDefaultAction: {
+                    label: 'Cancel'
+                }
+            };
+        },
+        template: `
             <cdx-button
                 v-if="!isProcessing"
                 @click="executeOperation"
@@ -58,117 +74,131 @@ class ExecuteHandler {
                     {{ executionProgressText }}
                 </div>
             </div>
-        `;
-    }
+        `,
+        methods: {
+            /**
+             * Execute batch operation
+             * Validates selection and shows confirmation dialog
+             */
+            executeOperation() {
+                const selectedCount = this.selectedCount;
 
-    // Execute batch operation
-    executeOperation(self) {
-        const selectedCount = self.selectedCount;
+                if (selectedCount === 0 || !this.selectedFiles || this.selectedFiles.length === 0) {
+                    this.showWarningMessage('Please select at least one file.');
+                    return;
+                }
 
-        if (selectedCount === 0 || !self.selectedFiles || self.selectedFiles.length === 0) {
-            self.showWarningMessage('Please select at least one file.');
-            return;
-        }
+                if (this.addCategory.selected.length === 0 && this.removeCategory.selected.length === 0) {
+                    this.showWarningMessage('Please specify categories to add or remove.');
+                    return;
+                }
 
-        if (self.addCategory.selected.length === 0 && self.removeCategory.selected.length === 0) {
-            self.showWarningMessage('Please specify categories to add or remove.');
-            return;
-        }
+                // Filter out circular categories (returns null if ALL are circular)
+                const filteredToAdd = validator.filterCircularCategories(this); // TODO: `this` changed from `self` check if issues arise
 
-        // Filter out circular categories (returns null if ALL are circular)
-        const filteredToAdd = this.validator.filterCircularCategories(self);
-        if (filteredToAdd === null) {
-            return;
-        }
-        // Check if there are any valid operations remaining
-        if (filteredToAdd.length === 0 && self.removeCategory.selected.length === 0) {
-            console.log('[CBM-V] No valid categories after filtering');
-            self.displayCategoryMessage('No valid categories to add or remove.', 'warning', 'add');
-            return;
-        }
+                if (filteredToAdd === null) {
+                    return;
+                }
+                // Check if there are any valid operations remaining
+                if (filteredToAdd.length === 0 && this.removeCategory.selected.length === 0) {
+                    console.log('[CBM-V] No valid categories after filtering');
+                    this.displayCategoryMessage('No valid categories to add or remove.', 'warning', 'add');
+                    return;
+                }
 
-        // Show confirmation dialog
-        self.confirmMessage =
-            `You are about to update ${self.selectedFiles.length} file(s).\n\n` +
-            `Categories to add: ${filteredToAdd.length > 0 ? filteredToAdd.join(', ') : 'none'}\n` +
-            `Categories to remove: ${self.removeCategory.selected.length > 0 ? self.removeCategory.selected.join(', ') : 'none'}\n\n` +
-            'Do you want to proceed?';
+                // Show confirmation dialog
+                this.confirmMessage =
+                    `You are about to update ${this.selectedFiles.length} file(s).\n\n` +
+                    `Categories to add: ${filteredToAdd.length > 0 ? filteredToAdd.join(', ') : 'none'}\n` +
+                    `Categories to remove: ${this.removeCategory.selected.length > 0 ? this.removeCategory.selected.join(', ') : 'none'}\n\n` +
+                    'Do you want to proceed?';
 
-        // trigger confirm dialog
-        self.openConfirmDialog = true;
-    }
+                // trigger confirm dialog
+                this.openConfirmDialog = true;
+            },
 
-    confirmOnPrimaryAction(self) {
-        self.openConfirmDialog = false;
-        // eslint-disable-next-line no-console
-        console.log('[CBM-E] User confirmed operation');
+            /**
+             * Handle confirmation dialog primary action
+             */
+            confirmOnPrimaryAction() {
+                this.openConfirmDialog = false;
+                console.log('[CBM-E] User confirmed operation');
 
-        self.isProcessing = true;
-        self.shouldStopProgress = false;
-        self.showExecutionProgress = true;
+                this.isProcessing = true;
+                this.shouldStopProgress = false;
+                this.showExecutionProgress = true;
 
-        // Filter out circular categories again (in case state changed)
-        const filteredToAdd = this.validator.filterCircularCategories(self);
+                // Filter out circular categories again
+                const filteredToAdd = validator.filterCircularCategories(this);// TODO: `this` changed from `self` check if issues arise
 
-        if (filteredToAdd === null) {
-            self.isProcessing = false;
-            self.showExecutionProgress = false;
-            return;
-        }
+                if (filteredToAdd === null) {
+                    this.isProcessing = false;
+                    this.showExecutionProgress = false;
+                    return;
+                }
 
-        // Process the batch using real BatchProcessor
-        this.processBatch(self, self.selectedFiles, filteredToAdd);
-    }
+                // Process the batch
+                this.processBatch(this.selectedFiles, filteredToAdd);
+            },
 
-    // Process files using BatchProcessor
-    async processBatch(self, files, filteredToAdd) {
-        try {
-            const results = await this.batchProcessor.processBatch(
-                files,
-                filteredToAdd,
-                self.removeCategory.selected,
-                {
-                    onProgress: (percent, results) => {
-                        self.executionProgressPercent = percent;
-                        self.executionProgressText = `Processing ${results.processed} of ${results.total}... (${results.successful} successful, ${results.failed} failed)`;
-                    },
-                    onFileComplete: (file, success) => {
-                        console.log(`[CBM-E] ${success ? '✓' : '⊘'} ${file.title}`);
-                    },
-                    onError: (file, error) => {
-                        console.error(`[CBM-E] ✗ ${file.title}:`, error.message);
+            /**
+             * Process files using BatchProcessor
+             * @param {Array} files - Files to process
+             * @param {Array} filteredToAdd - Categories to add
+             */
+            async processBatch(files, filteredToAdd) {
+                try {
+                    const results = await batchProcessor.processBatch(
+                        files,
+                        filteredToAdd,
+                        this.removeCategory.selected,
+                        {
+                            onProgress: (percent, results) => {
+                                this.executionProgressPercent = percent;
+                                this.executionProgressText = `Processing ${results.processed} of ${results.total}... (${results.successful} successful, ${results.failed} failed)`;
+                            },
+                            onFileComplete: (file, success) => {
+                                console.log(`[CBM-E] ${success ? '✓' : '⊘'} ${file.title}`);
+                            },
+                            onError: (file, error) => {
+                                console.error(`[CBM-E] ✗ ${file.title}:`, error.message);
+                            }
+                        }
+                    );
+
+                    this.isProcessing = false;
+                    this.showExecutionProgress = false;
+
+                    if (batchProcessor.shouldStop) {
+                        this.showWarningMessage(`Operation stopped by user. Processed ${results.processed} of ${results.total} files (${results.successful} successful, ${results.failed} failed).`);
+                    } else {
+                        const message = `Batch operation completed! Processed ${results.total} files: ${results.successful} successful, ${results.skipped} skipped, ${results.failed} failed.`;
+                        if (results.failed > 0) {
+                            this.showWarningMessage(message);
+                        } else {
+                            this.showSuccessMessage(message);
+                        }
                     }
-                }
-            );
 
-            self.isProcessing = false;
-            self.showExecutionProgress = false;
-
-            if (this.batchProcessor.shouldStop) {
-                self.showWarningMessage(`Operation stopped by user. Processed ${results.processed} of ${results.total} files (${results.successful} successful, ${results.failed} failed).`);
-            } else {
-                const message = `Batch operation completed! Processed ${results.total} files: ${results.successful} successful, ${results.skipped} skipped, ${results.failed} failed.`;
-                if (results.failed > 0) {
-                    self.showWarningMessage(message);
-                } else {
-                    self.showSuccessMessage(message);
+                } catch (error) {
+                    console.error('[CBM-E] Batch processing error:', error);
+                    this.isProcessing = false;
+                    this.showExecutionProgress = false;
+                    this.showErrorMessage(`Batch processing failed: ${error.message}`);
                 }
+            },
+
+            /**
+             * Stop ongoing operation
+             */
+            stopOperation() {
+                this.shouldStopProgress = true;
+                batchProcessor.stop();
             }
-
-        } catch (error) {
-            console.error('[CBM-E] Batch processing error:', error);
-            self.isProcessing = false;
-            self.showExecutionProgress = false;
-            self.showErrorMessage(`Batch processing failed: ${error.message}`);
         }
-    }
+    };
 
-    // Stop ongoing operation
-    stopOperation(self) {
-        self.shouldStopProgress = true;
-        this.batchProcessor.stop();
-    }
-
+    return app;
 }
 
 if (typeof module !== 'undefined' && module.exports) {

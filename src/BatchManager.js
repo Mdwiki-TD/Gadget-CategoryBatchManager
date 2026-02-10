@@ -16,13 +16,12 @@ function BatchManager() {
     const categoryService = new CategoryService(mwApi);
     const batchProcessor = new BatchProcessor(categoryService);
 
-    const execute_handler = new ExecuteHandler(validator, batchProcessor);
+    const execute_handler_app = ExecuteHandler(validator, batchProcessor);
     const preview_handler = new PreviewHandler();
 
     const Search_SectionHtml = search_handler.createElement();
     const FilesListHtml = files_list.createElement();
     const ProgressSectionHtml = progress_section.createElement();
-    const ExecuteSectionHtml = execute_handler.createElement();
     const PreviewChangesHtml = preview_handler.createElement();
 
     const category_inputs_app = CategoryInputs(mwApi);
@@ -53,7 +52,7 @@ function BatchManager() {
 
                         <div class="cbm-button-group">
                             ${PreviewChangesHtml}
-                            ${ExecuteSectionHtml}
+                            ${execute_handler_app.template}
                         </div>
                     </div>
                 </div>
@@ -74,7 +73,6 @@ function BatchManager() {
     const app = {
         data: function () {
             const app_data = {
-                execute_handler: execute_handler,
                 preview_handler: preview_handler,
                 search_handler: search_handler,
                 file_service: file_service,
@@ -91,9 +89,6 @@ function BatchManager() {
                 // FilesList state
                 workFiles: [],
 
-                // MessageDisplay state
-                ...message_display_app.data(),
-
                 // SearchProgressBar state
                 showSearchProgress: false,
                 searchProgressPercent: 0,
@@ -103,24 +98,16 @@ function BatchManager() {
                 isSearching: false,
                 shouldStopSearch: false,
 
-                // ExecuteHandler state
-                openConfirmDialog: false,
-                confirmDefaultAction: { label: 'Cancel' },
-                confirmPrimaryAction: { label: 'Save', actionType: 'progressive' },
-                confirmMessage: "",
-
-                // ExecuteHandler state
-                showExecutionProgress: false,
-                executionProgressText: 'Processing...',
-                executionProgressPercent: 0,
-
-                isProcessing: false,
-                shouldStopProgress: false,
-
                 // PreviewHandler state
                 previewRows: [],
                 changesCount: '',
                 openPreviewHandler: false,
+
+                // MessageDisplay state
+                ...message_display_app.data(),
+
+                // ExecuteHandler state
+                ...execute_handler_app.data(),
 
                 // CategoryInputsApp state
                 ...category_inputs_app.data(),
@@ -179,28 +166,8 @@ function BatchManager() {
                 return this.preview_handler.handlePreview(this);
             },
 
-            /* *************************
-            **      ExecuteHandler
-            ** *************************
-            */
-
-            // Execute batch operation
-            executeOperation: function () {
-                return this.execute_handler.executeOperation(this);
-            },
-
-            ConfirmOnPrimaryAction: function () {
-                return this.execute_handler.ConfirmOnPrimaryAction(this);
-            },
-            // Process files sequentially
-            processBatch: function (files, index) {
-                return this.execute_handler.processBatch(this, files, index);
-            },
-
-            // Stop ongoing operation
-            stopOperation: function () {
-                return this.execute_handler.stopOperation(this);
-            },
+            // ExecuteHandler methods
+            ...execute_handler_app.methods,
 
             // CategoryInputs
             ...category_inputs_app.methods,
