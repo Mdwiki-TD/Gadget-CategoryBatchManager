@@ -147,7 +147,7 @@ function CategoryInputsPanel(category_inputs_handler) {
 
             async onAddCategoryInput(value) {
                 this.hideCategoryMessage('add');
-                const data = this.category_inputs_handler.onCategoryInput(
+                const data = await this.category_inputs_handler.onCategoryInput(
                     value,
                     this.addCategory.input,
                     'add'
@@ -159,7 +159,7 @@ function CategoryInputsPanel(category_inputs_handler) {
 
             async onRemoveCategoryInput(value) {
                 this.hideCategoryMessage('remove');
-                const data = this.category_inputs_handler.onCategoryInput(
+                const data = await this.category_inputs_handler.onCategoryInput(
                     value,
                     this.removeCategory.input,
                     'remove'
