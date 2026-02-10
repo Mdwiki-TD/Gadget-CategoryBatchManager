@@ -146,7 +146,7 @@ function SearchPanel(search_handler) {
                 // Clear all files and messages from previous search
                 this.workFiles = [];
 
-                await this.search_handler.startSearch(this.sourceCategory, this.titlePattern);
+                await this.search_handler.startSearch(this.sourceCategory, this.titlePattern, this.searchPattern);
             },
 
             /**

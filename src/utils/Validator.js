@@ -37,7 +37,7 @@ class Validator {
      * @param {string} pattern - Raw search pattern
      * @returns {string} Sanitized pattern
      */
-    static sanitizeSearchPattern(pattern) {
+    static sanitizeTitlePattern(pattern) {
         if (!pattern || typeof pattern !== 'string') {
             return '';
         }
