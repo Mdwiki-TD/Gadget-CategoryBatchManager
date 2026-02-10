@@ -23,7 +23,8 @@ function SearchPanel(search_handler) {
 
                 // ── User inputs ──────────────────────────────────────────
                 sourceCategory: 'Category:Our World in Data graphs of Austria',
-                searchPattern: '1990',
+                titlePattern: '1990',
+                searchPattern: '',
 
                 workFiles: [],
                 // ── UI state (mirrors handler state via callbacks) ────────
@@ -35,44 +36,58 @@ function SearchPanel(search_handler) {
 
         template: `
             <div class="cbm-search-panel">
-                <div class="cbm-input-group">
-                    <cdx-label input-id="cbm-source-category" class="cbm-label">
-                        Source Category
-                    </cdx-label>
-                    <cdx-text-input
-                        id="cbm-source-category"
-                        v-model="sourceCategory"
-                        placeholder="Category:Our World in Data graphs of Austria"
-                    />
+                <div class="cbm-input-group cbm-two-column-row">
+                    <div class="cbm-input-group cbm-column-two-thirds">
+                        <cdx-label
+                            input-id="cbm-source-category"
+                            class="cbm-label">
+                            Source Category
+                        </cdx-label>
+                        <cdx-text-input
+                            id="cbm-source-category"
+                            v-model="sourceCategory"
+                            placeholder="Category:Our World in Data graphs of Austria" />
+                    </div>
+                    <div class="cbm-input-group cbm-column-one-third">
+                        <cdx-label
+                            input-id="cbm-title-pattern"
+                            class="cbm-label">
+                            In title Pattern
+                        </cdx-label>
+                        <cdx-text-input
+                            id="cbm-title-pattern"
+                            v-model="titlePattern"
+                            placeholder="(e.g., ,BLR.svg)" />
+                    </div>
                 </div>
 
                 <div class="cbm-input-group">
-                    <cdx-label input-id="cbm-pattern" class="cbm-label">
-                        Search Pattern
+                    <cdx-label
+                        input-id="cbm-pattern"
+                        class="cbm-label">
+                        Or Search Pattern
                     </cdx-label>
                     <span class="cbm-help-text">
-                        Enter a pattern to filter files (e.g., ,BLR.svg)
-                    </span>
+                        (e.g., "incategory:Category:2025 intitle:/example/
+                        -incategory:"Uploaded by OWID importer tool")</span
+                    >
                     <div class="cbm-input-button-group">
                         <cdx-text-input
                             id="cbm-pattern"
                             v-model="searchPattern"
-                            placeholder="e.g., ,BLR.svg"
-                        />
+                            placeholder="" />
                         <cdx-button
                             v-if="!isSearching"
                             @click="searchFiles"
                             action="progressive"
-                            weight="primary"
-                        >
+                            weight="primary">
                             Search
                         </cdx-button>
                         <cdx-button
                             v-if="isSearching"
                             @click="stopSearch"
                             action="destructive"
-                            weight="primary"
-                        >
+                            weight="primary">
                             Stop Search
                         </cdx-button>
                     </div>
@@ -131,7 +146,7 @@ function SearchPanel(search_handler) {
                 // Clear all files and messages from previous search
                 this.workFiles = [];
 
-                await this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
+                await this.search_handler.startSearch(this.sourceCategory, this.titlePattern);
             },
 
             /**

@@ -39,14 +39,14 @@ class SearchService {
      * category members.
      *
      * @param {string} categoryName   - Category to search in
-     * @param {string} searchPattern  - Pattern to match against file titles
+     * @param {string} titlePattern  - Pattern to match against file titles
      * @returns {Promise<Array<FileModel>>} Matching file models
      */
-    async search(categoryName, searchPattern) {
+    async search(categoryName, titlePattern) {
         this.resetSearchFlag();
         // Normalize category name
         const cleanCategoryName = categoryName.replace(/^Category:/i, '');
-        const searchResults = await this.api.searchInCategory(cleanCategoryName, searchPattern);
+        const searchResults = await this.api.searchInCategory(cleanCategoryName, titlePattern);
 
         if (this.shouldStopSearch) {
             console.log('[CBM-FS] Search stopped after API call');

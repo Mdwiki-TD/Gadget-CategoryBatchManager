@@ -42,7 +42,7 @@ class SearchHandler {
      * @param {string} searchPattern  - Pattern to match against file titles
      * @returns {Promise<void>}
      */
-    async startSearch(sourceCategory, searchPattern) {
+    async startSearch(sourceCategory, titlePattern) {
         if (this.isSearching) {
             console.warn('[CBM-SH] Search already in progress — ignoring duplicate call');
             return;
@@ -52,7 +52,7 @@ class SearchHandler {
         this._fireProgress('Searching for files…', 0);
 
         try {
-            const results = await this.file_service.search(sourceCategory, searchPattern);
+            const results = await this.file_service.search(sourceCategory, titlePattern);
 
             this._fireProgress('Search complete', 100);
             this.onComplete?.(results);
