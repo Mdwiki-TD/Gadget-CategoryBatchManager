@@ -70,7 +70,6 @@ function PreviewPanel(preview_handler) {
         methods: {
             handlePreview: function () {
                 const preparation = this.preview_handler.getPreparation(
-                    this,
                     this.sourceCategory,
                     this.selectedFiles,
                     this.addCategory.selected,

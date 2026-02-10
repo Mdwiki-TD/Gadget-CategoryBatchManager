@@ -7,7 +7,7 @@ class ChangesHandler {
     /**
      */
     constructor(validator) {
-        this.validator = validator
+        this.validator = validator;
     }
     /**
      * Handle preview button click
@@ -81,7 +81,7 @@ class ChangesHandler {
         };
     }
 
-    async valid_work(sourceCategory, selectedFiles, addCategorySelected, removeCategorySelected, callbacks = {}) {
+    validateAndPrepare(sourceCategory, selectedFiles, addCategorySelected, removeCategorySelected, callbacks = {}) {
         console.log('[CBM-P] Preview button clicked');
 
         const {

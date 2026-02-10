@@ -15,22 +15,22 @@ class PreviewHandler {
     /**
      */
     constructor(validator, changes_handler) {
-        this.validator = validator
-        this.changes_handler = changes_handler
+        this.validator = validator;
+        this.changes_handler = changes_handler;
     }
     /**
      * Handle preview button click
      * Generates and displays a preview of category changes
      */
 
-    async getPreparation(
+    getPreparation(
         sourceCategory,
         selectedFiles,
         addCategorySelected,
         removeCategorySelected,
         callbacks = {}
     ) {
-        const preparation = this.changes_handler.valid_work(
+        const preparation = this.changes_handler.validateAndPrepare(
             sourceCategory,
             selectedFiles,
             addCategorySelected,

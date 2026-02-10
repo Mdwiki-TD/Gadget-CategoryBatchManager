@@ -83,7 +83,7 @@ function ExecutePanel(execute_operation_handler, progress_handler, changes_handl
              */
             executeOperation() {
                 // Validate
-                const preparation = changes_handler.valid_work(
+                const preparation = changes_handler.validateAndPrepare(
                     this.sourceCategory,
                     this.selectedFiles,
                     this.addCategory.selected,
