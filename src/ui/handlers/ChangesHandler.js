@@ -40,7 +40,7 @@ class ChangesHandler {
      */
     prepareOperation(self) {
         // Check for duplicate categories in both add and remove lists
-        const duplicateCheck = this.validator.hasDuplicateCategories(self);
+        const duplicateCheck = this.validator.hasDuplicateCategories(self.addCategory.selected, self.removeCategory.selected);
         if (!duplicateCheck.valid) {
             return {
                 valid: false,
