@@ -34,7 +34,7 @@ function BatchManager() {
     // vue apps
     const category_inputs_app = CategoryInputs(mwApi);      // function
     const message_display_app = MessageDisplay();           // function
-    const search_panel_app = SearchPanel(search_handler);         // function
+    const search_panel_app = SearchPanel(search_handler);   // function
 
     const template = `
         <div class="cbm-container">

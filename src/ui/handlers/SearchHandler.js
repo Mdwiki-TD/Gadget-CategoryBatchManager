@@ -10,30 +10,19 @@ class SearchHandler {
         this.file_service = file_service;
     }
 
-    async startSearch(self) {
-        self.isSearching = true;
-        // Clear all files and messages from previous search
-        self.workFiles = [];
-        self.previewRows = [];
-        self.resetMessageState();
-
+    async startSearch(sourceCategory, searchPattern) {
         // TODO: searchProgressText updates via callbacks from file_service
         const searchResults = await this.file_service.search(
-            self.sourceCategory,
-            self.searchPattern
+            sourceCategory,
+            searchPattern
         );
-        self.workFiles = searchResults;
-        self.isSearching = false;
+        return searchResults;
     }
 
-    stop(self) {
-        self.isSearching = false;
-        self.shouldStopSearch = true;
-
+    stop() {
         // Tell the file service to stop the ongoing search
         this.file_service.stopSearch();
 
-        self.showWarningMessage('Search stopped by user.');
     }
 
 }

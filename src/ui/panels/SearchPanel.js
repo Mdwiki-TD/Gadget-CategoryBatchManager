@@ -76,14 +76,26 @@ function SearchPanel(search_handler) {
                 this.searchProgressText = 'Searching for files...';
                 this.searchProgressPercent = 0;
 
-                this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
+                // Clear all files and messages from previous search
+                this.workFiles = [];
+                this.previewRows = [];
+                this.resetMessageState();
+
+                const searchResults = this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
+                this.workFiles = searchResults;
+                this.isSearching = false;
             },
 
             /**
              * Stop ongoing batch operation
              */
             stopSearch() {
+                this.isSearching = false;
+                this.shouldStopSearch = true;
+
                 this.search_handler.stop();
+
+                this.showWarningMessage('Search stopped by user.');
             }
         }
     };
