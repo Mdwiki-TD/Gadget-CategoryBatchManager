@@ -126,15 +126,25 @@ function BatchManager() {
             }
         },
         methods: {
+
+            // ExecuteHandler methods
+            ...execute_handler_app.methods,
+
+            // CategoryInputs
+            ...category_inputs_app.methods,
+
+            // Message handlers
+            ...message_display_app.methods,
+
             /* *************************
             **      FileService
             ** *************************
             */
 
-            searchFiles: function () {
+            searchFiles() {
                 return this.search_handler.searchFiles(this);
             },
-            stopSearch: function () {
+            stopSearch() {
                 return this.search_handler.stopSearch(this);
             },
 
@@ -145,35 +155,26 @@ function BatchManager() {
 
             // should be moved to `class FilesList` at `ui/components/FilesList.js`
             // Select all files
-            selectAll: function () {
+            selectAll() {
                 return this.files_list.selectAll(this.workFiles);
             },
 
             // should be moved to `class FilesList` at `ui/components/FilesList.js`
             // Deselect all files
-            deselectAll: function () {
+            deselectAll() {
                 return this.files_list.deselectAll(this.workFiles);
             },
 
             // should be moved to `class FilesList` at `ui/components/FilesList.js`
             // Remove individual file from list
-            removeFile: function (index) {
+            removeFile(index) {
                 this.workFiles.splice(index, 1);
             },
 
             // Preview changes before executing
-            handlePreview: function () {
+            handlePreview() {
                 return this.preview_handler.handlePreview(this);
-            },
-
-            // ExecuteHandler methods
-            ...execute_handler_app.methods,
-
-            // CategoryInputs
-            ...category_inputs_app.methods,
-
-            // Message handlers
-            ...message_display_app.methods,
+            }
         },
         template: template
     };
