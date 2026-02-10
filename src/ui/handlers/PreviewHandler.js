@@ -113,7 +113,7 @@ class PreviewHandler {
                 filteredToAdd,
                 self.removeCategory.selected
             );
-            console.log('[CBM-P] Preview result:', preview);
+            console.log('[CBM-P] Preview result:', preview.length, 'items');
             this.showPreviewModal(self, preview);
 
         } catch (error) {
