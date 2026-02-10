@@ -73,6 +73,7 @@ function SearchPanel(search_handler) {
                 }
 
                 this.isSearching = true;
+                // NOTE: searchProgressText didn't hide after search finished
                 this.searchProgressText = 'Searching for files...';
                 this.searchProgressPercent = 0;
 
