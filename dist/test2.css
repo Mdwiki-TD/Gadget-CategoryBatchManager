@@ -1,0 +1,251 @@
+.cbm-preview-dialog {
+    width: 90vw;
+    max-width: 90%;
+    max-height: 80vh;
+}
+
+/* Container styles */
+.cbm-container {
+    width: 80vw;
+    max-width: 1400px;
+    max-height: 95vh;
+    margin: 30px auto;
+    padding: 30px;
+    border: 1px solid var(--border-color-base, #a2a9b1);
+    border-radius: 4px;
+    background-color: var(--background-color-base, #f8f9fa);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Title styles */
+.cbm-title {
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 1.5em;
+    border-bottom: 2px solid #0645ad;
+    padding-bottom: 10px;
+}
+
+/* ── Main Layout: Two Column ── */
+.cbm-main-layout {
+    display: flex;
+    gap: 20px;
+    height: 100%;
+}
+
+.cbm-left-panel {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: auto;
+    min-width: 0;
+}
+
+.cbm-right-panel {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color-base, #eaecf0);
+    border-radius: 2px;
+    background-color: var(--background-color-base, #f8f9fa);
+}
+
+/* Label styles */
+.cbm-label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Selected files info box */
+.cbm-selected-info {
+    margin-top: 15px;
+    border-top: 1px solid #c8ccd1;
+    padding: 10px;
+    background-color: var(--background-color-neutral, #eaecf0);
+    border-radius: 4px;
+}
+
+/* Button group */
+.cbm-button-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.cbm-button-group .cdx-button {
+    flex: 1;
+}
+
+/* Fixed message display */
+.cbm-fixed-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    max-width: 600px;
+    z-index: 999;
+}
+
+/* ==================== SearchHandler ==================== */
+.cbm-search-panel {
+    margin-bottom: 25px;
+}
+
+.cbm-input-group {
+    margin-bottom: 15px;
+}
+
+.cbm-help-text {
+    display: block;
+    font-size: 0.875em;
+    margin-bottom: 5px;
+}
+
+.cbm-input-button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.cbm-input-button-group>* {
+    flex: 1;
+}
+
+.cbm-input-button-group .cdx-button {
+    flex: unset;
+}
+
+/* ==================== CategoryInputs ==================== */
+.cbm-category-input-group {
+    margin-bottom: 15px;
+}
+
+/* ==================== FilesList ==================== */
+.cbm-files-list {
+    background-color: var(--background-color-base, #ffffff);
+    padding: 20px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color-base, #c8ccd1);
+    height: fit-content;
+}
+
+.cbm-files-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color-base, #c8ccd1);
+}
+
+.cbm-count-badge {
+    background-color: var(--background-color-neutral, #eaf3ff);
+    color: var(--color-primary, #36c);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.cbm-header-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.cbm-files-scrollable {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.cbm-file-row {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid var(--border-color-base, #eaecf0);
+    gap: 10px;
+}
+
+.cbm-file-row .cdx-checkbox {
+    flex-shrink: 0;
+}
+
+.cbm-file-row label {
+    flex: 1;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.cbm-file-remove-btn {
+    flex-shrink: 0;
+    background-color: transparent;
+    border: none;
+    color: var(--color-error, #d33);
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 0 8px;
+    line-height: 1;
+}
+
+.cbm-empty-state {
+    background-color: var(--background-color-base, #ffffff);
+    padding: 40px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color-base, #c8ccd1);
+    text-align: center;
+    color: #72777d;
+}
+
+.cbm-empty-state p {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+/* ==================== ProgressSection ==================== */
+.cbm-progress-section {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--background-color-base, #ffffff);
+    border: 1px solid var(--border-color-base, #c8ccd1);
+    border-radius: 4px;
+}
+
+.cbm-progress-bar-bg {
+    width: 100%;
+    background-color: var(--background-color-neutral, #eaecf0);
+    border-radius: 2px;
+    height: 20px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.cbm-progress-bar-fill {
+    height: 100%;
+    background-color: var(--color-primary, #36c);
+    transition: width 0.3s ease;
+}
+
+.cbm-progress-text {
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Utility classes */
+.margin-bottom-20 {
+    margin-bottom: 20px;
+}
+
+@media screen and (prefers-color-scheme: dark) {
+
+    html.skin-theme-clientpref-os .cbm-progress-section {
+        /* background-color: #212529; */
+    }
+}
+
+@media screen {
+    html.skin-theme-clientpref-night .cbm-progress-section {
+        /* background-color: #212529; */
+    }
+}
