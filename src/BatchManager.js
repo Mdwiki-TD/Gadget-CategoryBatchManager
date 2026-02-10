@@ -7,15 +7,15 @@
  * - Preview Changes: 520 file(s) will be updated. Review the changes below before saving.
  * - Confirm Batch Update: You are about to update 1033 file(s)
  */
-/* global APIService, SearchHandler, FilesList, SearchProgressBar, FileService, ValidationHelper, CategoryService, BatchProcessor, ExecutePanel, PreviewHandler, CategoryInputs, MessageDisplay
+/* global APIService, SearchHandler, FilesList, FileService, ValidationHelper, CategoryService, BatchProcessor, ExecutePanel, PreviewHandler, CategoryInputs, MessageDisplay
 */
 
 function BatchManager() {
     const mwApi = new APIService();
     const file_service = new FileService(mwApi);
-    const search_handler = new SearchHandler(file_service);
     const files_list = new FilesList(mwApi);
-    const progress_section = new SearchProgressBar();
+
+    const search_handler = new SearchHandler(file_service);
 
     const validator = new ValidationHelper();
     const preview_handler = new PreviewHandler(validator);
@@ -28,13 +28,13 @@ function BatchManager() {
     const execute_panel = new ExecutePanel(execute_operation_handler, progress_handler);
 
     // Generate HTML for components
-    const Search_SectionHtml = search_handler.createElement();
     const FilesListHtml = files_list.createElement();
-    const ProgressSectionHtml = progress_section.createElement();
     const PreviewChangesHtml = preview_handler.createElement();
 
-    const category_inputs_app = CategoryInputs(mwApi); // function
-    const message_display_app = MessageDisplay(); // function
+    // vue apps
+    const category_inputs_app = CategoryInputs(mwApi);      // function
+    const message_display_app = MessageDisplay();           // function
+    const search_app = SearchPanel(search_handler);         // function
 
     const template = `
         <div class="cbm-container">
@@ -44,7 +44,7 @@ function BatchManager() {
                 <!-- Left Panel: Search and Actions -->
                 <div class="cbm-left-panel">
                     <!-- Search Section -->
-                    ${Search_SectionHtml}
+                    ${search_app.template}
 
                     <!-- Actions Section -->
                     <div>
@@ -70,7 +70,7 @@ function BatchManager() {
                     ${FilesListHtml}
 
                     <!-- Progress Section -->
-                    ${ProgressSectionHtml}
+                    ${search_app.progress_template}
                 </div>
             </div>
             <!-- Message Display -->

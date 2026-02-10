@@ -41,7 +41,7 @@ describe('FileService', () => {
       expect(batches).toEqual([[1, 2, 3]]);
     });
   });
-  describe('searchFiles', () => {
+  describe('search', () => {
     test('should use search API to find files by pattern', async () => {
       // Mock search API response
       mockApi.searchInCategory.mockResolvedValue([
@@ -58,7 +58,7 @@ describe('FileService', () => {
           }
         }
       });
-      const result = await service.searchFiles(
+      const result = await service.search(
         'Category:Test',
         ',BLR'
       );
@@ -70,7 +70,7 @@ describe('FileService', () => {
     test('should return empty array when no matches', async () => {
       mockApi.searchInCategory.mockResolvedValue([]);
 
-      const result = await service.searchFiles(
+      const result = await service.search(
         'Category:Test',
         ',BLR'
       );
@@ -94,7 +94,7 @@ describe('FileService', () => {
         }
       });
 
-      const result = await service.searchFiles('Category:Test', 'Chart');
+      const result = await service.search('Category:Test', 'Chart');
 
       expect(result).toHaveLength(2);
       expect(mockApi.searchInCategory).toHaveBeenCalledWith('Test', 'Chart');
@@ -113,7 +113,7 @@ describe('FileService', () => {
         }
       });
 
-      await service.searchFiles(
+      await service.search(
         'Category:Life expectancy maps',
         '177'
       );
