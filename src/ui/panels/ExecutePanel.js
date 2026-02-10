@@ -138,21 +138,17 @@ function ExecutePanel(validator, batchProcessor) {
                 }
 
                 // Process the batch
-                this.processBatch(
-                    this.selectedFiles,
-                    filteredToAdd
-                );
+                this.processBatch(filteredToAdd);
             },
 
             /**
              * Process files using this.batchProcessor
-             * @param {Array} files - Files to process
              * @param {Array} filteredToAdd - Categories to add
              */
-            async processBatch(files, filteredToAdd) {
+            async processBatch(filteredToAdd) {
                 try {
                     const results = await this.batchProcessor.processBatch(
-                        files,
+                        this.selectedFiles,
                         filteredToAdd,
                         this.removeCategory.selected,
                         {
