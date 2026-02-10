@@ -7,8 +7,6 @@
 function BatchManager() {
     const mwApi = new APIService();
     const search_handler = new SearchHandler();
-    const messages_component = new CategoryInputsMessages();
-    const category_inputs = new CategoryInputs(mwApi, messages_component);
     const files_list = new FilesList(mwApi);
     const progress_section = new SearchProgressBar();
     const file_service = new FileService(mwApi);
@@ -16,14 +14,13 @@ function BatchManager() {
     const preview_handler = new PreviewHandler();
 
     const Search_SectionHtml = search_handler.createElement();
-    const CategoryInputPanelHtml = category_inputs.createElement();
     const FilesListHtml = files_list.createElement();
     const ProgressSectionHtml = progress_section.createElement();
     const ExecuteSectionHtml = execute_handler.createElement();
     const PreviewChangesHtml = preview_handler.createElement();
 
-    const message_display_app = new MessageDisplay();
-    const MessageDisplayHtml = message_display_app.template;
+    const category_inputs_app = CategoryInputs(mwApi);
+    const message_display_app = MessageDisplay();
 
     const template = `
         <div class="cbm-container">
@@ -39,7 +36,7 @@ function BatchManager() {
 
                     <!-- Actions Section -->
                     <div>
-                        ${CategoryInputPanelHtml}
+                        ${category_inputs_app.template}
 
                         <div class="margin-bottom-20">
                             <cdx-label input-id="cbm-summary" class="cbm-label">
@@ -64,7 +61,7 @@ function BatchManager() {
                 </div>
             </div>
             <!-- Message Display -->
-            ${MessageDisplayHtml}
+            ${message_display_app.template}
         </div>
     `;
 
@@ -75,8 +72,6 @@ function BatchManager() {
                 preview_handler: preview_handler,
                 search_handler: search_handler,
                 file_service: file_service,
-                category_inputs: category_inputs,
-                messages_component: messages_component,
                 files_list: files_list,
                 mwApi: mwApi, // Reference to API service instance
 
@@ -92,9 +87,6 @@ function BatchManager() {
 
                 // MessageDisplay state
                 ...message_display_app.data(),
-                // showMessage: false,
-                // messageType: '',
-                // messageContent: '',
 
                 // SearchProgressBar state
                 showSearchProgress: false,
@@ -124,36 +116,8 @@ function BatchManager() {
                 changesCount: '',
                 openPreviewHandler: false,
 
-                addCategory: {
-                    menuItems: [],
-                    menuConfig: {
-                        boldLabel: true,
-                        visibleItemLimit: 10
-                    },
-                    chips: [],
-                    selected: [],
-                    input: "",
-                    message: {
-                        show: false,
-                        type: "",
-                        text: "",
-                    },
-                },
-                removeCategory: {
-                    menuItems: [],
-                    menuConfig: {
-                        boldLabel: true,
-                        visibleItemLimit: 10
-                    },
-                    chips: [],
-                    selected: [],
-                    input: "",
-                    message: {
-                        show: false,
-                        type: "",
-                        text: "",
-                    },
-                }
+                // CategoryInputsApp state
+                ...category_inputs_app.data(),
             };
             return app_data;
         },
@@ -232,33 +196,8 @@ function BatchManager() {
                 return this.execute_handler.stopOperation(this);
             },
 
-            /* *************************
-            **  CategoryInputsMessages
-            ** *************************
-            */
-            displayCategoryMessage: function (text, type, msg_type = 'add') {
-                return this.messages_component.displayCategoryMessage(this, text, type, msg_type);
-            },
-            hideCategoryMessage: function (msg_type = 'add') {
-                return this.messages_component.hideCategoryMessage(this, msg_type);
-            },
-
-            /* *************************
-            **      CategoryInputs
-            ** *************************
-            */
-            onAddCategoryInput: function (value) {
-                return this.category_inputs.onAddCategoryInput(this, value);
-            },
-            onRemoveCategoryInput: function (value) {
-                return this.category_inputs.onRemoveCategoryInput(this, value);
-            },
-            addOnLoadMore: function () {
-                return this.category_inputs.addOnLoadMore(this);
-            },
-            removeOnLoadMore: function () {
-                return this.category_inputs.removeOnLoadMore(this);
-            },
+            // CategoryInputs
+            ...category_inputs_app.methods,
 
             // Message handlers
             ...message_display_app.methods,
