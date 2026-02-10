@@ -83,7 +83,20 @@ function ExecutePanel(execute_operation_handler, progress_handler, changes_handl
              */
             executeOperation() {
                 // Validate
-                const preparation = changes_handler.valid_work(this);
+                const preparation = changes_handler.valid_work(
+                    this.sourceCategory,
+                    this.selectedFiles,
+                    this.addCategory.selected,
+                    this.removeCategory.selected,
+                    {
+                        showWarningMessage: (msg) => {
+                            this.showWarningMessage(msg);
+                        },
+                        displayCategoryMessage: (msg, notice_type, msg_type) => {
+                            this.displayCategoryMessage(msg, notice_type, msg_type);
+                        }
+                    }
+                );
                 if (!preparation) {
                     return;
                 }
@@ -108,7 +121,12 @@ function ExecutePanel(execute_operation_handler, progress_handler, changes_handl
 
                 this.isProcessing = true;
 
-                const preparation = changes_handler.prepareOperation(this);
+                const preparation = changes_handler.prepareOperation(
+                    this.sourceCategory,
+                    this.selectedFiles,
+                    this.addCategory.selected,
+                    this.removeCategory.selected
+                );
 
                 if (!preparation.valid) {
                     if (preparation?.message) {

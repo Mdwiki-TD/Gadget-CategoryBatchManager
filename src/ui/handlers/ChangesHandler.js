@@ -35,12 +35,15 @@ class ChangesHandler {
 
     /**
      * Prepare batch operation data
-     * @param {Object} self - Vue component instance
+     * @param {String} sourceCategory - The source category
+     * @param {Array} selectedFiles - Array of selected files
+     * @param {Array} addCategorySelected - Categories to add
+     * @param {Array} removeCategorySelected - Categories to remove
      * @returns {Object} Preparation result
      */
-    prepareOperation(self) {
+    prepareOperation(sourceCategory, selectedFiles, addCategorySelected, removeCategorySelected) {
         // Check for duplicate categories in both add and remove lists
-        const duplicateCheck = this.validator.hasDuplicateCategories(self.addCategory.selected, self.removeCategory.selected);
+        const duplicateCheck = this.validator.hasDuplicateCategories(addCategorySelected, removeCategorySelected);
         if (!duplicateCheck.valid) {
             return {
                 valid: false,
@@ -49,7 +52,7 @@ class ChangesHandler {
         }
 
         // Filter out circular categories (returns null if ALL are circular)
-        const { filteredToAdd, circularCategories } = this.validator.filterCircularCategories(self.addCategory.selected, self.sourceCategory);
+        const { filteredToAdd, circularCategories } = this.validator.filterCircularCategories(addCategorySelected, sourceCategory);
 
         // If all categories are circular, show error
         if (circularCategories.length > 0 && filteredToAdd.length === 0) {
@@ -57,54 +60,64 @@ class ChangesHandler {
             return { valid: false, error: 'Circular categories detected.', message: message };
         }
         // Check if there are any valid operations remaining
-        if (filteredToAdd.length === 0 && self.removeCategory.selected.length === 0) {
+        if (filteredToAdd.length === 0 && removeCategorySelected.length === 0) {
             return { valid: false, error: 'No valid categories to add or remove.' };
         }
 
         // Filter files to only those that will actually change
         // This ensures the confirmation message shows the correct count
         const filesThatWillChange = ChangeCalculator.filterFilesThatWillChange(
-            self.selectedFiles,
+            selectedFiles,
             filteredToAdd,
-            self.removeCategory.selected
+            removeCategorySelected
         );
 
         return {
             valid: true,
             filteredToAdd,
-            removeCategories: self.removeCategory.selected,
+            removeCategories: removeCategorySelected,
             filesCount: filesThatWillChange.length,
             filesToProcess: filesThatWillChange
         };
     }
 
-    async valid_work(self) {
+    async valid_work(sourceCategory, selectedFiles, addCategorySelected, removeCategorySelected, callbacks = {}) {
         console.log('[CBM-P] Preview button clicked');
+
+        const {
+            showWarningMessage = () => { },
+            displayCategoryMessage = () => { }
+        } = callbacks;
 
         // Validate
         const validation = this.validateOperation(
-            self.selectedFiles,
-            self.addCategory.selected,
-            self.removeCategory.selected
+            selectedFiles,
+            addCategorySelected,
+            removeCategorySelected
         );
 
         if (!validation.valid) {
-            self.showWarningMessage(validation.error);
+            showWarningMessage(validation.error);
             return;
         }
 
-        const preparation = this.prepareOperation(self);
+        const preparation = this.prepareOperation(
+            sourceCategory,
+            selectedFiles,
+            addCategorySelected,
+            removeCategorySelected
+        );
 
         if (!preparation.valid) {
             if (preparation?.message) {
-                self.displayCategoryMessage(
+                displayCategoryMessage(
                     preparation.message,
                     'error',
                     'add'
                 );
             }
             console.log('[CBM-V] No valid categories after filtering');
-            self.displayCategoryMessage(preparation.error, 'warning', 'add');
+            displayCategoryMessage(preparation.error, 'warning', 'add');
             return;
         }
         return preparation;

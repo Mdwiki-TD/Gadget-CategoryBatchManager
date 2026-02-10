@@ -69,7 +69,36 @@ function PreviewPanel(preview_handler) {
         `,
         methods: {
             handlePreview: function () {
-                return this.preview_handler.handlePreview(this);
+                const preparation = this.preview_handler.getPreparation(
+                    this,
+                    this.sourceCategory,
+                    this.selectedFiles,
+                    this.addCategory.selected,
+                    this.removeCategory.selected,
+                    {
+                        showWarningMessage: (msg) => {
+                            this.showWarningMessage(msg);
+                        },
+                        displayCategoryMessage: (msg, notice_type, msg_type) => {
+                            this.displayCategoryMessage(msg, notice_type, msg_type);
+                        }
+                    }
+                );
+                if (!preparation) {
+                    return
+                }
+                console.log('[CBM-P] Preview result:', preparation.filesToProcess.length, 'items');
+
+                this.previewRows = this.preview_handler.filterFilesToProcess(preparation.filesToProcess);
+
+                this.changesCount = preparation.filesToProcess.length;
+
+                if (this.changesCount === 0) {
+                    console.log('[CBM] No changes detected');
+                    this.displayCategoryMessage('ℹ️ No changes detected.', 'notice', 'add');
+                }
+
+                this.openPreviewHandler = true;
             }
         }
     };

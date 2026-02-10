@@ -23,31 +23,33 @@ class PreviewHandler {
      * Generates and displays a preview of category changes
      */
 
-    async handlePreview(self) {
-        const preparation = this.changes_handler.valid_work(self);
+    async getPreparation(
+        sourceCategory,
+        selectedFiles,
+        addCategorySelected,
+        removeCategorySelected,
+        callbacks = {}
+    ) {
+        const preparation = this.changes_handler.valid_work(
+            sourceCategory,
+            selectedFiles,
+            addCategorySelected,
+            removeCategorySelected,
+            callbacks
+        );
         if (!preparation) {
             return
         }
+    }
 
-        console.log('[CBM-P] Preview result:', preparation.filesToProcess.length, 'items');
-
-        self.previewRows = preparation.filesToProcess
+    filterFilesToProcess(filesToProcess) {
+        return filesToProcess
             .map(item => ({
                 file: item.file,
                 currentCategories: [...item.currentCategories],
                 newCategories: [...item.newCategories],
                 diff: item.newCategories.length - item.currentCategories.length
             }));
-
-        self.changesCount = preparation.filesToProcess.length;
-
-        if (self.changesCount === 0) {
-            console.log('[CBM] No changes detected');
-            self.displayCategoryMessage('ℹ️ No changes detected.', 'notice', 'add');
-            // return;
-        }
-        self.openPreviewHandler = true;
-
     }
 
     /**
