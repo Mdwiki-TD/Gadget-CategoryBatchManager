@@ -263,7 +263,5 @@ function CategoryInputs(apiService) {
 
 }
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        CategoryInputs,
-    };
+    module.exports = CategoryInputs
 }

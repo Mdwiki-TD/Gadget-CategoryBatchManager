@@ -34,8 +34,8 @@ class RateLimiter {
     static async batch(items, batchSize, processor) {
         const results = [];
         for (let i = 0; i < items.length; i += batchSize) {
-            const batch = items.slice(i, i + batchSize);
-            const batchResults = await Promise.all(batch.map(processor));
+            const itemBatch = items.slice(i, i + batchSize);
+            const batchResults = await Promise.all(itemBatch.map(processor));
             results.push(...batchResults);
         }
         return results;

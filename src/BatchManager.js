@@ -141,10 +141,10 @@ function BatchManager() {
             ** *************************
             */
 
-            searchFiles() {
+            searchFiles: function () {
                 return this.search_handler.searchFiles(this);
             },
-            stopSearch() {
+            stopSearch: function () {
                 return this.search_handler.stopSearch(this);
             },
 
@@ -155,24 +155,24 @@ function BatchManager() {
 
             // should be moved to `class FilesList` at `ui/components/FilesList.js`
             // Select all files
-            selectAll() {
+            selectAll: function () {
                 return this.files_list.selectAll(this.workFiles);
             },
 
             // should be moved to `class FilesList` at `ui/components/FilesList.js`
             // Deselect all files
-            deselectAll() {
+            deselectAll: function () {
                 return this.files_list.deselectAll(this.workFiles);
             },
 
             // should be moved to `class FilesList` at `ui/components/FilesList.js`
             // Remove individual file from list
-            removeFile(index) {
+            removeFile: function (index) {
                 this.workFiles.splice(index, 1);
             },
 
             // Preview changes before executing
-            handlePreview() {
+            handlePreview: function () {
                 return this.preview_handler.handlePreview(this);
             }
         },

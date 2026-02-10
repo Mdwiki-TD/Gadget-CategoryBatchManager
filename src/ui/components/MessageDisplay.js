@@ -64,7 +64,5 @@ function MessageDisplay() {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        MessageDisplay,
-    };
+    module.exports = MessageDisplay
 }
