@@ -16,39 +16,83 @@ function createVueBatchManager(Vue, Codex) {
         .component('cdx-multiselect-lookup', Codex.CdxMultiselectLookup)
         .mount('#category-batch-manager2');
 }
-async function createDialogApp(Vue, portletLink, Codex, mountPoint) {
-    Vue.createMwApp({
-        data: function () {
-            return {
-                showDialog: false,
-            };
-        },
-        template: `
-                <cdx-dialog
-                    v-model:open="showDialog"
-                    title=""
-                    :use-close-button="true"
-                    class="cdx-demo-onboarding-dialog"
-                    close-button-label="Close"
-                    @default="open = false"
-                >
-                </cdx-dialog>
-            `,
-        methods: {
-            openDialog() {
-                this.showDialog = true;
-            }
-        },
-        mounted() {
-            portletLink.addEventListener('click', this.openDialog);
-        },
-        unMounted() {
-            portletLink.removeEventListener(this.openDialog);
+
+function createOverlay() {
+    // Create overlay container
+    const overlay = document.createElement('div');
+    overlay.id = 'batch-manager-overlay';
+    overlay.style.cssText = `
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        overflow: auto;
+    `;
+
+    // Create dialog container
+    const dialog = document.createElement('div');
+    dialog.style.cssText = `
+        position: relative;
+        background: white;
+        margin: 50px auto;
+        max-width: 90%;
+        width: 1200px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        padding: 20px;
+    `;
+
+    // Create close button
+    const closeButton = document.createElement('button');
+    closeButton.innerHTML = '×';
+    closeButton.style.cssText = `
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        color: #666;
+        line-height: 1;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+    `;
+    closeButton.setAttribute('aria-label', 'Close');
+    closeButton.onclick = () => {
+        overlay.style.display = 'none';
+    };
+
+    // Create mount point for Vue app
+    const mountPoint = document.createElement('div');
+    mountPoint.id = 'category-batch-manager2';
+
+    // Assemble structure
+    dialog.appendChild(closeButton);
+    dialog.appendChild(mountPoint);
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+
+    // Close on overlay background click
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            overlay.style.display = 'none';
         }
-    })
-        .component('cdx-button', Codex.CdxButton)
-        .component('cdx-dialog', Codex.CdxDialog)
-        .mount(mountPoint);
+    });
+
+    // Close on ESC key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.style.display === 'block') {
+            overlay.style.display = 'none';
+        }
+    });
+
+    return overlay;
 }
 
 async function initApp(require) {
@@ -57,18 +101,17 @@ async function initApp(require) {
     const Codex = require('@wikimedia/codex');
 
     if (target) {
-        // no overlay here
-        // If the mount point already exists, just mount the app
-        // this case in special pages where the mount point is pre-defined in the HTML, no icon need to add trigger
+        // In special pages - mount directly without overlay
         await createVueBatchManager(Vue, Codex);
     } else {
-        // overlay needed here
-        // in category pages, we need to add the button to trigger the dialog
-        // Check if we're on a category page
+        // In category pages - mount with overlay
         var isCategoryPage = mw.config.get('wgCanonicalNamespace') === 'Category';
         if (!isCategoryPage) return;
 
-        // Add button to trigger dialog
+        // Create overlay structure
+        const overlay = createOverlay();
+
+        // Add button to trigger overlay
         var portletLink = mw.util.addPortletLink(
             'p-cactions',
             '#',
@@ -77,12 +120,12 @@ async function initApp(require) {
             'Open Category Batch Manager'
         );
 
-        const mountPoint = document.createElement('div');
-        mountPoint.id = 'category-batch-manager2';
-        document.body.appendChild(mountPoint);
+        portletLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            overlay.style.display = 'block';
+        });
 
-        await createDialogApp(Vue, portletLink, Codex, mountPoint);
-
+        // Mount Vue app inside overlay
         await createVueBatchManager(Vue, Codex);
     }
 }
@@ -90,4 +133,3 @@ async function initApp(require) {
 mw.loader.using(['@wikimedia/codex', 'mediawiki.api', 'vue']).then(
     initApp
 );
-
