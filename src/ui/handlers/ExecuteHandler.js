@@ -17,10 +17,20 @@ class ExecuteHandler {
      */
     createElement() {
         return `
-            <cdx-button v-if="!isProcessing" @click="executeOperation" action="progressive" weight="primary">
+            <cdx-button
+                v-if="!isProcessing"
+                @click="executeOperation"
+                action="progressive"
+                weight="primary"
+            >
                 GO
             </cdx-button>
-            <cdx-button v-if="isProcessing" @click="stopOperation" action="destructive" weight="primary">
+            <cdx-button
+                v-if="isProcessing"
+                @click="stopOperation"
+                action="destructive"
+                weight="primary"
+            >
                 Stop Process
             </cdx-button>
             <cdx-dialog
@@ -29,18 +39,19 @@ class ExecuteHandler {
                 :use-close-button="true"
                 :primary-action="confirmPrimaryAction"
                 :default-action="confirmDefaultAction"
-                @primary="ConfirmOnPrimaryAction"
+                @primary="confirmOnPrimaryAction"
                 @default="openConfirmDialog = false"
             >
-                    <p>{{ confirmMessage }}</p>
-
+                <p>{{ confirmMessage }}</p>
                 <template #footer-text>
                 </template>
             </cdx-dialog>
             <div v-if="showExecutionProgress" class="cbm-progress-section">
                 <div class="cbm-progress-bar-bg">
-                    <div class="cbm-progress-bar-fill"
-                        :style="{ width: executionProgressPercent + '%' }">
+                    <div
+                        class="cbm-progress-bar-fill"
+                        :style="{ width: executionProgressPercent + '%' }"
+                    >
                     </div>
                 </div>
                 <div class="cbm-progress-text">
@@ -66,7 +77,9 @@ class ExecuteHandler {
 
         // Filter out circular categories (returns null if ALL are circular)
         const filteredToAdd = this.validator.filterCircularCategories(self);
-
+        if (filteredToAdd === null) {
+            return;
+        }
         // Check if there are any valid operations remaining
         if (filteredToAdd.length === 0 && self.removeCategory.selected.length === 0) {
             console.log('[CBM-V] No valid categories after filtering');
@@ -85,7 +98,7 @@ class ExecuteHandler {
         self.openConfirmDialog = true;
     }
 
-    ConfirmOnPrimaryAction(self) {
+    confirmOnPrimaryAction(self) {
         self.openConfirmDialog = false;
         // eslint-disable-next-line no-console
         console.log('[CBM-E] User confirmed operation');
