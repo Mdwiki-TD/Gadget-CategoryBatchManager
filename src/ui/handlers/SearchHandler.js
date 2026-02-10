@@ -6,7 +6,8 @@
 class SearchHandler {
     /**
      */
-    constructor() {
+    constructor(file_service) {
+        this.file_service = file_service;
     }
 
     /**
@@ -65,7 +66,7 @@ class SearchHandler {
         self.showSearchProgress = true;
         self.searchProgressText = 'Searching for files...';
 
-        self.searchResults = await self.file_service.searchFiles(self.sourceCategory, self.searchPattern);
+        self.searchResults = await this.file_service.searchFiles(self.sourceCategory, self.searchPattern);
         // self.workFiles = [...self.searchResults];
         self.workFiles = self.searchResults;
         self.showSearchProgress = false;
@@ -78,9 +79,7 @@ class SearchHandler {
         self.showSearchProgress = false;
 
         // Tell the file service to stop the ongoing search
-        if (self.file_service) {
-            self.file_service.stopSearch();
-        }
+        this.file_service.stopSearch();
 
         self.showWarningMessage('Search stopped by user.');
     }

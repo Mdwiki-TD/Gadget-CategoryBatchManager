@@ -19,7 +19,6 @@ class ValidationHelper {
     /**
      * Check for circular category references and filter them out silently
      * Only shows error if ALL categories are circular
-     * @param {Array<string>} categoriesToAdd - Categories to check for circular references
      * @returns {Array<string>|null} Filtered categories, or null if all are circular
      */
     filterCircularCategories(self) {

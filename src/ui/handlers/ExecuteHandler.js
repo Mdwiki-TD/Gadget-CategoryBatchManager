@@ -10,7 +10,8 @@ function ExecuteHandler(validator, batchProcessor) {
     const app = {
         data: function () {
             return {
-
+                validator: validator,
+                batchProcessor: batchProcessor,
                 // Processing state
                 isProcessing: false,
                 shouldStopProgress: false,
@@ -94,7 +95,7 @@ function ExecuteHandler(validator, batchProcessor) {
                 }
 
                 // Filter out circular categories (returns null if ALL are circular)
-                const filteredToAdd = validator.filterCircularCategories(this); // TODO: `this` changed from `self` check if issues arise
+                const filteredToAdd = this.validator.filterCircularCategories(this); // TODO: `this` changed from `self` check if issues arise
 
                 if (filteredToAdd === null) {
                     return;
@@ -107,6 +108,7 @@ function ExecuteHandler(validator, batchProcessor) {
                 }
 
                 // Show confirmation dialog
+
                 this.confirmMessage =
                     `You are about to update ${this.selectedFiles.length} file(s).\n\n` +
                     `Categories to add: ${filteredToAdd.length > 0 ? filteredToAdd.join(', ') : 'none'}\n` +
@@ -129,7 +131,7 @@ function ExecuteHandler(validator, batchProcessor) {
                 this.showExecutionProgress = true;
 
                 // Filter out circular categories again
-                const filteredToAdd = validator.filterCircularCategories(this);// TODO: `this` changed from `self` check if issues arise
+                const filteredToAdd = this.validator.filterCircularCategories(this);// TODO: `this` changed from `self` check if issues arise
 
                 if (filteredToAdd === null) {
                     this.isProcessing = false;
@@ -138,17 +140,20 @@ function ExecuteHandler(validator, batchProcessor) {
                 }
 
                 // Process the batch
-                this.processBatch(this.selectedFiles, filteredToAdd);
+                this.processBatch(
+                    this.selectedFiles,
+                    filteredToAdd
+                );
             },
 
             /**
-             * Process files using BatchProcessor
+             * Process files using this.batchProcessor
              * @param {Array} files - Files to process
              * @param {Array} filteredToAdd - Categories to add
              */
             async processBatch(files, filteredToAdd) {
                 try {
-                    const results = await batchProcessor.processBatch(
+                    const results = await this.batchProcessor.processBatch(
                         files,
                         filteredToAdd,
                         this.removeCategory.selected,
@@ -169,7 +174,7 @@ function ExecuteHandler(validator, batchProcessor) {
                     this.isProcessing = false;
                     this.showExecutionProgress = false;
 
-                    if (batchProcessor.shouldStop) {
+                    if (this.batchProcessor.shouldStop) {
                         this.showWarningMessage(`Operation stopped by user. Processed ${results.processed} of ${results.total} files (${results.successful} successful, ${results.failed} failed).`);
                     } else {
                         const message = `Batch operation completed! Processed ${results.total} files: ${results.successful} successful, ${results.skipped} skipped, ${results.failed} failed.`;
@@ -193,7 +198,7 @@ function ExecuteHandler(validator, batchProcessor) {
              */
             stopOperation() {
                 this.shouldStopProgress = true;
-                batchProcessor.stop();
+                this.batchProcessor.stop();
             }
         }
     };

@@ -7,10 +7,10 @@
 
 function BatchManager() {
     const mwApi = new APIService();
-    const search_handler = new SearchHandler();
+    const file_service = new FileService(mwApi);
+    const search_handler = new SearchHandler(file_service);
     const files_list = new FilesList(mwApi);
     const progress_section = new SearchProgressBar();
-    const file_service = new FileService(mwApi);
 
     const validator = new ValidationHelper();
     const categoryService = new CategoryService(mwApi);
@@ -73,9 +73,9 @@ function BatchManager() {
     const app = {
         data: function () {
             const app_data = {
+                validator: validator,
                 preview_handler: preview_handler,
                 search_handler: search_handler,
-                file_service: file_service,
                 files_list: files_list,
                 mwApi: mwApi, // Reference to API service instance
 
