@@ -47,7 +47,7 @@ function BatchManager() {
                     <div>
                         ${category_inputs_app.template}
 
-                        <div class="margin-bottom-20">
+                        <div class="margin-bottom-20 hidden">
                             <cdx-label input-id="cbm-summary" class="cbm-label">
                                 Edit Summary
                             </cdx-label>
@@ -59,6 +59,7 @@ function BatchManager() {
                             ${execute_panel.template}
                         </div>
                     </div>
+                    ${execute_panel.progress_template}
                 </div>
 
                 <!-- Right Panel: File List -->

@@ -8,7 +8,10 @@ class RateLimiter {
      * @param {number} ms - Milliseconds to wait
      * @returns {Promise<void>}
      */
-    async wait(ms) {
+    async wait(ms = 2000) {
+        if (!ms) {
+            return;
+        }
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
