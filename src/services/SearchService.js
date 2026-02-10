@@ -57,6 +57,26 @@ class SearchService {
     }
 
     /**
+     * Search files by pattern within a category.
+     * Uses the MediaWiki search API for efficiency instead of loading all
+     * category members.
+     *
+     * @param {string} srsearch   - Search query string
+     * @returns {Promise<Array<FileModel>>} Matching file models
+     */
+    async searchWithPattern(srsearch) {
+        this.resetSearchFlag();
+        const searchResults = await this.api.searchInCategoryWithPattern(srsearch);
+
+        if (this.shouldStopSearch) {
+            console.log('[CBM-FS] Search stopped after API call');
+            return [];
+        }
+
+        return await this.getFilesDetails(searchResults);
+    }
+
+    /**
      * Fetch detailed information for a list of files.
      * Processes files in batches to respect the API limit.
      *

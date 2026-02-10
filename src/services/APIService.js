@@ -190,25 +190,18 @@ class APIService {
     /**
      * Search for files in a category using MediaWiki search API
      * Much more efficient than loading all category members
-     * @param {string} categoryName - Category name (without "Category:" prefix)
-     * @param {string} pattern - Search pattern
+     * @param {string} srsearch - Search pattern
      * @returns {Promise<Array>} Array of file objects
      */
-    async searchInCategory(categoryName, pattern) {
+    async searchInCategoryWithPattern(srsearch) {
         const results = [];
         let continueToken = null;
 
-        // Sanitize the pattern to prevent search syntax injection
-        // MediaWiki search uses special characters like /, ", ", etc.
-        const sanitizedPattern = Validator.sanitizeSearchPattern(pattern);
-
         do {
-            // Replace spaces with underscores in category name for search API
-            const searchCategoryName = categoryName.replace(/\s+/g, '_');
             const params = {
                 action: 'query',
                 list: 'search',
-                srsearch: `incategory:${searchCategoryName} intitle:/${sanitizedPattern}/`,
+                srsearch: srsearch,
                 srnamespace: 6, // File namespace
                 srlimit: 'max',
                 srprop: 'size|wordcount|timestamp',
@@ -246,7 +239,24 @@ class APIService {
         return results;
     }
 
+    /**
+     * Search for files in a category using MediaWiki search API
+     * Much more efficient than loading all category members
+     * @param {string} categoryName - Category name (without "Category:" prefix)
+     * @param {string} titlePattern - Title pattern
+     * @returns {Promise<Array>} Array of file objects
+     */
+    async searchInCategory(categoryName, titlePattern) {
 
+        // Sanitize the pattern to prevent search syntax injection
+        // MediaWiki search uses special characters like /, ", ", etc.
+        const sanitizedPattern = Validator.sanitizeTitlePattern(titlePattern);
+        // Replace spaces with underscores in category name for search API
+        const searchCategoryName = categoryName.replace(/\s+/g, '_');
+        const srsearch = `incategory:${searchCategoryName} intitle:/${sanitizedPattern}/`;
+
+        return await this.searchInCategoryWithPattern(srsearch);
+    }
     /**
      * Edit a page using mw.Api.edit() which handles revision fetching and conflicts.
      *
