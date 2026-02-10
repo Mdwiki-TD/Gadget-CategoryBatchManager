@@ -37,7 +37,7 @@ function MessageDisplay() {
             },
 
             renderMessage: function (message, type = 'info') {
-                console.warn(`'[CBM] ${type}:`, message);
+                console.warn(`[CBM] ${type}:`, message);
                 this.messageType = type;
                 this.messageContent = message;
                 this.showMessage = true;

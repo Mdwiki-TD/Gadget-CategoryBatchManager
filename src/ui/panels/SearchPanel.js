@@ -85,6 +85,8 @@ function SearchPanel(search_handler) {
                 const searchResults = await this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
                 this.workFiles = searchResults || [];
                 this.isSearching = false;
+                this.searchProgressText = '';
+                this.searchProgressPercent = 0;
             },
 
             /**
@@ -93,6 +95,8 @@ function SearchPanel(search_handler) {
             stopSearch() {
                 this.isSearching = false;
                 this.shouldStopSearch = true;
+                this.searchProgressText = '';
+                this.searchProgressPercent = 0;
 
                 this.search_handler.stop();
 
