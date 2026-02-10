@@ -66,7 +66,7 @@ function SearchPanel(search_handler) {
             /**
              * Start file search operation
              */
-            searchFiles() {
+            async searchFiles() {
                 if (this.sourceCategory.trim() === '') {
                     this.showWarningMessage('Please enter a source category.');
                     return;
@@ -81,8 +81,8 @@ function SearchPanel(search_handler) {
                 this.previewRows = [];
                 this.resetMessageState();
 
-                const searchResults = this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
-                this.workFiles = searchResults;
+                const searchResults = await this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
+                this.workFiles = searchResults || [];
                 this.isSearching = false;
             },
 
