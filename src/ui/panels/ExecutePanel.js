@@ -142,7 +142,7 @@ function ExecutePanel(execute_operation_handler, progress_handler) {
                     const callbacks = progress_handler.createCallbacks(this);
 
                     const results = await execute_operation_handler.executeBatch(
-                        this.selectedFiles,
+                        preparation.filesToProcess,
                         preparation.filteredToAdd,
                         preparation.removeCategories,
                         callbacks
