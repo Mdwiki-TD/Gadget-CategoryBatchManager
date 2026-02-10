@@ -10,7 +10,7 @@ class SearchHandler {
         this.file_service = file_service;
     }
 
-    async searchFiles(self) {
+    async startSearch(self) {
         self.isSearching = true;
         // Clear all files and messages from previous search
         self.workFiles = [];
