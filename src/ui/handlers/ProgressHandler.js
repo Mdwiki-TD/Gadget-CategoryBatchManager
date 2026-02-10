@@ -6,10 +6,10 @@
 class ProgressHandler {
     /**
      * Create progress callbacks for batch processor
-     * @param {Object} vueInstance - Vue component instance
+     * @param {Object} self - Vue component instance
      * @returns {Object} Callbacks object with onProgress, onFileComplete, onError
      */
-    createCallbacks(vueInstance) {
+    createCallbacks(self) {
         return {
             /**
              * Progress update callback
@@ -17,8 +17,8 @@ class ProgressHandler {
              * @param {Object} results - Current results
              */
             onProgress: (percent, results) => {
-                vueInstance.executionProgressPercent = percent;
-                vueInstance.executionProgressText =
+                self.executionProgressPercent = percent;
+                self.executionProgressText =
                     `Processing ${results.processed} of ${results.total}... ` +
                     `(${results.successful} successful, ${results.failed} failed)`;
             },
