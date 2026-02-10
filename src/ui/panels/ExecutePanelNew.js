@@ -1,20 +1,27 @@
 /**
  * Execute Panel Vue app factory
- * Handles batch operations for category updates
+ * UI component only - delegates business logic to handlers
+ * @see https://doc.wikimedia.org/codex/latest/
+ * @param {Object} execute_operation_handler - ExecuteOperationHandler instance
+ * @param {Object} progress_handler - ProgressHandler instance
  * @param {Object} validator - ValidationHelper instance
  * @param {Object} batchProcessor - BatchProcessor instance
  * @returns {Object} Vue app configuration
  */
 
-function ExecutePanelNew(validator, batchProcessor) {
+function ExecutePanelNew(execute_operation_handler, progress_handler, validator, batchProcessor) {
     const app = {
         data: function () {
             return {
                 validator: validator,
                 batchProcessor: batchProcessor,
+                shouldStopProgress: false,
+
+                execute_operation_handler: execute_operation_handler,
+                progress_handler: progress_handler,
+
                 // Processing state
                 isProcessing: false,
-                shouldStopProgress: false,
                 showExecutionProgress: false,
 
                 // Progress tracking
