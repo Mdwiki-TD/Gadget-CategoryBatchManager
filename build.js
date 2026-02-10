@@ -69,7 +69,7 @@ function stripModuleExports(code) {
  */
 function stripGlobalComments(code) {
     // Use [\s\S] to match content across lines
-    return code.replace(/\/\* global [\s\S]+? \*\/\n?/g, '');
+    return code.replace(/\/\* global [\s\S]+? *\n?\*\/\n?/g, '');
 }
 
 /**
