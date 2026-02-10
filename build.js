@@ -25,7 +25,7 @@ const SOURCE_FILES = [
     'src/ui/components/SearchProgressBar.js',
     'src/ui/components/MessageDisplay.js',
 
-    'src/ui/handlers/ExecuteHandler.js',
+    // 'src/ui/handlers/ExecuteHandler.js',
     'src/ui/handlers/PreviewHandler.js',
     'src/ui/handlers/SearchHandler.js',
 
