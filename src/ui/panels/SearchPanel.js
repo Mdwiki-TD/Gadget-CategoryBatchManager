@@ -1,35 +1,49 @@
 /**
- * Execute Panel Vue app factory
- * UI component only - delegates business logic to handlers
+ * Search panel Vue component — UI layer only.
+ * Owns only what is needed to render and accept user input.
+ * All business logic is delegated to SearchHandler via callbacks.
+ *
+ * State owned here:
+ *   - sourceCategory, searchPattern  → user input fields
+ *   - isSearching, searchProgressText, searchProgressPercent → reflect handler state
+ *
+ * State NOT owned here (lives in parent component or handler):
+ *   - workFiles / previewRows        → passed up via onComplete callback
+ *   - shouldStopSearch flag          → owned by FileService, managed by SearchHandler
+ *
  * @see https://doc.wikimedia.org/codex/latest/
- * @param {Object} search_handler - SearchHandler instance
+ * @param {SearchHandler} search_handler
  * @returns {Object} Vue app configuration
  */
-
 function SearchPanel(search_handler) {
     const app = {
-        data: function () {
+        data() {
             return {
-                search_handler: search_handler,
+                search_handler,
 
+                // ── User inputs ──────────────────────────────────────────
                 sourceCategory: 'Category:Our World in Data graphs of Austria',
                 searchPattern: '1990',
 
                 workFiles: [],
-                // Processing state
+                // ── UI state (mirrors handler state via callbacks) ────────
                 isSearching: false,
                 searchProgressText: '',
                 searchProgressPercent: 0,
             };
         },
+
         template: `
             <div class="cbm-search-panel">
                 <div class="cbm-input-group">
                     <cdx-label input-id="cbm-source-category" class="cbm-label">
                         Source Category
                     </cdx-label>
-                    <cdx-text-input id="cbm-source-category" v-model="sourceCategory"
-                        placeholder="Category:Our World in Data graphs of Austria" />
+                    <cdx-text-input
+                        id="cbm-source-category"
+                        v-model="sourceCategory"
+                        placeholder="Category:Our World in Data graphs of Austria"
+                    />
                 </div>
 
                 <div class="cbm-input-group">
@@ -40,11 +54,25 @@ function SearchPanel(search_handler) {
                         Enter a pattern to filter files (e.g., ,BLR.svg)
                     </span>
                     <div class="cbm-input-button-group">
-                        <cdx-text-input id="cbm-pattern" v-model="searchPattern" placeholder="e.g., ,BLR.svg" />
-                        <cdx-button v-if="!isSearching" @click="searchFiles" action="progressive" weight="primary">
+                        <cdx-text-input
+                            id="cbm-pattern"
+                            v-model="searchPattern"
+                            placeholder="e.g., ,BLR.svg"
+                        />
+                        <cdx-button
+                            v-if="!isSearching"
+                            @click="searchFiles"
+                            action="progressive"
+                            weight="primary"
+                        >
                             Search
                         </cdx-button>
-                        <cdx-button v-if="isSearching" @click="stopSearch" action="destructive" weight="primary">
+                        <cdx-button
+                            v-if="isSearching"
+                            @click="stopSearch"
+                            action="destructive"
+                            weight="primary"
+                        >
                             Stop Search
                         </cdx-button>
                     </div>
@@ -52,10 +80,11 @@ function SearchPanel(search_handler) {
             </div>
         `,
         progress_template: `
-            <div v-if="searchProgressPercent > 0 || searchProgressText !== ''" class="cbm-progress-section">
+            <div v-if="searchProgressPercent > 0 || searchProgressText !== ''"
+                    class="cbm-progress-section">
                 <div class="cbm-progress-bar-bg">
                     <div class="cbm-progress-bar-fill"
-                        :style="{ width: searchProgressPercent + '%' }">
+                            :style="{ width: searchProgressPercent + '%' }">
                     </div>
                 </div>
                 <div class="cbm-progress-text">
@@ -63,9 +92,11 @@ function SearchPanel(search_handler) {
                 </div>
             </div>
         `,
+
         methods: {
             /**
-             * Start file search operation
+             * Initiate a file search.
+             * Registers callbacks on the handler then delegates the work.
              */
             async searchFiles() {
                 if (this.sourceCategory.trim() === '') {
