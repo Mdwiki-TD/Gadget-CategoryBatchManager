@@ -1,32 +1,96 @@
 /**
- * Search panel UI component using Codex CSS-only classes.
- * @see https://doc.wikimedia.org/codex/latest/
+ * Orchestrates the search operation.
+ * Owns all operation state (isSearching, progress) and acts as the single
+ * bridge between the UI layer (SearchPanel) and the data layer (FileService).
+ *
+ * Lifecycle of a search:
+ *   1. Panel calls startSearch()
+ *   2. Handler updates state and fires onProgress callbacks
+ *   3. Handler delegates actual work to FileService
+ *   4. Handler fires onComplete or onError when done
+ *   5. Panel reflects the new state through the callbacks it registered
+ *
  * @class SearchHandler
  */
 class SearchHandler {
     /**
+     * @param {FileService} file_service
      */
     constructor(file_service) {
         this.file_service = file_service;
+
+        /** @type {boolean} True while a search is running */
+        this.isSearching = false;
+
+        // ── Callback hooks (set by SearchPanel before calling startSearch) ──
+
+        /** @type {function(string, number): void} */
+        this.onProgress = null;
+
+        /** @type {function(Array<FileModel>): void} */
+        this.onComplete = null;
+
+        /** @type {function(Error): void} */
+        this.onError = null;
     }
 
+    /**
+     * Start a new search operation.
+     * Guards against concurrent searches and manages the full lifecycle.
+     *
+     * @param {string} sourceCategory - Category to search in
+     * @param {string} searchPattern  - Pattern to match against file titles
+     * @returns {Promise<void>}
+     */
     async startSearch(sourceCategory, searchPattern) {
-        this.file_service.resetSearchFlag();
+        if (this.isSearching) {
+            console.warn('[CBM-SH] Search already in progress — ignoring duplicate call');
+            return;
+        }
 
-        // TODO: searchProgressText updates via callbacks from file_service
-        const searchResults = await this.file_service.search(
-            sourceCategory,
-            searchPattern
-        );
-        return searchResults;
+        this.isSearching = true;
+        this._fireProgress('Searching for files…', 0);
+
+        try {
+            const results = await this.file_service.search(sourceCategory, searchPattern);
+
+            this._fireProgress('Search complete', 100);
+            this.onComplete?.(results);
+        } catch (error) {
+            console.error('[CBM-SH] Search failed:', error);
+            this.onError?.(error);
+        } finally {
+            this.isSearching = false;
+        }
     }
 
+    /**
+     * Request the current search to stop at the next safe checkpoint.
+     * Safe to call even when no search is running.
+     */
     stop() {
-        // Tell the file service to stop the ongoing search
+        if (!this.isSearching) return;
+
+        console.log('[CBM-SH] Stop requested by user');
         this.file_service.stopSearch();
 
+        // isSearching will be reset to false in the finally block of startSearch
+        // once FileService returns the partial results.
     }
 
+    // ─────────────────────────────────────────────
+    //  Private helpers
+    // ─────────────────────────────────────────────
+
+    /**
+     * Fire the onProgress callback if one is registered.
+     * @param {string} text    - Human-readable status message
+     * @param {number} percent - Completion percentage (0–100)
+     * @private
+     */
+    _fireProgress(text, percent) {
+        this.onProgress?.(text, percent);
+    }
 }
 
 if (typeof module !== 'undefined' && module.exports) {

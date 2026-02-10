@@ -101,31 +101,48 @@ function SearchPanel(search_handler) {
             async searchFiles() {
                 if (this.sourceCategory.trim() === '') {
                     this.showWarningMessage('Please enter a source category.');
+                    // this.$emit('warning', 'Please enter a source category.');
                     return;
                 }
 
+                // Wire up handler callbacks before starting
+                this.search_handler.onProgress = (text, percent) => {
+                    this.searchProgressText = text;
+                    this.searchProgressPercent = percent;
+                };
+
+                this.search_handler.onComplete = (results) => {
+                    this.clearStatus();
+                    this.workFiles = results || [];
+                    // Bubble results up to the parent component
+                    // this.$emit('search-complete', results);
+                };
+
+                this.search_handler.onError = (error) => {
+                    this.clearStatus();
+                    // this.$emit('warning', `Search failed: ${error.message}`);
+                    this.showWarningMessage(`Search failed: ${error.message}`);
+                };
+
                 this.isSearching = true;
-                // NOTE: searchProgressText didn't hide after search finished
-                this.searchProgressText = 'Searching for files...';
+                this.searchProgressText = '';
                 this.searchProgressPercent = 0;
 
                 // Clear all files and messages from previous search
                 this.workFiles = [];
 
-                const searchResults = await this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
-                this.workFiles = searchResults || [];
-
-                this.clearStatus();
+                await this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
             },
 
             /**
-             * Stop ongoing batch operation
+             * Ask the handler to abort the current search.
+             * UI state is reset once the handler fires onComplete/onError.
              */
             stopSearch() {
                 this.clearStatus();
 
                 this.search_handler.stop();
-
+                // this.$emit('warning', 'Search stopped by user.');
                 this.showWarningMessage('Search stopped by user.');
             },
             clearStatus() {
