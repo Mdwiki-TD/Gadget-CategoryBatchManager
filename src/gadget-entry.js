@@ -16,38 +16,62 @@ function createVueBatchManager(Vue, Codex) {
         .component('cdx-multiselect-lookup', Codex.CdxMultiselectLookup)
         .mount('#category-batch-manager2');
 }
-async function createDialogApp(Vue, portletLink, Codex, mountPoint) {
-    Vue.createMwApp({
+
+async function createDialogWithContent(Vue, portletLink, Codex, mountPoint) {
+    const batchManagerApp = BatchManager();
+
+    // Wrap the batch manager in a dialog
+    const dialogApp = {
         data: function () {
             return {
                 showDialog: false,
+                ...batchManagerApp.data()
             };
         },
         template: `
-                <cdx-dialog
-                    v-model:open="showDialog"
-                    title=""
-                    :use-close-button="true"
-                    class="cdx-demo-onboarding-dialog"
-                    close-button-label="Close"
-                    @default="open = false"
-                >
-                </cdx-dialog>
-            `,
+            <cdx-dialog
+                v-model:open="showDialog"
+                title="Category Batch Manager"
+                :use-close-button="true"
+                close-button-label="Close"
+            >
+                ${batchManagerApp.template}
+            </cdx-dialog>
+        `,
         methods: {
+            ...batchManagerApp.methods,
             openDialog() {
                 this.showDialog = true;
             }
         },
         mounted() {
-            portletLink.addEventListener('click', this.openDialog);
+            portletLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.openDialog();
+            });
+            if (batchManagerApp.mounted) {
+                batchManagerApp.mounted.call(this);
+            }
         },
-        unMounted() {
-            portletLink.removeEventListener(this.openDialog);
+        unmounted() {
+            portletLink.removeEventListener('click', this.openDialog);
+            if (batchManagerApp.unmounted) {
+                batchManagerApp.unmounted.call(this);
+            }
         }
-    })
+    };
+
+    Vue.createMwApp(dialogApp)
+        .component('cdx-text-input', Codex.CdxTextInput)
+        .component('cdx-textarea', Codex.CdxTextArea)
+        .component('cdx-select', Codex.CdxSelect)
+        .component('cdx-checkbox', Codex.CdxCheckbox)
         .component('cdx-button', Codex.CdxButton)
+        .component('cdx-progress-bar', Codex.CdxProgressBar)
+        .component('cdx-message', Codex.CdxMessage)
         .component('cdx-dialog', Codex.CdxDialog)
+        .component('cdx-label', Codex.CdxLabel)
+        .component('cdx-multiselect-lookup', Codex.CdxMultiselectLookup)
         .mount(mountPoint);
 }
 
@@ -57,18 +81,14 @@ async function initApp(require) {
     const Codex = require('@wikimedia/codex');
 
     if (target) {
-        // no overlay here
-        // If the mount point already exists, just mount the app
-        // this case in special pages where the mount point is pre-defined in the HTML, no icon need to add trigger
+        // In special pages - mount directly without dialog
         await createVueBatchManager(Vue, Codex);
     } else {
-        // overlay needed here
-        // in category pages, we need to add the button to trigger the dialog
-        // Check if we're on a category page
+        // In category pages - mount with dialog overlay
         var isCategoryPage = mw.config.get('wgCanonicalNamespace') === 'Category';
         if (!isCategoryPage) return;
 
-        // Add button to page
+        // Add button to trigger dialog
         var portletLink = mw.util.addPortletLink(
             'p-cactions',
             '#',
@@ -77,17 +97,16 @@ async function initApp(require) {
             'Open Category Batch Manager'
         );
 
+        // Create mount point
         const mountPoint = document.createElement('div');
         mountPoint.id = 'category-batch-manager2';
         document.body.appendChild(mountPoint);
 
-        await createDialogApp(Vue, portletLink, Codex, mountPoint);
-
-        await createVueBatchManager(Vue, Codex);
+        // Create single app with dialog wrapper
+        await createDialogWithContent(Vue, portletLink, Codex, mountPoint);
     }
 }
 
 mw.loader.using(['@wikimedia/codex', 'mediawiki.api', 'vue']).then(
     initApp
 );
-
