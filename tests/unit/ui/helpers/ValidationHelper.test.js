@@ -151,51 +151,44 @@ describe('ValidationHelper', () => {
     });
   });
 
-  describe('filterCircularCategories', () => {
+  describe('filterCircularCategoriesNew', () => {
     test('should filter out circular categories', () => {
       // Mock isCircularCategory to return true for some categories
       global.Validator.isCircularCategory = (current, toAdd) => {
         return toAdd === 'Category:Circular';
       };
 
-      const vueInstance = {
-        sourceCategory: 'Category:Source',
-        addCategory: { selected: ['Category:Valid', 'Category:Circular'] },
-        displayCategoryMessage: jest.fn()
-      };
+      const addCategories = ['Category:Valid', 'Category:Circular'];
+      const sourceCategory = 'Category:Source';
 
-      const result = validationHelper.filterCircularCategories(vueInstance);
+      const result = validationHelper.filterCircularCategoriesNew(addCategories, sourceCategory);
 
-      expect(result).toEqual(['Category:Valid']);
+      expect(result.validCategories).toEqual(['Category:Valid']);
+      expect(result.circularCategories).toEqual(['Category:Circular']);
     });
 
-    test('should return null if all categories are circular', () => {
+    test('should return all as circular if all are circular', () => {
       global.Validator.isCircularCategory = () => true;
 
-      const vueInstance = {
-        sourceCategory: 'Category:Source',
-        addCategory: { selected: ['Category:Circular1', 'Category:Circular2'] },
-        displayCategoryMessage: jest.fn()
-      };
+      const addCategories = ['Category:Circular1', 'Category:Circular2'];
+      const sourceCategory = 'Category:Source';
 
-      const result = validationHelper.filterCircularCategories(vueInstance);
+      const result = validationHelper.filterCircularCategoriesNew(addCategories, sourceCategory);
 
-      expect(result).toBeNull();
-      expect(vueInstance.displayCategoryMessage).toHaveBeenCalled();
+      expect(result.validCategories).toEqual([]);
+      expect(result.circularCategories).toEqual(['Category:Circular1', 'Category:Circular2']);
     });
 
     test('should return all categories if none are circular', () => {
       global.Validator.isCircularCategory = () => false;
 
-      const vueInstance = {
-        sourceCategory: 'Category:Source',
-        addCategory: { selected: ['Category:A', 'Category:B'] },
-        displayCategoryMessage: jest.fn()
-      };
+      const addCategories = ['Category:A', 'Category:B'];
+      const sourceCategory = 'Category:Source';
 
-      const result = validationHelper.filterCircularCategories(vueInstance);
+      const result = validationHelper.filterCircularCategoriesNew(addCategories, sourceCategory);
 
-      expect(result).toEqual(['Category:A', 'Category:B']);
+      expect(result.validCategories).toEqual(['Category:A', 'Category:B']);
+      expect(result.circularCategories).toEqual([]);
     });
   });
 });
