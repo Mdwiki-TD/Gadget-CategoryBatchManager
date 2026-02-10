@@ -29,9 +29,7 @@ function BatchManager() {
 
     const template = `
         <div class="cbm-container">
-            <h2 class="cbm-title">
-                Category Batch Manager
-            </h2>
+            <h2 class="cbm-title">Category Batch Manager!</h2>
 
             <div class="cbm-main-layout">
                 <!-- Left Panel: Search and Actions -->
