@@ -13,7 +13,6 @@ function ExecutePanel(validator, batchProcessor) {
                 validator: validator,
                 batchProcessor: batchProcessor,
 
-                shouldStopProgress: false,
                 // Processing state
                 isProcessing: false,
                 showExecutionProgress: false,
@@ -127,7 +126,6 @@ function ExecutePanel(validator, batchProcessor) {
                 console.log('[CBM-E] User confirmed operation');
 
                 this.isProcessing = true;
-                this.shouldStopProgress = false;
                 this.showExecutionProgress = true;
 
                 // Filter out circular categories again
@@ -193,7 +191,6 @@ function ExecutePanel(validator, batchProcessor) {
              * Stop ongoing operation
              */
             stopOperation() {
-                this.shouldStopProgress = true;
                 this.batchProcessor.stop();
             }
         }
