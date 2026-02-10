@@ -111,26 +111,6 @@ describe('PreviewHandler', () => {
       expect(result[0].newCategories).toEqual(['Category:A']);
     });
 
-    test('should throw error when trying to add duplicate categories', async () => {
-      const files = [
-        { title: 'File:Test.svg', currentCategories: ['Category:A', 'Category:B'] }
-      ];
-
-      await expect(
-        processor.previewChanges(files, ['Category:A'], [])
-      ).rejects.toThrow('The following categories already exist and cannot be added: Category:A');
-    });
-
-    test('should throw error for multiple duplicate categories', async () => {
-      const files = [
-        { title: 'File:Test.svg', currentCategories: ['Category:A', 'Category:B', 'Category:C'] }
-      ];
-
-      await expect(
-        processor.previewChanges(files, ['Category:A', 'Category:B'], [])
-      ).rejects.toThrow('The following categories already exist and cannot be added: Category:A, Category:B');
-    });
-
     test('should allow removing duplicate categories', async () => {
       const files = [
         { title: 'File:Test.svg', currentCategories: ['Category:A', 'Category:B'] }

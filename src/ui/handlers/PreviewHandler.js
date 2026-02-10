@@ -191,7 +191,9 @@ class PreviewHandler {
             if (categoriesToAdd.length > 0) {
                 const duplicateCategories = categoriesToAdd.filter(cat => this.categoryExists(cat, current));
                 if (duplicateCategories.length > 0) {
-                    throw new Error(`The following categories already exist and cannot be added: ${duplicateCategories.join(', ')}`);
+                    //throwing an error here isn't true because other files may not have the duplicate categories, so we will just ignore the duplicates for the preview and show a warning in the UI instead
+                    console.warn(`[CBM-P] Warning: The following categories already exist for file "${file.title}" and will be ignored in the preview: ${duplicateCategories.join(', ')}`);
+                    // throw new Error(`The following categories already exist and cannot be added: ${duplicateCategories.join(', ')}`);
                 }
             }
 
