@@ -4,7 +4,7 @@
  * @see https://doc.wikimedia.org/codex/latest/
  */
 
-function CategoryInputs(apiService) {
+function CategoryInputsPanel(category_inputs_handler) {
     const addElement = `
         <!-- Category Add Message -->
         <div v-if="addCategory.message.show" class="margin-bottom-20">
@@ -32,7 +32,7 @@ function CategoryInputs(apiService) {
     const app = {
         data: function () {
             return {
-                apiService: apiService,
+                category_inputs_handler: category_inputs_handler,
 
                 addCategory: {
                     menuItems: [],
@@ -121,17 +121,6 @@ function CategoryInputs(apiService) {
             ${removeElement}
         `,
         methods: {
-            hideCategoryMessage(msg_type = 'add') {
-                console.log(`[CBM] Hiding ${msg_type} category message`);
-                if (msg_type === 'add') {
-                    this.addCategory.message.show = false;
-                    this.addCategory.message.text = '';
-                } else if (msg_type === 'remove') {
-                    this.removeCategory.message.show = false;
-                    this.removeCategory.message.text = '';
-                }
-            },
-
             displayCategoryMessage(text, type = 'error', msg_type = 'add') {
                 console.log(`[CBM] Displaying ${msg_type} category message: ${text} (type: ${type})`);
                 if (msg_type === 'add') {
@@ -145,116 +134,51 @@ function CategoryInputs(apiService) {
                 }
             },
 
-            deduplicateResults(items1, results) {
-                const seen = new Set(items1.map((result) => result.value));
-                return results.filter((result) => !seen.has(result.value));
+            hideCategoryMessage(msg_type = 'add') {
+                console.log(`[CBM] Hiding ${msg_type} category message`);
+                if (msg_type === 'add') {
+                    this.addCategory.message.show = false;
+                    this.addCategory.message.text = '';
+                } else if (msg_type === 'remove') {
+                    this.removeCategory.message.show = false;
+                    this.removeCategory.message.text = '';
+                }
             },
 
             async onAddCategoryInput(value) {
                 this.hideCategoryMessage('add');
-
-                // Clear menu items if the input was cleared.
-                if (!value) {
-                    console.warn('Add category input cleared, clearing menu items.');
-                    this.addCategory.menuItems = [];
-                    return;
+                const data = this.category_inputs_handler.onAddCategoryInput(
+                    value,
+                    this.addCategory.input
+                );
+                if (data !== null) {
+                    this.addCategory.menuItems = data;
                 }
-
-                // If empty, clear menu items
-                if (!value || value.trim().length < 2) {
-                    console.warn('Add category input too short, clearing menu items.');
-                    this.addCategory.menuItems = [];
-                    return;
-                }
-
-                const data = await this.apiService.fetchCategories(value);
-
-                // Make sure this data is still relevant first.
-                if (this.addCategory.input !== value) {
-                    console.warn('Add category input value changed during fetch, discarding results.');
-                    return;
-                }
-
-                // Reset the menu items if there are no results.
-                if (!data || data.length === 0) {
-                    console.warn('No results for add category input, clearing menu items.');
-                    this.addCategory.menuItems = [];
-                    return;
-                }
-
-                // Update addCategory.menuItems.
-                this.addCategory.menuItems = data;
             },
 
             async onRemoveCategoryInput(value) {
                 this.hideCategoryMessage('remove');
-                // Clear menu items if the input was cleared.
-                if (!value) {
-                    console.warn('Remove category input cleared, clearing menu items.');
-                    this.removeCategory.menuItems = [];
-                    return;
+                const data = this.category_inputs_handler.onRemoveCategoryInput(
+                    value,
+                    this.removeCategory.input
+                );
+                if (data !== null) {
+                    this.removeCategory.menuItems = data;
                 }
-
-                // If empty, clear menu items
-                if (!value || value.trim().length < 2) {
-                    console.warn('Remove category input too short, clearing menu items.');
-                    this.removeCategory.menuItems = [];
-                    return;
-                }
-
-                const data = await this.apiService.fetchCategories(value);
-
-                // Make sure this data is still relevant first.
-                if (this.removeCategory.input !== value) {
-                    console.warn('Remove category input value changed during fetch, discarding results.');
-                    return;
-                }
-
-                // Reset the menu items if there are no results.
-                if (!data || data.length === 0) {
-                    console.warn('No results for remove category input, clearing menu items.');
-                    this.removeCategory.menuItems = [];
-                    return;
-                }
-
-                // Update removeCategory.menuItems.
-                this.removeCategory.menuItems = data;
             },
 
             async addOnLoadMore() {
-                if (!this.addCategory.input) {
-                    console.warn('No input value for add categories, cannot load more.');
-                    return;
+                const results = this.category_inputs_handler.addOnLoadMore(this.addCategory);
+                if (results) {
+                    this.addCategory.menuItems.push(...results);
                 }
-
-                const data = await this.apiService.fetchCategories(this.addCategory.input, { offset: this.addCategory.menuItems.length });
-
-                if (!data || data.length === 0) {
-                    console.warn('No more results to load for add categories.');
-                    return;
-                }
-
-                // Update this.addCategory.menuItems.
-                const deduplicatedResults = this.deduplicateResults(this.addCategory.menuItems, data);
-                this.addCategory.menuItems.push(...deduplicatedResults);
             },
 
             async removeOnLoadMore() {
-                if (!this.removeCategory.input) {
-                    console.warn('No input value for remove categories, cannot load more.');
-                    return;
+                const results = this.category_inputs_handler.removeOnLoadMore(this.removeCategory);
+                if (results) {
+                    this.removeCategory.menuItems.push(...results);
                 }
-
-                const data = await this.apiService.fetchCategories(this.removeCategory.input, { offset: this.removeCategory.menuItems.length });
-
-                if (!data || data.length === 0) {
-                    console.warn('No more results to load for remove categories.');
-                    return;
-                }
-
-                // Update this.removeCategory.menuItems.
-                const deduplicatedResults = this.deduplicateResults(this.removeCategory.menuItems, data);
-                this.removeCategory.menuItems.push(...deduplicatedResults);
             },
         }
     }
@@ -263,5 +187,5 @@ function CategoryInputs(apiService) {
 
 }
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CategoryInputs
+    module.exports = CategoryInputsPanel
 }

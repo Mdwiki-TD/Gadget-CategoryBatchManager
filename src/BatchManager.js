@@ -6,26 +6,24 @@
 function BatchManager() {
     const mwApi = new APIService();
     const file_service = new FileService(mwApi);
-    const files_list = new FileListHandler(mwApi);
-
-    const search_handler = new SearchHandler(file_service);
-
     const validator = new ValidationHelper();
-    const preview_handler = new PreviewHandler(validator);
     const categoryService = new CategoryService(mwApi);
     const batchProcessor = new BatchProcessor(categoryService);
 
-    // Execute panels and handlers
-    const execute_operation_handler = new ExecuteOperationHandler(validator, batchProcessor);
+    const files_list = new FileListHandler(mwApi);
+    const search_handler = new SearchHandler(file_service);
+    const preview_handler = new PreviewHandler(validator);
     const progress_handler = new ProgressHandler();
-    const execute_panel = new ExecutePanel(execute_operation_handler, progress_handler);
+    const execute_operation_handler = new ExecuteOperationHandler(validator, batchProcessor);
+    const category_inputs_handler = new CategoryInputsHandler(mwApi);
 
     // vue apps
-    const preview_panel_app = PreviewPanel(preview_handler);    // function
-    const category_inputs_app = CategoryInputs(mwApi);          // function
-    const message_display_app = MessageDisplay();               // function
-    const search_panel_app = SearchPanel(search_handler);       // function
-    const files_list_app = FilesListPanel(files_list);          // function
+    const execute_panel = ExecutePanel(execute_operation_handler, progress_handler);
+    const preview_panel_app = PreviewPanel(preview_handler);
+    const category_inputs_app = CategoryInputsPanel(category_inputs_handler);
+    const message_display_app = MessageDisplay();
+    const search_panel_app = SearchPanel(search_handler);
+    const files_list_app = FilesListPanel(files_list);
 
     const template = `
         <div class="cbm-container">
@@ -110,7 +108,7 @@ function BatchManager() {
             // ExecutePanel methods
             ...execute_panel.methods,
 
-            // CategoryInputs
+            // CategoryInputsPanel methods
             ...category_inputs_app.methods,
 
             // Message handlers

@@ -23,8 +23,8 @@ const SOURCE_FILES = [
     'src/ui/panels/SearchPanel.js',         // from SearchHandler
     'src/ui/panels/PreviewPanel.js',
     'src/ui/panels/FilesListPanel.js',
+    'src/ui/panels/CategoryInputsPanel.js',
 
-    'src/ui/components/CategoryInputs.js',
     'src/ui/components/MessageDisplay.js',
 
     'src/ui/handlers/PreviewHandler.js',
@@ -33,6 +33,7 @@ const SOURCE_FILES = [
     'src/ui/handlers/ProgressHandler.js',           // from ExecuteHandler
     'src/ui/handlers/ExecuteOperationHandler.js',   // from ExecuteHandler
     'src/ui/handlers/FileListHandler.js',
+    'src/ui/handlers/CategoryInputsHandler.js',
 
     'src/ui/helpers/ValidationHelper.js',
 
