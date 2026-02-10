@@ -12,8 +12,13 @@ function SearchPanel(search_handler) {
             return {
                 search_handler: search_handler,
 
+                sourceCategory: 'Category:Our World in Data graphs of Austria',
+                searchPattern: '1990',
+
                 // Processing state
                 isSearching: false,
+                searchProgressText: '',
+                searchProgressPercent: 0,
             };
         },
         template: `
@@ -46,7 +51,7 @@ function SearchPanel(search_handler) {
             </div>
         `,
         progress_template: `
-            <div v-if="showSearchProgress" class="cbm-progress-section">
+            <div v-if="searchProgressPercent > 0 || searchProgressText !== ''" class="cbm-progress-section">
                 <div class="cbm-progress-bar-bg">
                     <div class="cbm-progress-bar-fill"
                         :style="{ width: searchProgressPercent + '%' }">
@@ -59,99 +64,19 @@ function SearchPanel(search_handler) {
             `,
         methods: {
             /**
-             * Execute batch operation
-             * Validates and shows confirmation dialog
+             * Start file search operation
              */
-            executeOperation() {
-                // Validate
-                const validation = execute_operation_handler.validateOperation(
-                    this.selectedFiles,
-                    this.addCategory.selected,
-                    this.removeCategory.selected
-                );
-
-                if (!validation.valid) {
-                    this.showWarningMessage(validation.error);
+            searchFiles() {
+                if (this.sourceCategory.trim() === '') {
+                    this.showWarningMessage('Please enter a source category.');
                     return;
                 }
 
-                // Prepare operation
-                const preparation = execute_operation_handler.prepareOperation(this);
+                this.isSearching = true;
+                this.searchProgressText = 'Searching for files...';
+                this.searchProgressPercent = 0;
 
-                if (!preparation.valid) {
-                    console.log('[CBM-V] No valid categories after filtering');
-                    this.displayCategoryMessage(preparation.error, 'warning', 'add');
-                    return;
-                }
-
-                // Generate confirmation message
-                this.confirmMessage = execute_operation_handler.generateConfirmMessage(
-                    preparation.filesCount,
-                    preparation.filteredToAdd,
-                    preparation.removeCategories
-                );
-
-                // Show dialog
-                this.openConfirmDialog = true;
-            },
-
-            /**
-             * Handle confirmation dialog primary action
-             */
-            async confirmOnPrimaryAction() {
-                this.openConfirmDialog = false;
-                console.log('[CBM-E] User confirmed operation');
-
-                this.isProcessing = true;
-                this.showExecutionProgress = true;
-
-                const preparation = execute_operation_handler.prepareOperation(this);
-
-                if (!preparation.valid) {
-                    this.isProcessing = false;
-                    this.showExecutionProgress = false;
-                    return;
-                }
-
-                await this.processBatch(preparation);
-            },
-
-            /**
-             * Process batch with progress tracking
-             * @param {Object} preparation - Prepared operation data
-             */
-            async processBatch(preparation) {
-                try {
-                    const callbacks = progress_handler.createCallbacks(this);
-
-                    const results = await execute_operation_handler.executeBatch(
-                        this.selectedFiles,
-                        preparation.filteredToAdd,
-                        preparation.removeCategories,
-                        callbacks
-                    );
-
-                    this.isProcessing = false;
-                    this.showExecutionProgress = false;
-
-                    // Format and show completion message
-                    const completion = progress_handler.formatCompletionMessage(
-                        results,
-                        execute_operation_handler.batchProcessor.shouldStop
-                    );
-
-                    if (completion.type === 'warning') {
-                        this.showWarningMessage(completion.message);
-                    } else {
-                        this.showSuccessMessage(completion.message);
-                    }
-
-                } catch (error) {
-                    console.error('[CBM-E] Batch processing error:', error);
-                    this.isProcessing = false;
-                    this.showExecutionProgress = false;
-                    this.showErrorMessage(`Batch processing failed: ${error.message}`);
-                }
+                search_handler.startSearch(this.sourceCategory, this.searchPattern);
             },
 
             /**

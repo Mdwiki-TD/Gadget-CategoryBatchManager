@@ -34,7 +34,7 @@ function BatchManager() {
     // vue apps
     const category_inputs_app = CategoryInputs(mwApi);      // function
     const message_display_app = MessageDisplay();           // function
-    const search_app = SearchPanel(search_handler);         // function
+    const search_panel_app = SearchPanel(search_handler);         // function
 
     const template = `
         <div class="cbm-container">
@@ -44,7 +44,7 @@ function BatchManager() {
                 <!-- Left Panel: Search and Actions -->
                 <div class="cbm-left-panel">
                     <!-- Search Section -->
-                    ${search_app.template}
+                    ${search_panel_app.template}
 
                     <!-- Actions Section -->
                     <div>
@@ -70,7 +70,7 @@ function BatchManager() {
                     ${FilesListHtml}
 
                     <!-- Progress Section -->
-                    ${search_app.progress_template}
+                    ${search_panel_app.progress_template}
                 </div>
             </div>
             <!-- Message Display -->
@@ -83,33 +83,21 @@ function BatchManager() {
             const app_data = {
                 validator: validator,
                 preview_handler: preview_handler,
-                search_handler: search_handler,
                 files_list: files_list,
                 mwApi: mwApi, // Reference to API service instance
 
                 editSummary: 'Batch category update via Category Batch Manager',
 
-                // SearchHandler state
-                sourceCategory: 'Category:Our World in Data graphs of Austria',
-                searchPattern: '1990',
-                searchResults: [],
-
                 // FilesList state
                 workFiles: [],
-
-                // SearchProgressBar state
-                showSearchProgress: false,
-                searchProgressPercent: 0,
-                searchProgressText: '',
-
-                // SearchHandler state
-                isSearching: false,
-                shouldStopSearch: false,
 
                 // PreviewHandler state
                 previewRows: [],
                 changesCount: '',
                 openPreviewHandler: false,
+
+                // SearchPanel state
+                ...search_panel_app.data(),
 
                 // MessageDisplay state
                 ...message_display_app.data(),
@@ -135,6 +123,9 @@ function BatchManager() {
         },
         methods: {
 
+            // SearchPanel methods
+            ...search_panel_app.methods,
+
             // ExecutePanel methods
             ...execute_panel.methods,
 
@@ -143,18 +134,6 @@ function BatchManager() {
 
             // Message handlers
             ...message_display_app.methods,
-
-            /* *************************
-            **      FileService
-            ** *************************
-            */
-
-            searchFiles: function () {
-                return this.search_handler.searchFiles(this);
-            },
-            stopSearch: function () {
-                return this.search_handler.stopSearch(this);
-            },
 
             /* *************************
             **      FilesList
