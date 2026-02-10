@@ -1,6 +1,6 @@
 // <nowiki>
 
-function newFunction(Vue, Codex, target_id) {
+function createVueBatchManager(Vue, Codex) {
     const app = BatchManager();
 
     Vue.createMwApp(app)
@@ -14,17 +14,56 @@ function newFunction(Vue, Codex, target_id) {
         .component('cdx-dialog', Codex.CdxDialog)
         .component('cdx-label', Codex.CdxLabel)
         .component('cdx-multiselect-lookup', Codex.CdxMultiselectLookup)
-        .mount(target_id);
+        .mount('#category-batch-manager2');
+}
+async function createDialogApp(Vue, portletLink, Codex, mountPoint) {
+    Vue.createMwApp({
+        data: function () {
+            return {
+                showDialog: false,
+            };
+        },
+        template: `
+                <cdx-dialog
+                    v-model:open="showDialog"
+                    title=""
+                    :use-close-button="true"
+                    class="cdx-demo-onboarding-dialog"
+                    close-button-label="Close"
+                    @default="open = false"
+                >
+                </cdx-dialog>
+            `,
+        methods: {
+            openDialog() {
+                this.showDialog = true;
+            }
+        },
+        mounted() {
+            portletLink.addEventListener('click', this.openDialog);
+        },
+        unMounted() {
+            portletLink.removeEventListener(this.openDialog);
+        }
+    })
+        .component('cdx-button', Codex.CdxButton)
+        .component('cdx-dialog', Codex.CdxDialog)
+        .mount(mountPoint);
 }
 
-mw.loader.using(['@wikimedia/codex', 'mediawiki.api', 'vue']).then(function (require) {
+async function initApp(require) {
     const target = document.getElementById('category-batch-manager2');
     const Vue = require('vue');
     const Codex = require('@wikimedia/codex');
 
     if (target) {
-        newFunction(Vue, Codex, '#category-batch-manager2');
+        // no overlay here
+        // If the mount point already exists, just mount the app
+        // this case in special pages where the mount point is pre-defined in the HTML, no icon need to add trigger
+        await createVueBatchManager(Vue, Codex);
     } else {
+        // overlay needed here
+        // in category pages, we need to add the button to trigger the dialog
         // Check if we're on a category page
         var isCategoryPage = mw.config.get('wgCanonicalNamespace') === 'Category';
         if (!isCategoryPage) return;
@@ -38,44 +77,17 @@ mw.loader.using(['@wikimedia/codex', 'mediawiki.api', 'vue']).then(function (req
             'Open Category Batch Manager'
         );
 
-        const mountPoint = document.body.appendChild(document.createElement('div'));
+        const mountPoint = document.createElement('div');
+        mountPoint.id = 'category-batch-manager2';
+        document.body.appendChild(mountPoint);
 
-        Vue.createMwApp({
-            data: function () {
-                return {
-                    showDialog: false,
-                };
-            },
-            template: `
-                <cdx-dialog
-                    v-model:open="showDialog"
-                    title=""
-                    :use-close-button="true"
-                    class="cdx-demo-onboarding-dialog"
-                    close-button-label="Close"
-                    @default="open = false"
-                >
-                    <div id="category-batch-manager2"></div>
-                </cdx-dialog>
-            `,
-            methods: {
-                openDialog() {
-                    this.showDialog = true;
-                }
-            },
-            mounted() {
-                portletLink.addEventListener('click', this.openDialog);
-            },
-            unMounted() {
-                portletLink.removeEventListener(this.openDialog);
-            }
-        })
-            .component('cdx-button', Codex.CdxButton)
-            .component('cdx-dialog', Codex.CdxDialog)
-            .mount(mountPoint);
+        await createDialogApp(Vue, portletLink, Codex, mountPoint);
 
-        newFunction(Vue, Codex, '#category-batch-manager2');
+        await createVueBatchManager(Vue, Codex);
     }
-});
+}
 
-// </nowiki>
+mw.loader.using(['@wikimedia/codex', 'mediawiki.api', 'vue']).then(
+    initApp
+);
+
