@@ -1,21 +1,18 @@
 /**
- * Execute Operation Handler
- * Handles business logic for batch operations
- * @class ExecuteOperationHandler
- * @requires ChangeCalculator - For calculating which files will actually change
+ * Changes Handler
+ *
  */
 
-/* global ChangeCalculator */
-class ExecuteOperationHandler {
+class ChangesHandler {
     /**
-     * @param {Object} validator - ValidationHelper instance
-     * @param {Object} batchProcessor - BatchProcessor instance
      */
-    constructor(validator, batchProcessor) {
+    constructor(validator) {
         this.validator = validator;
-        this.batchProcessor = batchProcessor;
     }
-
+    /**
+     * Handle preview button click
+     * Generates and displays a preview of category changes
+     */
     /**
      * Validate operation before execution
      * @param {Array} selectedFiles - Array of selected files
@@ -38,12 +35,15 @@ class ExecuteOperationHandler {
 
     /**
      * Prepare batch operation data
-     * @param {Object} self - Vue component instance
+     * @param {String} sourceCategory - The source category
+     * @param {Array} selectedFiles - Array of selected files
+     * @param {Array} addCategorySelected - Categories to add
+     * @param {Array} removeCategorySelected - Categories to remove
      * @returns {Object} Preparation result
      */
-    prepareOperation(self) {
+    prepareOperation(sourceCategory, selectedFiles, addCategorySelected, removeCategorySelected) {
         // Check for duplicate categories in both add and remove lists
-        const duplicateCheck = this.validator.hasDuplicateCategories(self);
+        const duplicateCheck = this.validator.hasDuplicateCategories(addCategorySelected, removeCategorySelected);
         if (!duplicateCheck.valid) {
             return {
                 valid: false,
@@ -52,7 +52,7 @@ class ExecuteOperationHandler {
         }
 
         // Filter out circular categories (returns null if ALL are circular)
-        const { filteredToAdd, circularCategories } = this.validator.filterCircularCategories(self.addCategory.selected, self.sourceCategory);
+        const { filteredToAdd, circularCategories } = this.validator.filterCircularCategories(addCategorySelected, sourceCategory);
 
         // If all categories are circular, show error
         if (circularCategories.length > 0 && filteredToAdd.length === 0) {
@@ -60,66 +60,70 @@ class ExecuteOperationHandler {
             return { valid: false, error: 'Circular categories detected.', message: message };
         }
         // Check if there are any valid operations remaining
-        if (filteredToAdd.length === 0 && self.removeCategory.selected.length === 0) {
+        if (filteredToAdd.length === 0 && removeCategorySelected.length === 0) {
             return { valid: false, error: 'No valid categories to add or remove.' };
         }
 
         // Filter files to only those that will actually change
         // This ensures the confirmation message shows the correct count
         const filesThatWillChange = ChangeCalculator.filterFilesThatWillChange(
-            self.selectedFiles,
+            selectedFiles,
             filteredToAdd,
-            self.removeCategory.selected
+            removeCategorySelected
         );
 
         return {
             valid: true,
             filteredToAdd,
-            removeCategories: self.removeCategory.selected,
+            removeCategories: removeCategorySelected,
             filesCount: filesThatWillChange.length,
             filesToProcess: filesThatWillChange
         };
     }
 
-    /**
-     * Generate confirmation message
-     * @param {number} filesCount - Number of files to process
-     * @param {Array} addCategories - Categories to add
-     * @param {Array} removeCategories - Categories to remove
-     * @returns {string} Formatted confirmation message
-     */
-    generateConfirmMessage(filesCount, addCategories, removeCategories) {
-        return `You are about to update ${filesCount} file(s).\n\n` +
-            `Categories to add: ${addCategories.length > 0 ? addCategories.join(', ') : 'none'}\n` +
-            `Categories to remove: ${removeCategories.length > 0 ? removeCategories.join(', ') : 'none'}\n\n` +
-            'Do you want to proceed?';
-    }
+    validateAndPrepare(sourceCategory, selectedFiles, addCategorySelected, removeCategorySelected, callbacks = {}) {
+        console.log('[CBM-P] Preview button clicked');
 
-    /**
-     * Execute batch processing
-     * @param {Array} files - Files to process
-     * @param {Array} addCategories - Categories to add
-     * @param {Array} removeCategories - Categories to remove
-     * @param {Object} callbacks - Progress callbacks
-     * @returns {Promise<Object>} Processing results
-     */
-    async executeBatch(files, addCategories, removeCategories, callbacks) {
-        return await this.batchProcessor.processBatch(
-            files,
-            addCategories,
-            removeCategories,
-            callbacks
+        const {
+            showWarningMessage = () => { },
+            displayCategoryMessage = () => { }
+        } = callbacks;
+
+        // Validate
+        const validation = this.validateOperation(
+            selectedFiles,
+            addCategorySelected,
+            removeCategorySelected
         );
-    }
 
-    /**
-     * Stop batch processing
-     */
-    stopBatch() {
-        this.batchProcessor.stop();
+        if (!validation.valid) {
+            showWarningMessage(validation.error);
+            return;
+        }
+
+        const preparation = this.prepareOperation(
+            sourceCategory,
+            selectedFiles,
+            addCategorySelected,
+            removeCategorySelected
+        );
+
+        if (!preparation.valid) {
+            if (preparation?.message) {
+                displayCategoryMessage(
+                    preparation.message,
+                    'error',
+                    'add'
+                );
+            }
+            console.log('[CBM-V] No valid categories after filtering');
+            displayCategoryMessage(preparation.error, 'warning', 'add');
+            return;
+        }
+        return preparation;
     }
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ExecuteOperationHandler;
+    module.exports = ChangesHandler;
 }

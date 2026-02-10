@@ -29,11 +29,12 @@ const SOURCE_FILES = [
     'src/ui/panels/SearchPanel.js',
 
     'src/ui/handlers/CategoryInputsHandler.js',
-    'src/ui/handlers/ExecuteOperationHandler.js',
+    'src/ui/handlers/ExecuteHandler.js',
     'src/ui/handlers/FileListHandler.js',
     'src/ui/handlers/PreviewHandler.js',
     'src/ui/handlers/ProgressHandler.js',
     'src/ui/handlers/SearchHandler.js',
+    'src/ui/handlers/ChangesHandler.js',
 
     'src/ui/helpers/ValidationHelper.js',
 

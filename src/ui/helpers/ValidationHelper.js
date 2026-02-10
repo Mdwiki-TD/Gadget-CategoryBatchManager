@@ -18,12 +18,13 @@ class ValidationHelper {
 
     /**
      * Check if any category appears in both add and remove lists
-     * @param {Object} self - Vue component instance
+     * @param {Array<string>} addCategorySelected - Categories selected to be added
+     * @param {Array<string>} removeCategorySelected - Categories selected to be removed
      * @returns {Object} Validation result {valid: boolean, duplicates?: Array<string>}
      */
-    hasDuplicateCategories(self) {
-        const addCategories = self.addCategory.selected || [];
-        const removeCategories = self.removeCategory.selected || [];
+    hasDuplicateCategories(addCategorySelected, removeCategorySelected) {
+        const addCategories = addCategorySelected || [];
+        const removeCategories = removeCategorySelected || [];
 
         if (addCategories.length === 0 || removeCategories.length === 0) {
             return { valid: true };
