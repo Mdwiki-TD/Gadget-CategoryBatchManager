@@ -1,4 +1,5 @@
 const PreviewHandler = require('../../../../src/ui/handlers/PreviewHandler');
+const ChangeCalculator = require('../../../../src/utils/ChangeCalculator');
 
 // Mock RateLimiter
 global.RateLimiter = class {
@@ -15,6 +16,9 @@ global.Validator = {
       .trim();
   }
 };
+
+// Make ChangeCalculator available globally
+global.ChangeCalculator = ChangeCalculator;
 
 describe('PreviewHandler', () => {
   let processor;

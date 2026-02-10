@@ -2,7 +2,10 @@
  * Execute Operation Handler
  * Handles business logic for batch operations
  * @class ExecuteOperationHandler
+ * @requires ChangeCalculator - For calculating which files will actually change
  */
+
+/* global ChangeCalculator */
 class ExecuteOperationHandler {
     /**
      * @param {Object} validator - ValidationHelper instance
@@ -50,11 +53,20 @@ class ExecuteOperationHandler {
             return { valid: false, error: 'No valid categories to add or remove.' };
         }
 
+        // Filter files to only those that will actually change
+        // This ensures the confirmation message shows the correct count
+        const filesThatWillChange = ChangeCalculator.filterFilesThatWillChange(
+            vueInstance.selectedFiles,
+            filteredToAdd,
+            vueInstance.removeCategory.selected
+        );
+
         return {
             valid: true,
             filteredToAdd,
             removeCategories: vueInstance.removeCategory.selected,
-            filesCount: vueInstance.selectedFiles.length
+            filesCount: filesThatWillChange.length,
+            filesToProcess: filesThatWillChange
         };
     }
 

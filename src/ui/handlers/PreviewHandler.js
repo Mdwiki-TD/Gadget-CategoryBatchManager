@@ -6,9 +6,10 @@
  * Manages preview generation, modal display, and validation.
  *
  * @requires ValidationHelper - For common validation logic
+ * @requires ChangeCalculator - For calculating category changes
  */
 
-/* global ValidationHelper */
+/* global ValidationHelper, ChangeCalculator, Validator */
 
 class PreviewHandler {
     /**
@@ -153,28 +154,6 @@ class PreviewHandler {
 
     }
     /**
-     * Check if a category exists in a list (with normalization)
-     * @param {string} category - Category to find
-     * @param {Array<string>} categoryList - List to search in
-     * @returns {number} Index of the category in the list, or -1 if not found
-     */
-    findCategoryIndex(category, categoryList) {
-        const normalized = Validator.normalizeCategoryName(category);
-        return categoryList.findIndex(cat => {
-            return Validator.normalizeCategoryName(cat).toLowerCase() === normalized.toLowerCase();
-        });
-    }
-    /**
-     * Check if category exists in a list (with normalization)
-     * @param {string} category - Category to check
-     * @param {Array<string>} categoryList - List to search in
-     * @returns {boolean} True if category exists in the list
-     */
-    categoryExists(category, categoryList) {
-        return this.findCategoryIndex(category, categoryList) !== -1;
-    }
-
-    /**
      * Preview changes without actually editing
      * @param {Array} files - Files to preview
      * @param {Array<string>} categoriesToAdd - Categories to add
@@ -182,43 +161,8 @@ class PreviewHandler {
      * @returns {Promise<Array>} Preview of changes
      */
     async previewChanges(files, categoriesToAdd, categoriesToRemove) {
-        const previews = [];
-
-        for (const file of files) {
-            const current = file.currentCategories || [];
-
-            // Check if trying to add categories that already exist (with normalization)
-            if (categoriesToAdd.length > 0) {
-                const duplicateCategories = categoriesToAdd.filter(cat => this.categoryExists(cat, current));
-                if (duplicateCategories.length > 0) {
-                    //throwing an error here isn't true because other files may not have the duplicate categories, so we will just ignore the duplicates for the preview and show a warning in the UI instead
-                    console.warn(`[CBM-P] Warning: The following categories already exist for file "${file.title}" and will be ignored in the preview: ${duplicateCategories.join(', ')}`);
-                    // throw new Error(`The following categories already exist and cannot be added: ${duplicateCategories.join(', ')}`);
-                }
-            }
-
-            const after = [...current];
-
-            // Simulate removal (with normalization for matching)
-            categoriesToRemove.forEach(cat => {
-                const index = this.findCategoryIndex(cat, after);
-                if (index > -1) after.splice(index, 1);
-            });
-
-            // Simulate addition (with normalization for checking duplicates)
-            categoriesToAdd.forEach(cat => {
-                if (!this.categoryExists(cat, after)) after.push(cat);
-            });
-
-            previews.push({
-                file: file.title,
-                currentCategories: current,
-                newCategories: after,
-                willChange: JSON.stringify(current) !== JSON.stringify(after)
-            });
-        }
-
-        return previews;
+        // Use shared ChangeCalculator utility
+        return ChangeCalculator.previewChanges(files, categoriesToAdd, categoriesToRemove);
     }
 }
 
