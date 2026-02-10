@@ -9,6 +9,9 @@ function PreviewPanel(preview_handler) {
         data: function () {
             return {
                 preview_handler: preview_handler,
+                previewRows: [],
+                changesCount: '',
+                openPreviewHandler: false,
             };
         },
         template: `

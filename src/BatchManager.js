@@ -26,10 +26,10 @@ function BatchManager() {
     const FilesListHtml = files_list.createElement();
 
     // vue apps
-    const preview_panel_app = PreviewPanel();               // function
-    const category_inputs_app = CategoryInputs(mwApi);      // function
-    const message_display_app = MessageDisplay();           // function
-    const search_panel_app = SearchPanel(search_handler);   // function
+    const preview_panel_app = PreviewPanel(preview_handler);    // function
+    const category_inputs_app = CategoryInputs(mwApi);          // function
+    const message_display_app = MessageDisplay();               // function
+    const search_panel_app = SearchPanel(search_handler);       // function
 
     const template = `
         <div class="cbm-container">
@@ -85,11 +85,6 @@ function BatchManager() {
 
                 // FilesList state
                 workFiles: [],
-
-                // PreviewHandler state
-                previewRows: [],
-                changesCount: '',
-                openPreviewHandler: false,
 
                 // SearchPanel state
                 ...search_panel_app.data(),
