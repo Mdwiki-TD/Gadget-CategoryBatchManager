@@ -151,7 +151,7 @@ describe('ValidationHelper', () => {
     });
   });
 
-  describe('filterCircularCategoriesNew', () => {
+  describe('filterCircularCategories', () => {
     test('should filter out circular categories', () => {
       // Mock isCircularCategory to return true for some categories
       global.Validator.isCircularCategory = (current, toAdd) => {
@@ -161,7 +161,7 @@ describe('ValidationHelper', () => {
       const addCategories = ['Category:Valid', 'Category:Circular'];
       const sourceCategory = 'Category:Source';
 
-      const result = validationHelper.filterCircularCategoriesNew(addCategories, sourceCategory);
+      const result = validationHelper.filterCircularCategories(addCategories, sourceCategory);
 
       expect(result.validCategories).toEqual(['Category:Valid']);
       expect(result.circularCategories).toEqual(['Category:Circular']);
@@ -173,7 +173,7 @@ describe('ValidationHelper', () => {
       const addCategories = ['Category:Circular1', 'Category:Circular2'];
       const sourceCategory = 'Category:Source';
 
-      const result = validationHelper.filterCircularCategoriesNew(addCategories, sourceCategory);
+      const result = validationHelper.filterCircularCategories(addCategories, sourceCategory);
 
       expect(result.validCategories).toEqual([]);
       expect(result.circularCategories).toEqual(['Category:Circular1', 'Category:Circular2']);
@@ -185,7 +185,7 @@ describe('ValidationHelper', () => {
       const addCategories = ['Category:A', 'Category:B'];
       const sourceCategory = 'Category:Source';
 
-      const result = validationHelper.filterCircularCategoriesNew(addCategories, sourceCategory);
+      const result = validationHelper.filterCircularCategories(addCategories, sourceCategory);
 
       expect(result.validCategories).toEqual(['Category:A', 'Category:B']);
       expect(result.circularCategories).toEqual([]);

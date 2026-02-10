@@ -52,7 +52,7 @@ class ExecuteOperationHandler {
         }
 
         // Filter out circular categories (returns null if ALL are circular)
-        const { filteredToAdd, circularCategories } = this.validator.filterCircularCategoriesNew(vueInstance.addCategory.selected, vueInstance.sourceCategory);
+        const { filteredToAdd, circularCategories } = this.validator.filterCircularCategories(vueInstance.addCategory.selected, vueInstance.sourceCategory);
 
         // If all categories are circular, show error
         if (circularCategories.length > 0 && filteredToAdd.length === 0) {

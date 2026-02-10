@@ -55,7 +55,7 @@ class ValidationHelper {
      * Only shows error if ALL categories are circular
      * @returns {Object} Object with validCategories and circularCategories arrays
      */
-    filterCircularCategoriesNew(addCategory_selected, sourceCategory) {
+    filterCircularCategories(addCategory_selected, sourceCategory) {
         const circularCategories = [];
         const validCategories = [];
         for (const category of addCategory_selected) {
@@ -68,31 +68,6 @@ class ValidationHelper {
         }
 
         return { validCategories, circularCategories };
-    }
-    filterCircularCategories(self) {
-        const circularCategories = [];
-        const validCategories = [];
-        for (const category of self.addCategory.selected) {
-            if (Validator.isCircularCategory(self.sourceCategory, category)) {
-                console.log('[CBM-V] Circular category detected (silently removed):', category);
-                circularCategories.push(category);
-            } else {
-                validCategories.push(category);
-            }
-        }
-
-        // If all categories are circular, show error
-        if (circularCategories.length > 0 && validCategories.length === 0) {
-            self.displayCategoryMessage(
-                `❌ Cannot add: all categorie(s) are circular references to the current page. Cannot add "${circularCategories.join(', ')}" to itself.`,
-                'error',
-                'add'
-            );
-            return null;
-        }
-
-        // Silently filter circular categories if there are valid ones
-        return validCategories;
     }
 }
 
