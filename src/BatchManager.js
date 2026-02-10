@@ -24,9 +24,9 @@ function BatchManager() {
 
     // Generate HTML for components
     const FilesListHtml = files_list.createElement();
-    const PreviewChangesHtml = preview_handler.createElement();
 
     // vue apps
+    const preview_panel_app = PreviewPanel();               // function
     const category_inputs_app = CategoryInputs(mwApi);      // function
     const message_display_app = MessageDisplay();           // function
     const search_panel_app = SearchPanel(search_handler);   // function
@@ -53,7 +53,7 @@ function BatchManager() {
                         </div>
 
                         <div class="cbm-button-group">
-                            ${PreviewChangesHtml}
+                            ${preview_panel_app.template}
                             ${execute_panel.template}
                         </div>
                     </div>
@@ -102,6 +102,9 @@ function BatchManager() {
 
                 // CategoryInputsApp state
                 ...category_inputs_app.data(),
+
+                // PreviewPanel state
+                ...preview_panel_app.data(),
             };
             return app_data;
         },
@@ -130,6 +133,9 @@ function BatchManager() {
             // Message handlers
             ...message_display_app.methods,
 
+            // PreviewPanel methods
+            ...preview_panel_app.methods,
+
             /* *************************
             **      FilesList
             ** *************************
@@ -151,11 +157,6 @@ function BatchManager() {
             // Remove individual file from list
             removeFile: function (index) {
                 this.workFiles.splice(index, 1);
-            },
-
-            // Preview changes before executing
-            handlePreview: function () {
-                return this.preview_handler.handlePreview(this);
             }
         },
         template: template
