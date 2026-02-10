@@ -2,7 +2,7 @@
  * Creates the Vue app definition for the Category Batch Manager tool.
  * @returns {Object} Vue app definition object.
  */
-/* global APIService, SearchHandler, FilesList, SearchProgressBar, FileService, ValidationHelper, CategoryService, BatchProcessor, ExecuteHandler, PreviewHandler, CategoryInputs, MessageDisplay
+/* global APIService, SearchHandler, FilesList, SearchProgressBar, FileService, ValidationHelper, CategoryService, BatchProcessor, ExecuteHandler, ExecutePanel, PreviewHandler, CategoryInputs, MessageDisplay
 */
 
 function BatchManager() {
@@ -16,6 +16,7 @@ function BatchManager() {
     const categoryService = new CategoryService(mwApi);
     const batchProcessor = new BatchProcessor(categoryService);
 
+    const execute_panel = ExecutePanel(validator, batchProcessor);
     const execute_handler_app = ExecuteHandler(validator, batchProcessor);
     const preview_handler = new PreviewHandler();
 
@@ -50,7 +51,7 @@ function BatchManager() {
 
                         <div class="cbm-button-group">
                             ${PreviewChangesHtml}
-                            ${execute_handler_app.template}
+                            ${execute_panel.template}
                         </div>
                     </div>
                 </div>
@@ -105,7 +106,7 @@ function BatchManager() {
                 ...message_display_app.data(),
 
                 // ExecuteHandler state
-                ...execute_handler_app.data(),
+                ...execute_panel.data(),
 
                 // CategoryInputsApp state
                 ...category_inputs_app.data(),
@@ -126,7 +127,7 @@ function BatchManager() {
         methods: {
 
             // ExecuteHandler methods
-            ...execute_handler_app.methods,
+            ...execute_panel.methods,
 
             // CategoryInputs
             ...category_inputs_app.methods,
