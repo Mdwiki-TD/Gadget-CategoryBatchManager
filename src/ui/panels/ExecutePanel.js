@@ -2,17 +2,18 @@
  * Execute Panel Vue app factory
  * UI component only - delegates business logic to handlers
  * @see https://doc.wikimedia.org/codex/latest/
- * @param {Object} execute_operation_handler - ExecuteOperationHandler instance
+ * @param {Object} execute_operation_handler - ExecuteHandler instance
  * @param {Object} progress_handler - ProgressHandler instance
  * @returns {Object} Vue app configuration
  */
 
-function ExecutePanel(execute_operation_handler, progress_handler) {
+function ExecutePanel(execute_operation_handler, progress_handler, changes_handler) {
     const app = {
         data: function () {
             return {
                 execute_operation_handler: execute_operation_handler,
                 progress_handler: progress_handler,
+                changes_handler: changes_handler,
 
                 // Processing state
                 isProcessing: false,
@@ -82,30 +83,8 @@ function ExecutePanel(execute_operation_handler, progress_handler) {
              */
             executeOperation() {
                 // Validate
-                const validation = execute_operation_handler.validateOperation(
-                    this.selectedFiles,
-                    this.addCategory.selected,
-                    this.removeCategory.selected
-                );
-
-                if (!validation.valid) {
-                    this.showWarningMessage(validation.error);
-                    return;
-                }
-
-                // Prepare operation
-                const preparation = execute_operation_handler.prepareOperation(this);
-
-                if (!preparation.valid) {
-                    if (preparation?.message) {
-                        this.displayCategoryMessage(
-                            preparation.message,
-                            'error',
-                            'add'
-                        );
-                    }
-                    console.log('[CBM-V] No valid categories after filtering');
-                    this.displayCategoryMessage(preparation.error, 'warning', 'add');
+                const preparation = changes_handler.valid_work(this);
+                if (!preparation) {
                     return;
                 }
 
@@ -129,7 +108,7 @@ function ExecutePanel(execute_operation_handler, progress_handler) {
 
                 this.isProcessing = true;
 
-                const preparation = execute_operation_handler.prepareOperation(this);
+                const preparation = changes_handler.prepareOperation(this);
 
                 if (!preparation.valid) {
                     if (preparation?.message) {

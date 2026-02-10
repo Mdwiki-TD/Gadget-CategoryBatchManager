@@ -1,21 +1,18 @@
 /**
- * Execute Operation Handler
- * Handles business logic for batch operations
- * @class ExecuteOperationHandler
- * @requires ChangeCalculator - For calculating which files will actually change
+ * Changes Handler
+ *
  */
 
-/* global ChangeCalculator */
-class ExecuteOperationHandler {
+class ChangesHandler {
     /**
-     * @param {Object} validator - ValidationHelper instance
-     * @param {Object} batchProcessor - BatchProcessor instance
      */
-    constructor(validator, batchProcessor) {
-        this.validator = validator;
-        this.batchProcessor = batchProcessor;
+    constructor(validator) {
+        this.validator = validator
     }
-
+    /**
+     * Handle preview button click
+     * Generates and displays a preview of category changes
+     */
     /**
      * Validate operation before execution
      * @param {Array} selectedFiles - Array of selected files
@@ -81,45 +78,39 @@ class ExecuteOperationHandler {
         };
     }
 
-    /**
-     * Generate confirmation message
-     * @param {number} filesCount - Number of files to process
-     * @param {Array} addCategories - Categories to add
-     * @param {Array} removeCategories - Categories to remove
-     * @returns {string} Formatted confirmation message
-     */
-    generateConfirmMessage(filesCount, addCategories, removeCategories) {
-        return `You are about to update ${filesCount} file(s).\n\n` +
-            `Categories to add: ${addCategories.length > 0 ? addCategories.join(', ') : 'none'}\n` +
-            `Categories to remove: ${removeCategories.length > 0 ? removeCategories.join(', ') : 'none'}\n\n` +
-            'Do you want to proceed?';
-    }
+    async valid_work(self) {
+        console.log('[CBM-P] Preview button clicked');
 
-    /**
-     * Execute batch processing
-     * @param {Array} files - Files to process
-     * @param {Array} addCategories - Categories to add
-     * @param {Array} removeCategories - Categories to remove
-     * @param {Object} callbacks - Progress callbacks
-     * @returns {Promise<Object>} Processing results
-     */
-    async executeBatch(files, addCategories, removeCategories, callbacks) {
-        return await this.batchProcessor.processBatch(
-            files,
-            addCategories,
-            removeCategories,
-            callbacks
+        // Validate
+        const validation = this.validateOperation(
+            self.selectedFiles,
+            self.addCategory.selected,
+            self.removeCategory.selected
         );
-    }
 
-    /**
-     * Stop batch processing
-     */
-    stopBatch() {
-        this.batchProcessor.stop();
+        if (!validation.valid) {
+            self.showWarningMessage(validation.error);
+            return;
+        }
+
+        const preparation = this.prepareOperation(self);
+
+        if (!preparation.valid) {
+            if (preparation?.message) {
+                self.displayCategoryMessage(
+                    preparation.message,
+                    'error',
+                    'add'
+                );
+            }
+            console.log('[CBM-V] No valid categories after filtering');
+            self.displayCategoryMessage(preparation.error, 'warning', 'add');
+            return;
+        }
+        return preparation;
     }
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ExecuteOperationHandler;
+    module.exports = ChangesHandler;
 }

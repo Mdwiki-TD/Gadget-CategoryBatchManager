@@ -11,14 +11,15 @@ function BatchManager() {
     const batchProcessor = new BatchProcessor(categoryService);
 
     const files_list = new FileListHandler(mwApi);
+    const changes_handler = new ChangesHandler(validator);
     const search_handler = new SearchHandler(file_service);
-    const preview_handler = new PreviewHandler(validator);
+    const preview_handler = new PreviewHandler(validator, changes_handler);
     const progress_handler = new ProgressHandler();
-    const execute_operation_handler = new ExecuteOperationHandler(validator, batchProcessor);
+    const execute_operation_handler = new ExecuteHandler(validator, batchProcessor);
     const category_inputs_handler = new CategoryInputsHandler(mwApi);
 
     // vue apps
-    const execute_panel = ExecutePanel(execute_operation_handler, progress_handler);
+    const execute_panel = ExecutePanel(execute_operation_handler, progress_handler, changes_handler);
     const preview_panel_app = PreviewPanel(preview_handler);
     const category_inputs_app = CategoryInputsPanel(category_inputs_handler);
     const message_display_app = MessageDisplayPanel();
