@@ -45,16 +45,14 @@ function ExecutePanelNew(execute_operation_handler, progress_handler, validator,
                 v-if="!isProcessing"
                 @click="executeOperation"
                 action="progressive"
-                weight="primary"
-            >
+                weight="primary">
                 GO
             </cdx-button>
             <cdx-button
                 v-if="isProcessing"
                 @click="stopOperation"
                 action="destructive"
-                weight="primary"
-            >
+                weight="primary">
                 Stop Process
             </cdx-button>
             <cdx-dialog
@@ -64,23 +62,26 @@ function ExecutePanelNew(execute_operation_handler, progress_handler, validator,
                 :primary-action="confirmPrimaryAction"
                 :default-action="confirmDefaultAction"
                 @primary="confirmOnPrimaryAction"
-                @default="openConfirmDialog = false"
-            >
+                @default="openConfirmDialog = false">
                 <p>{{ confirmMessage }}</p>
             </cdx-dialog>
-            <div v-if="showExecutionProgress" class="cbm-progress-section">
+        `,
+        progress_template: `
+            <div
+                v-if="showExecutionProgress"
+                class="cbm-progress-section">
                 <div class="cbm-progress-bar-bg">
                     <div
                         class="cbm-progress-bar-fill"
-                        :style="{ width: executionProgressPercent + '%' }"
-                    >
+                        :style="{
+                            width: executionProgressPercent + '%',
+                        }">
                     </div>
                 </div>
                 <div class="cbm-progress-text">
                     {{ executionProgressText }}
                 </div>
-            </div>
-        `,
+            </div>`,
         methods: {
             /**
              * Execute batch operation
