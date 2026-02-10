@@ -83,7 +83,7 @@ function SearchPanel(search_handler) {
              * Stop ongoing batch operation
              */
             stopSearch() {
-                this.search_handler.stopSearch();
+                this.search_handler.stop();
             }
         }
     };
