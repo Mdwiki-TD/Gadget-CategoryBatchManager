@@ -19,7 +19,6 @@ const SOURCE_FILES = [
     'src/services/FileService.js',
 
     'src/ui/components/CategoryInputs.js',
-    'src/ui/components/CategoryInputsMessages.js',
     'src/ui/components/FilesList.js',
     'src/ui/components/SearchProgressBar.js',
     'src/ui/components/MessageDisplay.js',
