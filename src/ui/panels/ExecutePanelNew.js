@@ -84,21 +84,20 @@ function ExecutePanelNew(execute_operation_handler, progress_handler, validator,
         methods: {
             /**
              * Execute batch operation
-             * Validates selection and shows confirmation dialog
+             * Validates and shows confirmation dialog
              */
             executeOperation() {
-                const selectedCount = this.selectedCount;
+                // Validate
+                const validation = execute_operation_handler.validateOperation(
+                    this.selectedFiles,
+                    this.addCategory.selected,
+                    this.removeCategory.selected
+                );
 
-                if (selectedCount === 0 || !this.selectedFiles || this.selectedFiles.length === 0) {
-                    this.showWarningMessage('Please select at least one file.');
+                if (!validation.valid) {
+                    this.showWarningMessage(validation.error);
                     return;
                 }
-
-                if (this.addCategory.selected.length === 0 && this.removeCategory.selected.length === 0) {
-                    this.showWarningMessage('Please specify categories to add or remove.');
-                    return;
-                }
-
                 // Filter out circular categories (returns null if ALL are circular)
                 const filteredToAdd = this.validator.filterCircularCategories(this); // TODO: `this` changed from `self` check if issues arise
 

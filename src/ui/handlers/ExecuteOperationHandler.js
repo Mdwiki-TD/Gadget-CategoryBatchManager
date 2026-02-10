@@ -21,6 +21,7 @@ class ExecuteOperationHandler {
      * @returns {Object} Validation result {valid: boolean, error?: string}
      */
     validateOperation(selectedFiles, addCategories, removeCategories) {
+        // selectedCount === 0 ||
         if (!selectedFiles || selectedFiles.length === 0) {
             return { valid: false, error: 'Please select at least one file.' };
         }
