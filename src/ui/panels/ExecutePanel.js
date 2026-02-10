@@ -142,7 +142,7 @@ function ExecutePanel(execute_operation_handler, progress_handler) {
                     const callbacks = progress_handler.createCallbacks(this);
 
                     const results = await execute_operation_handler.executeBatch(
-                        preparation.filesToProcess,
+                        preparation.filesToProcess, // [CBM-E] Batch processing error: TypeError: Cannot read properties of undefined (reading 'length')
                         preparation.filteredToAdd,
                         preparation.removeCategories,
                         callbacks
