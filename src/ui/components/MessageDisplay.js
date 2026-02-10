@@ -1,21 +1,18 @@
 /**
  * Progress bar UI component using Codex CSS-only classes.
  * @see https://doc.wikimedia.org/codex/latest/
- * @class MessageDisplay
  */
-class MessageDisplay {
-    /**
-     */
-    constructor() {
-    }
 
-    /**
-     * Create the HTML structure for the progress section
-     *
-     */
-    createElement() {
-        // :auto-dismiss="messageType === 'success'"
-        return `
+function MessageDisplay() {
+    const app = {
+        data: function () {
+            return {
+                showMessage: false,
+                messageType: '',
+                messageContent: '',
+            };
+        },
+        template: `
             <!-- Message Display -->
             <div v-if="showMessage" class="cbm-fixed-message">
                 <cdx-message
@@ -30,41 +27,44 @@ class MessageDisplay {
                     {{ messageContent }}
                 </cdx-message>
             </div>
-    `;
-    }
+        `,
+        methods: {
+            // Message handlers
+            resetMessageState: function () {
+                this.showMessage = false;
+                this.messageType = '';
+                this.messageContent = '';
+            },
 
-    // Message handlers
-    resetMessageState() {
-        this.showMessage = false;
-        this.messageType = '';
-        this.messageContent = '';
-    }
+            renderMessage: function (message, type = 'info') {
+                console.warn(`'[CBM] ${type}:`, message);
+                this.messageType = type;
+                this.messageContent = message;
+                this.showMessage = true;
+            },
 
-    renderMessage(message, type = 'info') {
-        console.warn(`'[CBM] ${type}:`, message);
-        this.messageType = type;
-        this.messageContent = message;
-        this.showMessage = true;
-    }
+            showWarningMessage: function (message) {
+                this.renderMessage(message, 'warning');
+            },
 
-    showWarningMessage(message) {
-        this.renderMessage(message, 'warning');
-    }
+            showErrorMessage: function (message) {
+                this.renderMessage(message, 'error');
+            },
 
-    showErrorMessage(message) {
-        this.renderMessage(message, 'error');
-    }
+            showSuccessMessage: function (message) {
+                this.renderMessage(message, 'success');
+            },
 
-    showSuccessMessage(message) {
-        this.renderMessage(message, 'success');
+            handleMessageDismiss: function () {
+                this.showMessage = false;
+            }
+        }
     }
-
-    handleMessageDismiss() {
-        this.showMessage = false;
-    }
-
+    return app;
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = MessageDisplay;
+    module.exports = {
+        MessageDisplay,
+    };
 }

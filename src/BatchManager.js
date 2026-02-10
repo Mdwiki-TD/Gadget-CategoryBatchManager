@@ -14,15 +14,16 @@ function BatchManager() {
     const file_service = new FileService(mwApi);
     const execute_handler = new ExecuteHandler(mwApi);
     const preview_handler = new PreviewHandler();
-    const message_display = new MessageDisplay();
 
     const Search_SectionHtml = search_handler.createElement();
     const CategoryInputPanelHtml = category_inputs.createElement();
     const FilesListHtml = files_list.createElement();
     const ProgressSectionHtml = progress_section.createElement();
-    const MessageDisplayHtml = message_display.createElement();
     const ExecuteSectionHtml = execute_handler.createElement();
     const PreviewChangesHtml = preview_handler.createElement();
+
+    const message_display_app = new MessageDisplay();
+    const MessageDisplayHtml = message_display_app.template;
 
     const template = `
         <div class="cbm-container">
@@ -71,7 +72,6 @@ function BatchManager() {
         data: function () {
             const app_data = {
                 execute_handler: execute_handler,
-                message_display: message_display,
                 preview_handler: preview_handler,
                 search_handler: search_handler,
                 file_service: file_service,
@@ -91,9 +91,10 @@ function BatchManager() {
                 workFiles: [],
 
                 // MessageDisplay state
-                showMessage: false,
-                messageType: '',
-                messageContent: '',
+                ...message_display_app.data(),
+                // showMessage: false,
+                // messageType: '',
+                // messageContent: '',
 
                 // SearchProgressBar state
                 showSearchProgress: false,
@@ -152,7 +153,7 @@ function BatchManager() {
                         type: "",
                         text: "",
                     },
-                },
+                }
             };
             return app_data;
         },
@@ -259,35 +260,8 @@ function BatchManager() {
                 return this.category_inputs.removeOnLoadMore(this);
             },
 
-            /* *************************
-            **      Message Handlers
-            ** *************************
-            */
-
             // Message handlers
-            resetMessageState: function () {
-                this.message_display.resetMessageState();
-            },
-
-            renderMessage: function (message, type = 'info') {
-                this.message_display.renderMessage(message, type);
-            },
-
-            showWarningMessage: function (message) {
-                this.message_display.showWarningMessage(message);
-            },
-
-            showErrorMessage: function (message) {
-                this.message_display.showErrorMessage(message);
-            },
-
-            showSuccessMessage: function (message) {
-                this.message_display.showSuccessMessage(message);
-            },
-
-            handleMessageDismiss: function () {
-                this.message_display.handleMessageDismiss();
-            }
+            ...message_display_app.methods,
         },
         template: template
     };
