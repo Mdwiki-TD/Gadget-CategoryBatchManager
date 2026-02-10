@@ -1,12 +1,12 @@
 /**
  * Orchestrates the search operation.
  * Owns all operation state (isSearching, progress) and acts as the single
- * bridge between the UI layer (SearchPanel) and the data layer (FileService).
+ * bridge between the UI layer (SearchPanel) and the data layer (SearchService).
  *
  * Lifecycle of a search:
  *   1. Panel calls startSearch()
  *   2. Handler updates state and fires onProgress callbacks
- *   3. Handler delegates actual work to FileService
+ *   3. Handler delegates actual work to SearchService
  *   4. Handler fires onComplete or onError when done
  *   5. Panel reflects the new state through the callbacks it registered
  *
@@ -14,7 +14,7 @@
  */
 class SearchHandler {
     /**
-     * @param {FileService} search_service
+     * @param {SearchService} search_service
      */
     constructor(search_service) {
         this.search_service = search_service;
@@ -98,7 +98,7 @@ class SearchHandler {
         this.search_service.stopSearch();
 
         // isSearching will be reset to false in the finally block of startSearch
-        // once FileService returns the partial results.
+        // once SearchService returns the partial results.
     }
 
     // ─────────────────────────────────────────────

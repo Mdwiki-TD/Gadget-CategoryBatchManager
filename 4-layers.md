@@ -129,7 +129,7 @@ const CategoryInputsComponent = {
 class SearchHandler {
     async searchFiles(self) {
         self.isSearching = true;
-        self.searchResults = await self.file_service.searchFiles(...);
+        self.searchResults = await self.search_service.searchFiles(...);
         self.workFiles = [...self.searchResults];
         self.showProgress = false;
     }

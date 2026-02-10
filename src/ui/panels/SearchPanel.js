@@ -9,7 +9,7 @@
  *
  * State NOT owned here (lives in parent component or handler):
  *   - workFiles / previewRows        → passed up via onComplete callback
- *   - shouldStopSearch flag          → owned by FileService, managed by SearchHandler
+ *   - shouldStopSearch flag          → owned by SearchService, managed by SearchHandler
  *
  * @see https://doc.wikimedia.org/codex/latest/
  * @param {SearchHandler} search_handler
