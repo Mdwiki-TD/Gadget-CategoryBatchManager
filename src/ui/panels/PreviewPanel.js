@@ -87,6 +87,7 @@ function PreviewPanel(preview_handler) {
                 if (!preparation) {
                     return
                 }
+                // TODO: Cannot read properties of undefined (reading 'length') preparation.filesToProcess.length
                 console.log('[CBM-P] Preview result:', preparation.filesToProcess.length, 'items');
 
                 this.previewRows = this.preview_handler.filterFilesToProcess(preparation.filesToProcess);
