@@ -1,5 +1,5 @@
-const CategoryService = require('../../src/services/CategoryService');
-const WikitextParser = require('../../src/utils/WikitextParser');
+const CategoryService = require('../../../src/services/CategoryService');
+const WikitextParser = require('../../../src/utils/WikitextParser');
 
 // Make WikitextParser available globally for CategoryService
 global.WikitextParser = WikitextParser;

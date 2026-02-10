@@ -1,4 +1,4 @@
-const WikitextParser = require('../../src/utils/WikitextParser');
+const WikitextParser = require('../../../src/utils/WikitextParser');
 
 // Make WikitextParser available globally
 global.WikitextParser = WikitextParser;
