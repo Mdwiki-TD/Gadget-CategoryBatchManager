@@ -158,8 +158,10 @@ function ExecutePanel(execute_operation_handler, progress_handler) {
                     );
 
                     if (completion.type === 'warning') {
+                        // NOTE: this didn't show up
                         this.showWarningMessage(completion.message);
                     } else {
+                        // NOTE: this didn't show up
                         this.showSuccessMessage(completion.message);
                     }
 

@@ -66,13 +66,14 @@ function SearchPanel(search_handler) {
             /**
              * Start file search operation
              */
-            searchFiles() {
+            async searchFiles() {
                 if (this.sourceCategory.trim() === '') {
                     this.showWarningMessage('Please enter a source category.');
                     return;
                 }
 
                 this.isSearching = true;
+                // NOTE: searchProgressText didn't hide after search finished
                 this.searchProgressText = 'Searching for files...';
                 this.searchProgressPercent = 0;
 
@@ -81,8 +82,8 @@ function SearchPanel(search_handler) {
                 this.previewRows = [];
                 this.resetMessageState();
 
-                const searchResults = this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
-                this.workFiles = searchResults;
+                const searchResults = await this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
+                this.workFiles = searchResults || [];
                 this.isSearching = false;
             },
 
