@@ -11,6 +11,8 @@ class SearchHandler {
     }
 
     async startSearch(sourceCategory, searchPattern) {
+        this.file_service.resetSearchFlag();
+
         // TODO: searchProgressText updates via callbacks from file_service
         const searchResults = await this.file_service.search(
             sourceCategory,

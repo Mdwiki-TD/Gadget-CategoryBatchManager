@@ -37,8 +37,6 @@ class SearchService {
      * @returns {Promise<Array<FileModel>>} Array of matching file models
      */
     async search(categoryName, searchPattern) {
-        this.resetSearchFlag();
-
         // Normalize category name
         const cleanCategoryName = categoryName.replace(/^Category:/i, '');
 
