@@ -147,9 +147,10 @@ function CategoryInputsPanel(category_inputs_handler) {
 
             async onAddCategoryInput(value) {
                 this.hideCategoryMessage('add');
-                const data = this.category_inputs_handler.onAddCategoryInput(
+                const data = this.category_inputs_handler.onCategoryInput(
                     value,
-                    this.addCategory.input
+                    this.addCategory.input,
+                    'add'
                 );
                 if (data !== null) {
                     this.addCategory.menuItems = data;
@@ -158,9 +159,10 @@ function CategoryInputsPanel(category_inputs_handler) {
 
             async onRemoveCategoryInput(value) {
                 this.hideCategoryMessage('remove');
-                const data = this.category_inputs_handler.onRemoveCategoryInput(
+                const data = this.category_inputs_handler.onCategoryInput(
                     value,
-                    this.removeCategory.input
+                    this.removeCategory.input,
+                    'remove'
                 );
                 if (data !== null) {
                     this.removeCategory.menuItems = data;
@@ -168,14 +170,14 @@ function CategoryInputsPanel(category_inputs_handler) {
             },
 
             async addOnLoadMore() {
-                const results = this.category_inputs_handler.addOnLoadMore(this.addCategory);
+                const results = this.category_inputs_handler.onLoadMore(this.addCategory, 'add');
                 if (results) {
                     this.addCategory.menuItems.push(...results);
                 }
             },
 
             async removeOnLoadMore() {
-                const results = this.category_inputs_handler.removeOnLoadMore(this.removeCategory);
+                const results = this.category_inputs_handler.onLoadMore(this.removeCategory, 'remove');
                 if (results) {
                     this.removeCategory.menuItems.push(...results);
                 }
