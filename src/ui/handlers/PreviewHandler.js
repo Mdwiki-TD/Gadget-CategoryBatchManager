@@ -41,28 +41,20 @@ class PreviewHandler {
         return { valid: true };
     }
 
-    async handlePreview(self) {
-        console.log('[CBM-P] Preview button clicked');
-
-        const selectedCount = self.selectedCount;
-
-        if (selectedCount === 0 || !self.selectedFiles || self.selectedFiles.length === 0) {
-            self.showWarningMessage('Please select at least one file.');
-            return;
-        }
-
-        if (self.addCategory.selected.length === 0 && self.removeCategory.selected.length === 0) {
-            self.showWarningMessage('Please specify categories to add or remove.');
-            return;
-        }
+    /**
+     * Prepare batch operation data
+     * @param {Object} self - Vue component instance
+     * @returns {Object} Preparation result
+     */
+    prepareOperation(self) {
 
         // Check for duplicate categories in both add and remove lists
         const duplicateCheck = this.validator.hasDuplicateCategories(self);
         if (!duplicateCheck.valid) {
-            self.showErrorMessage(
-                `❌ Cannot add and remove the same category: "${duplicateCheck.duplicates.join(', ')}". Please remove it from one of the lists.`
-            );
-            return;
+            return {
+                valid: false,
+                error: `Cannot add and remove the same category: "${duplicateCheck.duplicates.join(', ')}". Please remove it from one of the lists.`
+            };
         }
 
         // Filter out circular categories (returns null if ALL are circular)
@@ -70,51 +62,62 @@ class PreviewHandler {
 
         // If all categories are circular, show error
         if (circularCategories.length > 0 && filteredToAdd.length === 0) {
-            self.displayCategoryMessage(
-                `❌ Cannot add: all categorie(s) are circular references to the current page. Cannot add "${circularCategories.join(', ')}" to itself.`,
-                'error',
-                'add'
-            );
-            return;
+            const message = `❌ Cannot add: all categorie(s) are circular references to the current page. Cannot add "${circularCategories.join(', ')}" to itself.`;
+            return { valid: false, error: 'Circular categories detected.', message: message };
         }
-
         // Check if there are any valid operations remaining
         if (filteredToAdd.length === 0 && self.removeCategory.selected.length === 0) {
-            console.log('[CBM-V] No valid categories after filtering');
-            self.displayCategoryMessage('No valid categories to add or remove.', 'warning', 'add');
+            return { valid: false, error: 'No valid categories to add or remove.' };
+        }
+
+        // Filter files to only those that will actually change
+        // This ensures the confirmation message shows the correct count
+        const filesThatWillChange = ChangeCalculator.filterFilesThatWillChange(
+            self.selectedFiles,
+            filteredToAdd,
+            self.removeCategory.selected
+        );
+
+        return {
+            valid: true,
+            filteredToAdd,
+            removeCategories: self.removeCategory.selected,
+            filesCount: filesThatWillChange.length,
+            filesToProcess: filesThatWillChange,
+        };
+    }
+
+    async handlePreview(self) {
+        console.log('[CBM-P] Preview button clicked');
+
+        // Validate
+        const validation = this.validateOperation(
+            self.selectedFiles,
+            self.addCategory.selected,
+            self.removeCategory.selected
+        );
+
+        if (!validation.valid) {
+            self.showWarningMessage(validation.error);
             return;
         }
 
-        // Generate preview without affecting file list - no loading indicator
-        try {
-            console.log('[CBM-P] Calling batchProcessor.previewChanges');
-            const preview = await this.previewChanges(
-                self.selectedFiles,
-                filteredToAdd,
-                self.removeCategory.selected
-            );
-            console.log('[CBM-P] Preview result:', preview.length, 'items');
-            this.showPreviewModal(self, preview);
+        const preparation = this.prepareOperation(self);
 
-        } catch (error) {
-            console.log('[CBM-P] Error in previewChanges:', error);
-            // Check if error is about duplicate categories
-            if (error.message.includes('already exist')) {
-                self.showWarningMessage(`⚠️ ${error.message}`);
-            } else {
-                self.showErrorMessage(`Error generating preview: ${error.message}`);
+        if (!preparation.valid) {
+            if (preparation?.message) {
+                self.displayCategoryMessage(
+                    preparation.message,
+                    'error',
+                    'add'
+                );
             }
+            return;
         }
-    }
 
-    /**
-     * Show the preview modal with changes
-     * @param {Array} preview - Array of preview items
-     */
-    showPreviewModal(self, preview) {
+        console.log('[CBM-P] Preview result:', preparation.filesToProcess.length, 'items');
 
-        self.previewRows = preview
-            .filter(item => item.willChange)
+        self.previewRows = preparation.filesToProcess
             .map(item => ({
                 file: item.file,
                 currentCategories: [...item.currentCategories],
@@ -122,7 +125,7 @@ class PreviewHandler {
                 diff: item.newCategories.length - item.currentCategories.length
             }));
 
-        self.changesCount = preview.filter(p => p.willChange).length;
+        self.changesCount = preparation.filesToProcess.length;
 
         if (self.changesCount === 0) {
             console.log('[CBM] No changes detected');
@@ -132,6 +135,7 @@ class PreviewHandler {
         self.openPreviewHandler = true;
 
     }
+
     /**
      * Preview changes without actually editing
      * @param {Array} files - Files to preview
