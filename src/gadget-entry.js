@@ -1,9 +1,6 @@
 // <nowiki>
 
-function newFunction(require, target_id) {
-    const Vue = require('vue');
-    const Codex = require('@wikimedia/codex');
-
+function newFunction(Vue, Codex, target_id) {
     const app = BatchManager();
 
     Vue.createMwApp(app)
@@ -22,8 +19,11 @@ function newFunction(require, target_id) {
 
 mw.loader.using(['@wikimedia/codex', 'mediawiki.api', 'vue']).then(function (require) {
     const target = document.getElementById('category-batch-manager2');
+    const Vue = require('vue');
+    const Codex = require('@wikimedia/codex');
+
     if (target) {
-        newFunction(require, '#category-batch-manager2');
+        newFunction(Vue, Codex, '#category-batch-manager2');
     } else {
         // Check if we're on a category page
         var isCategoryPage = mw.config.get('wgCanonicalNamespace') === 'Category';
@@ -37,17 +37,44 @@ mw.loader.using(['@wikimedia/codex', 'mediawiki.api', 'vue']).then(function (req
             'ca-batch-manager',
             'Open Category Batch Manager'
         );
+
         const mountPoint = document.body.appendChild(document.createElement('div'));
-        mountPoint.id = 'category-batch-manager2';
-        mountPoint.style.display = 'none';
 
-        newFunction(require, '#category-batch-manager2');
+        Vue.createMwApp({
+            data: function () {
+                return {
+                    showDialog: false,
+                };
+            },
+            template: `
+                <cdx-dialog
+                    v-model:open="showDialog"
+                    title=""
+                    :use-close-button="true"
+                    class="cdx-demo-onboarding-dialog"
+                    close-button-label="Close"
+                    @default="open = false"
+                >
+                    <div id="category-batch-manager2"></div>
+                </cdx-dialog>
+            `,
+            methods: {
+                openDialog() {
+                    this.showDialog = true;
+                }
+            },
+            mounted() {
+                portletLink.addEventListener('click', this.openDialog);
+            },
+            unMounted() {
+                portletLink.removeEventListener(this.openDialog);
+            }
+        })
+            .component('cdx-button', Codex.CdxButton)
+            .component('cdx-dialog', Codex.CdxDialog)
+            .mount(mountPoint);
 
-        portletLink.addEventListener('click', function (e) {
-            e.preventDefault();
-            mountPoint.style.display = 'block';
-        });
-
+        newFunction(Vue, Codex, '#category-batch-manager2');
     }
 });
 
