@@ -13,8 +13,8 @@
 class PreviewHandler {
     /**
      */
-    constructor() {
-        this.validator = new ValidationHelper();
+    constructor(validator) {
+        this.validator = validator
     }
     createElement() {
         // @primary="onPrimaryAction"

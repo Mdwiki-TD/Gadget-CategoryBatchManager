@@ -2,7 +2,7 @@
  * Creates the Vue app definition for the Category Batch Manager tool.
  * @returns {Object} Vue app definition object.
  */
-/* global APIService, SearchHandler, FilesList, SearchProgressBar, FileService, ValidationHelper, CategoryService, BatchProcessor, ExecuteHandler, PreviewHandler, CategoryInputs, MessageDisplay
+/* global APIService, SearchHandler, FilesList, SearchProgressBar, FileService, ValidationHelper, CategoryService, BatchProcessor, ExecutePanel, PreviewHandler, CategoryInputs, MessageDisplay
 */
 
 function BatchManager() {
@@ -13,19 +13,25 @@ function BatchManager() {
     const progress_section = new SearchProgressBar();
 
     const validator = new ValidationHelper();
+    const preview_handler = new PreviewHandler(validator);
     const categoryService = new CategoryService(mwApi);
     const batchProcessor = new BatchProcessor(categoryService);
 
-    const execute_handler_app = ExecuteHandler(validator, batchProcessor);
-    const preview_handler = new PreviewHandler();
+    // Execute panels and handlers
+    const execute_panel = ExecutePanel(validator, batchProcessor); // function
 
+    // const execute_operation_handler = new ExecuteOperationHandler();
+    // const progress_handler = new ProgressHandler();
+    // const execute_panel_new = new ExecutePanelNew(execute_operation_handler, progress_handler);
+
+    // Generate HTML for components
     const Search_SectionHtml = search_handler.createElement();
     const FilesListHtml = files_list.createElement();
     const ProgressSectionHtml = progress_section.createElement();
     const PreviewChangesHtml = preview_handler.createElement();
 
-    const category_inputs_app = CategoryInputs(mwApi);
-    const message_display_app = MessageDisplay();
+    const category_inputs_app = CategoryInputs(mwApi); // function
+    const message_display_app = MessageDisplay(); // function
 
     const template = `
         <div class="cbm-container">
@@ -50,7 +56,7 @@ function BatchManager() {
 
                         <div class="cbm-button-group">
                             ${PreviewChangesHtml}
-                            ${execute_handler_app.template}
+                            ${execute_panel.template}
                         </div>
                     </div>
                 </div>
@@ -104,8 +110,8 @@ function BatchManager() {
                 // MessageDisplay state
                 ...message_display_app.data(),
 
-                // ExecuteHandler state
-                ...execute_handler_app.data(),
+                // ExecutePanel state
+                ...execute_panel.data(),
 
                 // CategoryInputsApp state
                 ...category_inputs_app.data(),
@@ -125,8 +131,8 @@ function BatchManager() {
         },
         methods: {
 
-            // ExecuteHandler methods
-            ...execute_handler_app.methods,
+            // ExecutePanel methods
+            ...execute_panel.methods,
 
             // CategoryInputs
             ...category_inputs_app.methods,

@@ -1,12 +1,12 @@
 /**
- * Execute Handler
+ * Execute Panel Vue app factory
  * Handles batch operations for category updates
  * @param {Object} validator - ValidationHelper instance
  * @param {Object} batchProcessor - BatchProcessor instance
  * @returns {Object} Vue app configuration
  */
 
-function ExecuteHandler(validator, batchProcessor) {
+function ExecutePanel(validator, batchProcessor) {
     const app = {
         data: function () {
             return {
@@ -201,5 +201,5 @@ function ExecuteHandler(validator, batchProcessor) {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ExecuteHandler;
+    module.exports = ExecutePanel;
 }
