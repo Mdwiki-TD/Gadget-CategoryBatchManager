@@ -172,6 +172,7 @@ function CategoryInputsPanel(category_inputs_handler) {
             async addOnLoadMore() {
                 const results = this.category_inputs_handler.onLoadMore(this.addCategory, 'add');
                 if (results) {
+                    // Spread syntax requires ...iterable[Symbol.iterator] to be a function
                     this.addCategory.menuItems.push(...results);
                 }
             },
@@ -179,6 +180,7 @@ function CategoryInputsPanel(category_inputs_handler) {
             async removeOnLoadMore() {
                 const results = this.category_inputs_handler.onLoadMore(this.removeCategory, 'remove');
                 if (results) {
+                    // Spread syntax requires ...iterable[Symbol.iterator] to be a function
                     this.removeCategory.menuItems.push(...results);
                 }
             },
