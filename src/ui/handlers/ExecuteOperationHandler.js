@@ -42,6 +42,15 @@ class ExecuteOperationHandler {
      * @returns {Object} Preparation result
      */
     prepareOperation(vueInstance) {
+        // Check for duplicate categories in both add and remove lists
+        const duplicateCheck = this.validator.hasDuplicateCategories(vueInstance);
+        if (!duplicateCheck.valid) {
+            return {
+                valid: false,
+                error: `Cannot add and remove the same category: "${duplicateCheck.duplicates.join(', ')}". Please remove it from one of the lists.`
+            };
+        }
+
         const filteredToAdd = this.validator.filterCircularCategories(vueInstance);
 
         if (filteredToAdd === null) {

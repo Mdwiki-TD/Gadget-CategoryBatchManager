@@ -17,6 +17,40 @@ class ValidationHelper {
     }
 
     /**
+     * Check if any category appears in both add and remove lists
+     * @param {Object} vueInstance - Vue component instance
+     * @returns {Object} Validation result {valid: boolean, duplicates?: Array<string>}
+     */
+    hasDuplicateCategories(vueInstance) {
+        const addCategories = vueInstance.addCategory.selected || [];
+        const removeCategories = vueInstance.removeCategory.selected || [];
+
+        if (addCategories.length === 0 || removeCategories.length === 0) {
+            return { valid: true };
+        }
+
+        const duplicates = [];
+
+        for (const addCat of addCategories) {
+            for (const removeCat of removeCategories) {
+                const normalizedAdd = Validator.normalizeCategoryName(addCat);
+                const normalizedRemove = Validator.normalizeCategoryName(removeCat);
+
+                if (normalizedAdd.toLowerCase() === normalizedRemove.toLowerCase()) {
+                    duplicates.push(addCat);
+                    break;
+                }
+            }
+        }
+
+        if (duplicates.length > 0) {
+            return { valid: false, duplicates };
+        }
+
+        return { valid: true };
+    }
+
+    /**
      * Check for circular category references and filter them out silently
      * Only shows error if ALL categories are circular
      * @returns {Array<string>|null} Filtered categories, or null if all are circular

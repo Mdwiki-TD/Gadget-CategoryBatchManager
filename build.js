@@ -21,6 +21,7 @@ const SOURCE_FILES = [
 
     'src/ui/panels/ExecutePanel.js',        // from ExecuteHandler
     'src/ui/panels/SearchPanel.js',         // from SearchHandler
+    'src/ui/panels/PreviewPanel.js',
 
     'src/ui/components/CategoryInputs.js',
     'src/ui/components/FilesList.js',
