@@ -21,6 +21,7 @@ class ExecuteOperationHandler {
      * @returns {Object} Validation result {valid: boolean, error?: string}
      */
     validateOperation(selectedFiles, addCategories, removeCategories) {
+        // selectedCount === 0 ||
         if (!selectedFiles || selectedFiles.length === 0) {
             return { valid: false, error: 'Please select at least one file.' };
         }
@@ -40,6 +41,11 @@ class ExecuteOperationHandler {
     prepareOperation(vueInstance) {
         const filteredToAdd = this.validator.filterCircularCategories(vueInstance);
 
+        if (filteredToAdd === null) {
+            return { valid: false, error: 'Circular categories detected.' };
+        }
+
+        // Check if there are any valid operations remaining
         if (filteredToAdd.length === 0 && vueInstance.removeCategory.selected.length === 0) {
             return { valid: false, error: 'No valid categories to add or remove.' };
         }

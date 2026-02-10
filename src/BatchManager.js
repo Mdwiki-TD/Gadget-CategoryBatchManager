@@ -1,16 +1,21 @@
 /**
  * Creates the Vue app definition for the Category Batch Manager tool.
  * @returns {Object} Vue app definition object.
+ *
+ * TODO: fix the diff between Preview Changes and Execute Batch, Execute should filter before acting.
+ * messages:
+ * - Preview Changes: 520 file(s) will be updated. Review the changes below before saving.
+ * - Confirm Batch Update: You are about to update 1033 file(s)
  */
-/* global APIService, SearchHandler, FilesList, SearchProgressBar, FileService, ValidationHelper, CategoryService, BatchProcessor, ExecutePanel, PreviewHandler, CategoryInputs, MessageDisplay
+/* global APIService, SearchHandler, FilesList, FileService, ValidationHelper, CategoryService, BatchProcessor, ExecutePanel, PreviewHandler, CategoryInputs, MessageDisplay
 */
 
 function BatchManager() {
     const mwApi = new APIService();
     const file_service = new FileService(mwApi);
-    const search_handler = new SearchHandler(file_service);
     const files_list = new FilesList(mwApi);
-    const progress_section = new SearchProgressBar();
+
+    const search_handler = new SearchHandler(file_service);
 
     const validator = new ValidationHelper();
     const preview_handler = new PreviewHandler(validator);
@@ -18,20 +23,18 @@ function BatchManager() {
     const batchProcessor = new BatchProcessor(categoryService);
 
     // Execute panels and handlers
-    const execute_panel = ExecutePanel(validator, batchProcessor); // function
-
-    // const execute_operation_handler = new ExecuteOperationHandler();
-    // const progress_handler = new ProgressHandler();
-    // const execute_panel_new = new ExecutePanelNew(execute_operation_handler, progress_handler);
+    const execute_operation_handler = new ExecuteOperationHandler(validator, batchProcessor);
+    const progress_handler = new ProgressHandler();
+    const execute_panel = new ExecutePanel(execute_operation_handler, progress_handler);
 
     // Generate HTML for components
-    const Search_SectionHtml = search_handler.createElement();
     const FilesListHtml = files_list.createElement();
-    const ProgressSectionHtml = progress_section.createElement();
     const PreviewChangesHtml = preview_handler.createElement();
 
-    const category_inputs_app = CategoryInputs(mwApi); // function
-    const message_display_app = MessageDisplay(); // function
+    // vue apps
+    const category_inputs_app = CategoryInputs(mwApi);      // function
+    const message_display_app = MessageDisplay();           // function
+    const search_panel_app = SearchPanel(search_handler);   // function
 
     const template = `
         <div class="cbm-container">
@@ -41,13 +44,13 @@ function BatchManager() {
                 <!-- Left Panel: Search and Actions -->
                 <div class="cbm-left-panel">
                     <!-- Search Section -->
-                    ${Search_SectionHtml}
+                    ${search_panel_app.template}
 
                     <!-- Actions Section -->
                     <div>
                         ${category_inputs_app.template}
 
-                        <div class="margin-bottom-20">
+                        <div class="margin-bottom-20 hidden">
                             <cdx-label input-id="cbm-summary" class="cbm-label">
                                 Edit Summary
                             </cdx-label>
@@ -59,6 +62,7 @@ function BatchManager() {
                             ${execute_panel.template}
                         </div>
                     </div>
+                    ${execute_panel.progress_template}
                 </div>
 
                 <!-- Right Panel: File List -->
@@ -66,7 +70,7 @@ function BatchManager() {
                     ${FilesListHtml}
 
                     <!-- Progress Section -->
-                    ${ProgressSectionHtml}
+                    ${search_panel_app.progress_template}
                 </div>
             </div>
             <!-- Message Display -->
@@ -79,33 +83,21 @@ function BatchManager() {
             const app_data = {
                 validator: validator,
                 preview_handler: preview_handler,
-                search_handler: search_handler,
                 files_list: files_list,
                 mwApi: mwApi, // Reference to API service instance
 
                 editSummary: 'Batch category update via Category Batch Manager',
 
-                // SearchHandler state
-                sourceCategory: 'Category:Our World in Data graphs of Austria',
-                searchPattern: '1990',
-                searchResults: [],
-
                 // FilesList state
                 workFiles: [],
-
-                // SearchProgressBar state
-                showSearchProgress: false,
-                searchProgressPercent: 0,
-                searchProgressText: '',
-
-                // SearchHandler state
-                isSearching: false,
-                shouldStopSearch: false,
 
                 // PreviewHandler state
                 previewRows: [],
                 changesCount: '',
                 openPreviewHandler: false,
+
+                // SearchPanel state
+                ...search_panel_app.data(),
 
                 // MessageDisplay state
                 ...message_display_app.data(),
@@ -131,6 +123,9 @@ function BatchManager() {
         },
         methods: {
 
+            // SearchPanel methods
+            ...search_panel_app.methods,
+
             // ExecutePanel methods
             ...execute_panel.methods,
 
@@ -139,18 +134,6 @@ function BatchManager() {
 
             // Message handlers
             ...message_display_app.methods,
-
-            /* *************************
-            **      FileService
-            ** *************************
-            */
-
-            searchFiles: function () {
-                return this.search_handler.searchFiles(this);
-            },
-            stopSearch: function () {
-                return this.search_handler.stopSearch(this);
-            },
 
             /* *************************
             **      FilesList

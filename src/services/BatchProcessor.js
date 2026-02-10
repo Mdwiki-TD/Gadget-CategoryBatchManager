@@ -68,7 +68,7 @@ class BatchProcessor {
 
             try {
                 // Wait to respect rate limits (1 edit per 2 seconds)
-                await this.rateLimiter.wait(2000);
+                await this.rateLimiter.wait();
 
                 // Update categories
                 const result = await this.categoryService.updateCategories(

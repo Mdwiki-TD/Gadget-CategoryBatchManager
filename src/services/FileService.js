@@ -36,7 +36,7 @@ class FileService {
      * @param {string} searchPattern - Pattern to match against file titles
      * @returns {Promise<Array<FileModel>>} Array of matching file models
      */
-    async searchFiles(categoryName, searchPattern) {
+    async search(categoryName, searchPattern) {
         this.resetSearchFlag();
 
         // Normalize category name
