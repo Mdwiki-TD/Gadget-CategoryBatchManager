@@ -19,6 +19,7 @@ const SOURCE_FILES = [
     'src/services/FileService.js',
 
     'src/ui/panels/ExecutePanel.js',        // from ExecuteHandler
+    'src/ui/panels/ExecutePanelNew.js',     // from ExecuteHandler
 
     'src/ui/components/CategoryInputs.js',
     'src/ui/components/FilesList.js',

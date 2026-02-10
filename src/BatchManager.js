@@ -23,11 +23,11 @@ function BatchManager() {
     const batchProcessor = new BatchProcessor(categoryService);
 
     // Execute panels and handlers
-    const execute_panel = ExecutePanel(validator, batchProcessor); // function
+    // const execute_panel = ExecutePanel(validator, batchProcessor); // function
 
-    // const execute_operation_handler = new ExecuteOperationHandler();
-    // const progress_handler = new ProgressHandler();
-    // const execute_panel_new = new ExecutePanelNew(execute_operation_handler, progress_handler);
+    const execute_operation_handler = new ExecuteOperationHandler(validator, batchProcessor);
+    const progress_handler = new ProgressHandler();
+    const execute_panel = new ExecutePanelNew(execute_operation_handler, progress_handler);
 
     // Generate HTML for components
     const Search_SectionHtml = search_handler.createElement();
