@@ -26,7 +26,7 @@ class SearchHandler {
         self.isSearching = false;
     }
 
-    stopSearch(self) {
+    stop(self) {
         self.isSearching = false;
         self.shouldStopSearch = true;
 

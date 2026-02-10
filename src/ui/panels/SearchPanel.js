@@ -76,14 +76,14 @@ function SearchPanel(search_handler) {
                 this.searchProgressText = 'Searching for files...';
                 this.searchProgressPercent = 0;
 
-                search_handler.startSearch(this.sourceCategory, this.searchPattern);
+                this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
             },
 
             /**
              * Stop ongoing batch operation
              */
             stopSearch() {
-                search_handler.stopSearch();
+                this.search_handler.stopSearch();
             }
         }
     };
