@@ -114,9 +114,8 @@ function SearchPanel(search_handler) {
              * Registers callbacks on the handler then delegates the work.
              */
             async searchFiles() {
-                if (this.sourceCategory.trim() === '') {
-                    this.showWarningMessage('Please enter a source category.');
-                    // this.$emit('warning', 'Please enter a source category.');
+                if (this.sourceCategory.trim() === '' && this.searchPattern.trim() === '') {
+                    this.showWarningMessage('Please enter a source category or search pattern.');
                     return;
                 }
 
@@ -130,12 +129,10 @@ function SearchPanel(search_handler) {
                     this.clearStatus();
                     this.workFiles = results || [];
                     // Bubble results up to the parent component
-                    // this.$emit('search-complete', results);
                 };
 
                 this.search_handler.onError = (error) => {
                     this.clearStatus();
-                    // this.$emit('warning', `Search failed: ${error.message}`);
                     this.showWarningMessage(`Search failed: ${error.message}`);
                 };
 
@@ -157,7 +154,6 @@ function SearchPanel(search_handler) {
                 this.clearStatus();
 
                 this.search_handler.stop();
-                // this.$emit('warning', 'Search stopped by user.');
                 this.showWarningMessage('Search stopped by user.');
             },
             clearStatus() {
