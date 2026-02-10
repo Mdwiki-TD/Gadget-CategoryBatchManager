@@ -6,10 +6,10 @@
 class ExecuteHandler {
     /**
      */
-    constructor(mwApi) {
-        this.validator = new ValidationHelper();
-        this.categoryService = new CategoryService(mwApi)
-        this.batchProcessor = new BatchProcessor(this.categoryService)
+    constructor(validator, batchProcessor) {
+
+        this.validator = validator
+        this.batchProcessor = batchProcessor
     }
 
     /**

@@ -2,7 +2,8 @@
  * Creates the Vue app definition for the Category Batch Manager tool.
  * @returns {Object} Vue app definition object.
  */
-/* global APIService, SearchHandler, CategoryInputs, FilesList, SearchProgressBar, MessageDisplay */
+/* global APIService, SearchHandler, FilesList, SearchProgressBar, FileService, ValidationHelper, CategoryService, BatchProcessor, ExecuteHandler, PreviewHandler, CategoryInputs, MessageDisplay
+*/
 
 function BatchManager() {
     const mwApi = new APIService();
@@ -10,7 +11,12 @@ function BatchManager() {
     const files_list = new FilesList(mwApi);
     const progress_section = new SearchProgressBar();
     const file_service = new FileService(mwApi);
-    const execute_handler = new ExecuteHandler(mwApi);
+
+    const validator = new ValidationHelper();
+    const categoryService = new CategoryService(mwApi);
+    const batchProcessor = new BatchProcessor(categoryService);
+
+    const execute_handler = new ExecuteHandler(validator, batchProcessor);
     const preview_handler = new PreviewHandler();
 
     const Search_SectionHtml = search_handler.createElement();
