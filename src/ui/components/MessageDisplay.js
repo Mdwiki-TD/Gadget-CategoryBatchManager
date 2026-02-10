@@ -44,6 +44,7 @@ function MessageDisplay() {
             },
 
             showWarningMessage: function (message) {
+                // TODO: this message shows up one time only.
                 this.renderMessage(message, 'warning');
             },
 
