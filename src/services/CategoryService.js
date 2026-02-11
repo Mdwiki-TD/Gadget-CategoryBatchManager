@@ -24,6 +24,9 @@ class CategoryService {
      */
     async addCategoriesToFile(fileTitle, categoriesToAdd) {
         const wikitext = await this.api.getPageContent(fileTitle);
+        if (!wikitext) {
+            return { success: false, modified: false };
+        }
 
         let newWikitext = wikitext;
         for (const category of categoriesToAdd) {
@@ -53,7 +56,9 @@ class CategoryService {
      */
     async removeCategoriesFromFile(fileTitle, categoriesToRemove) {
         const wikitext = await this.api.getPageContent(fileTitle);
-
+        if (!wikitext) {
+            return { success: false, modified: false };
+        }
         let newWikitext = wikitext;
         for (const category of categoriesToRemove) {
             newWikitext = this.parser.removeCategory(newWikitext, category);
@@ -80,6 +85,9 @@ class CategoryService {
      */
     async updateCategories(fileTitle, toAdd, toRemove) {
         const wikitext = await this.api.getPageContent(fileTitle);
+        if (!wikitext) {
+            return { success: false, modified: false };
+        }
         let newWikitext = wikitext;
 
         // Remove first

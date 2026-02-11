@@ -86,6 +86,10 @@ class APIService {
      * @returns {Promise<string>} Page wikitext content
      */
     async getPageContent(title) {
+        if (!title) {
+            console.error('getPageContent called with empty title', title);
+            return '';
+        }
         const params = {
             action: 'query',
             titles: title,
@@ -96,7 +100,11 @@ class APIService {
         };
 
         const data = await this.makeRequest(params);
-        const pages = data.query.pages;
+        const pages = data?.query?.pages;
+        if (!pages) {
+            console.error('No pages found in API response for title:', title);
+            return '';
+        }
         const pageId = Object.keys(pages)[0];
         return pages[pageId].revisions[0].slots.main['*'];
     }
@@ -292,6 +300,52 @@ class APIService {
                 ...options
             };
         });
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Rate-limit helpers                                                 */
+    /* ------------------------------------------------------------------ */
+
+    /**
+     * Fetch the current user's edit rate limits from the MediaWiki API.
+     * Endpoint: action=query&meta=userinfo&uiprop=ratelimits
+     *
+     * Returns the `edit.user` bucket when available, falling back to
+     * `edit.ip` for anonymous users, or a safe default when the API
+     * does not expose limit data (e.g. sysops with no enforced limit).
+     *
+     * @returns {Promise<{hits: number, seconds: number}>}
+     *   e.g. { hits: 900, seconds: 180 }  →  5 edits per second
+     */
+    async fetchUserRateLimits() {
+        const DEFAULT_LIMIT = { hits: 5, seconds: 1 };
+        try {
+            const data = await this.makeRequest({
+                action: 'query',
+                meta: 'userinfo',
+                uiprop: 'ratelimits',
+                format: 'json'
+            });
+
+            const editBuckets = data?.query?.userinfo?.ratelimits?.edit;
+
+            // Prefer the named-user bucket; fall back to ip bucket
+            const bucket = editBuckets?.user ?? editBuckets?.ip ?? null;
+
+            if (bucket && bucket.hits && bucket.seconds) {
+                console.log(`[CBM-API] Rate limit fetched: ${bucket.hits} edits / ${bucket.seconds}s`);
+                return { hits: bucket.hits, seconds: bucket.seconds };
+            }
+
+            // Sysops / bots may have no enforced limit — treat as unlimited,
+            // but cap at a safe high value to avoid hammering the server.
+            console.warn('[CBM-API] No edit rate limit found in API response, using default.');
+            return DEFAULT_LIMIT;
+
+        } catch (error) {
+            console.error('[CBM-API] fetchUserRateLimits failed, using default.', error);
+            return DEFAULT_LIMIT;
+        }
     }
 
     /* ------------------------------------------------------------------ */

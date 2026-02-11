@@ -31,7 +31,27 @@ class BatchProcessor {
     }
 
     /**
-     * Process a batch of files with category updates
+     * Fetch live rate limits from the API and configure the RateLimiter.
+     * Should be called once before each processBatch() run.
+     *
+     * Delegates to APIService.fetchUserRateLimits() so the limit data
+     * always comes from a single authoritative source.
+     *
+     * @returns {Promise<void>}
+     */
+    async initRateLimiter() {
+        if (this.rate_limiter.isConfigured()) {
+            return; // Already configured — skip extra API call
+        }
+        const limit = await this.category_service.api.fetchUserRateLimits();
+        this.rate_limiter.configure(limit);
+    }
+
+    /**
+     * Process a batch of files with category updates.
+     * Automatically fetches and applies the user's live rate limits before
+     * starting, then runs files in concurrent batches via RateLimiter.batch().
+     *
      * @param {Array} files - Files to process
      * @param {Array<string>} categoriesToAdd - Categories to add
      * @param {Array<string>} categoriesToRemove - Categories to remove
@@ -50,6 +70,9 @@ class BatchProcessor {
 
         this.reset();
 
+        // Fetch live rate limits and configure the limiter (no-op if already done)
+        await this.initRateLimiter();
+
         const results = {
             total: files.length,
             processed: 0,
@@ -59,19 +82,15 @@ class BatchProcessor {
             errors: []
         };
 
-        // Process files sequentially with throttling
-        for (const file of files) {
-            // Check if we should stop
-            if (this.shouldStop) {
-                console.log('[CBM-BP] Batch processing stopped by user');
-                break;
-            }
+        /**
+         * Process a single file and update shared results.
+         * Wrapped so it can be passed directly to RateLimiter.batch().
+         * @param {Object} file
+         */
+        const processFile = async (file) => {
+            if (this.shouldStop) return;
 
             try {
-                // Wait to respect rate limits (1 edit per 2 seconds)
-                // await this.rate_limiter.wait();
-
-                // Update categories
                 const result = await this.category_service.updateCategories(
                     file.title,
                     categoriesToAdd,
@@ -89,21 +108,55 @@ class BatchProcessor {
                     }
                 }
 
-                // Update progress
-                const progress = (results.processed / results.total) * 100;
-                onProgress(progress, results);
-
             } catch (error) {
+                // Back-off on rate-limit errors before counting as failed
+                if (error?.code === 'ratelimited' || error?.message === 'ratelimited') {
+                    console.warn('[CBM-BP] ratelimited — waiting 60 s before continuing');
+                    await this.rate_limiter.wait(60_000);
+                    return; // file stays unprocessed; caller may retry
+                }
+
                 results.processed++;
                 results.failed++;
-                results.errors.push({
-                    file: file.title,
-                    error: error.message
-                });
-
+                results.errors.push({ file: file.title, error: error.message });
                 onError(file, error);
-                onProgress((results.processed / results.total) * 100, results);
             }
+
+            onProgress((results.processed / results.total) * 100, results);
+        };
+        /**
+         * Process a single file and update shared results.
+         * Wrapped so it can be passed directly to RateLimiter.batch().
+         * @param {Object} file
+         */
+        const processFileNotTry = async (file) => {
+            if (this.shouldStop) return;
+
+            const result = await this.category_service.updateCategories(
+                file.title,
+                categoriesToAdd,
+                categoriesToRemove
+            );
+
+            results.processed++;
+            if (result.success) {
+                if (result.modified) {
+                    results.successful++;
+                    onFileComplete(file, true);
+                } else {
+                    results.skipped++;
+                    onFileComplete(file, false);
+                }
+            }
+
+            onProgress((results.processed / results.total) * 100, results);
+        };
+
+        // Delegate concurrent execution and inter-batch pausing to RateLimiter
+        await this.rate_limiter.batch(files, this.rate_limiter.concurrency, processFile);
+
+        if (this.shouldStop) {
+            console.log('[CBM-BP] Batch processing stopped by user');
         }
 
         return results;

@@ -25,7 +25,10 @@ describe('BatchProcessor', () => {
     mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
 
     mockCategoryService = {
-      updateCategories: jest.fn().mockResolvedValue({ success: true, modified: true })
+      updateCategories: jest.fn().mockResolvedValue({ success: true, modified: true }),
+      api: {
+        fetchUserRateLimits: jest.fn().mockResolvedValue({ hits: 100, seconds: 60 })
+      }
     };
     processor = new BatchProcessor(mockCategoryService);
 

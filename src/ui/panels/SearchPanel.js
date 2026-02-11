@@ -16,17 +16,22 @@
  * @returns {Object} Vue app configuration
  */
 
+import mw from '../../services/mw.js';
 import SearchHandler from './../handlers/SearchHandler.js';
 
 function SearchPanel(search_handler) {
+    const sourceCategory = mw.config.get('wgCanonicalNamespace') === 'Category'
+        ? mw.config.get('wgPageName')
+        : 'Category:Our World in Data graphs of Austria';
+
     const app = {
         data() {
             return {
                 search_handler: search_handler,
 
                 // ── User inputs ──────────────────────────────────────────
-                sourceCategory: 'Category:Our World in Data graphs of Austria',
-                titlePattern: '1990',
+                sourceCategory: sourceCategory,
+                titlePattern: '',
                 searchPattern: '',
 
                 workFiles: [],
