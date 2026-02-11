@@ -12,6 +12,7 @@
 
 import { Validator } from './../utils';
 import mw from './mw.js';
+import Api from './mw.js';
 
 class APIService {
     constructor() {
@@ -19,7 +20,11 @@ class APIService {
          * Native MediaWiki API helper
          * @typeof {mw.Api}
          */
-        this.mwApi = new mw.Api();
+        try {
+            this.mwApi = new mw.Api();
+        } catch (error) {
+            this.mwApi = new Api();
+        }
     }
     /* ------------------------------------------------------------------ */
     /*  Public helpers used by other services                              */

@@ -28,15 +28,4 @@ class Api {
     }
 }
 
-class mw {
-    constructor() {
-    }
-    Api() {
-        return new Api();
-    }
-}
-
-export default {
-    mw,
-    Api
-};
+export default Api;
