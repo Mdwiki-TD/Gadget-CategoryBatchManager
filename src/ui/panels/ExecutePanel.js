@@ -1,21 +1,23 @@
+
+import { ExecuteHandler, ProgressHandler } from "../handlers";
+import { ChangesHelper } from "../helpers";
+
+
 /**
  * Execute Panel Vue app factory
  * UI component only - delegates business logic to handlers
  * @see https://doc.wikimedia.org/codex/latest/
- * @param {ExecuteHandler} execute_operation_handler - ExecuteHandler instance
+ * @param {ExecuteHandler} execute_handler - ExecuteHandler instance
  * @param {ProgressHandler} progress_handler - ProgressHandler instance
  * @param {ChangesHelper} changes_helpers
  * @returns {Object} Vue app configuration
  */
 
-import { ExecuteHandler, ProgressHandler } from "../handlers";
-import { ChangesHelper } from "../helpers";
-
-function ExecutePanel(execute_operation_handler, progress_handler, changes_helpers) {
+function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
     const app = {
         data: function () {
             return {
-                execute_operation_handler: execute_operation_handler,
+                execute_handler: execute_handler,
                 progress_handler: progress_handler,
                 changes_helpers: changes_helpers,
 
@@ -109,7 +111,7 @@ function ExecutePanel(execute_operation_handler, progress_handler, changes_helpe
                 }
 
                 // Generate confirmation message
-                this.confirmMessage = execute_operation_handler.generateConfirmMessage(
+                this.confirmMessage = execute_handler.generateConfirmMessage(
                     preparation.filesCount,
                     preparation.validAddCategories,
                     preparation.removeCategories
@@ -159,7 +161,7 @@ function ExecutePanel(execute_operation_handler, progress_handler, changes_helpe
                 try {
                     const callbacks = progress_handler.createCallbacks(this);
 
-                    const results = await execute_operation_handler.executeBatch(
+                    const results = await execute_handler.executeBatch(
                         preparation.filesToProcess, // [CBM-E] Batch processing error: TypeError: Cannot read properties of undefined (reading 'length')
                         preparation.validAddCategories,
                         preparation.removeCategories,
@@ -172,7 +174,7 @@ function ExecutePanel(execute_operation_handler, progress_handler, changes_helpe
                     // Format and show completion message
                     const completion = progress_handler.formatCompletionMessage(
                         results,
-                        execute_operation_handler.batchProcessor.shouldStop
+                        execute_handler.shouldStop()
                     );
 
                     if (completion.type === 'warning') {
@@ -195,7 +197,7 @@ function ExecutePanel(execute_operation_handler, progress_handler, changes_helpe
              * Stop ongoing batch operation
              */
             stopOperation() {
-                execute_operation_handler.stopBatch();
+                execute_handler.stopBatch();
             }
         }
     };

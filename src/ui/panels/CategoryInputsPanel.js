@@ -4,6 +4,8 @@
  * @see https://doc.wikimedia.org/codex/latest/
  */
 
+import { CategoryLookup } from "../components";
+
 function CategoryInputsPanel(category_inputs_handler) {
     const app = {
         data: function () {
@@ -94,8 +96,10 @@ function CategoryInputsPanel(category_inputs_handler) {
                     this.addCategory.input,
                     'add'
                 );
-                if (data !== null) {
-                    this.addCategory.menuItems = data;
+                // if (data !== null) {
+                if (data) {
+                    // this.addCategory.menuItems = data;
+                    this.addCategory.menuItems.push(...data);
                 }
             },
 
@@ -106,8 +110,10 @@ function CategoryInputsPanel(category_inputs_handler) {
                     this.removeCategory.input,
                     'remove'
                 );
-                if (data !== null) {
-                    this.removeCategory.menuItems = data;
+                // if (data !== null) {
+                if (data) {
+                    // this.removeCategory.menuItems = data;
+                    this.removeCategory.menuItems.push(...data);
                 }
             },
 

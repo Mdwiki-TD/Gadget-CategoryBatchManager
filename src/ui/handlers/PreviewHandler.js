@@ -38,8 +38,10 @@ class PreviewHandler {
             callbacks
         );
         if (!preparation) {
-            return
+            console.error('[CBM-P] Preview preparation failed');
+            return;
         }
+        return preparation;
     }
 
     filterFilesToProcess(filesToProcess) {

@@ -1,6 +1,9 @@
+
+import { PreviewHandler } from "../handlers";
+
 /**
  * PreviewPanel
- * @param {Object} preview_handler - PreviewHandler instance
+ * @param {PreviewHandler} preview_handler - PreviewHandler instance
  * @returns {Object} Vue app configuration
  */
 
@@ -8,7 +11,6 @@ function PreviewPanel(preview_handler) {
     const app = {
         data: function () {
             return {
-                preview_handler: preview_handler,
                 previewRows: [],
                 changesCount: '',
                 openPreviewHandler: false,
@@ -69,7 +71,7 @@ function PreviewPanel(preview_handler) {
         `,
         methods: {
             handlePreview: function () {
-                const preparation = this.preview_handler.getPreparation(
+                const preparation = preview_handler.getPreparation(
                     this.sourceCategory,
                     this.selectedFiles,
                     this.addCategory.selected,
@@ -89,7 +91,7 @@ function PreviewPanel(preview_handler) {
                 // TODO: Cannot read properties of undefined (reading 'length') preparation.filesToProcess.length
                 console.log('[CBM-P] Preview result:', preparation.filesToProcess.length, 'items');
 
-                this.previewRows = this.preview_handler.filterFilesToProcess(preparation.filesToProcess);
+                this.previewRows = preview_handler.filterFilesToProcess(preparation.filesToProcess);
 
                 this.changesCount = preparation.filesToProcess.length;
 
