@@ -1,9 +1,10 @@
-const { default: ChangesHandler } = require('../../../src/ui/handlers/ChangesHandler');
-
-// Mock ChangeCalculator globally
-global.ChangeCalculator = {
+// Mock ChangeCalculator module before importing ChangesHandler
+jest.mock('../../../src/utils/ChangeCalculator', () => ({
     filterFilesThatWillChange: jest.fn()
-};
+}));
+
+const { default: ChangesHandler } = require('../../../src/ui/handlers/ChangesHandler');
+const { filterFilesThatWillChange } = require('../../../src/utils/ChangeCalculator');
 
 describe('ChangesHandler', () => {
     let handler;
@@ -114,7 +115,7 @@ describe('ChangesHandler', () => {
                 filteredToAdd: ['Category:C'],
                 circularCategories: []
             });
-            global.ChangeCalculator.filterFilesThatWillChange.mockReturnValue(selectedFiles);
+            filterFilesThatWillChange.mockReturnValue(selectedFiles);
         });
 
         test('should prepare operation successfully', () => {
@@ -180,7 +181,7 @@ describe('ChangesHandler', () => {
             });
 
             // When no files will change
-            global.ChangeCalculator.filterFilesThatWillChange.mockReturnValue([]);
+            filterFilesThatWillChange.mockReturnValue([]);
 
             const result = handler.prepareOperation(
                 'Category:Source',
@@ -232,7 +233,7 @@ describe('ChangesHandler', () => {
                 filteredToAdd: ['Category:A'],
                 circularCategories: []
             });
-            global.ChangeCalculator.filterFilesThatWillChange.mockReturnValue(selectedFiles);
+            filterFilesThatWillChange.mockReturnValue(selectedFiles);
 
             mockCallbacks = {
                 showWarningMessage: jest.fn(),
