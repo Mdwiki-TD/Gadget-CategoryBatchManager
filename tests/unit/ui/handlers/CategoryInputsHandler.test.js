@@ -3,12 +3,20 @@ const { default: CategoryInputsHandler } = require('../../../../src/ui/handlers/
 describe('CategoryInputsHandler', () => {
   let handler;
   let mockApiService;
+  let mockConsoleWarn;
 
   beforeEach(() => {
+    // Suppress console.warn in tests
+    mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
     mockApiService = {
       fetchCategories: jest.fn()
     };
     handler = new CategoryInputsHandler(mockApiService);
+  });
+
+  afterEach(() => {
+    mockConsoleWarn.mockRestore();
   });
 
   describe('deduplicateResults', () => {

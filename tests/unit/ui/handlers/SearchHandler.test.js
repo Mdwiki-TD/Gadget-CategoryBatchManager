@@ -15,10 +15,16 @@ describe('SearchHandler', () => {
   let handler;
   let mockSearchService;
   let mockConsoleError;
+  let mockConsoleWarn;
+  let mockConsoleLog;
 
   beforeEach(() => {
     // Mock console.error to suppress error messages during tests
     mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    // Mock console.warn to suppress warning messages during tests
+    mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    // Mock console.log to suppress log messages during tests
+    mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
 
     // Reset Validator mock
     global.Validator.sanitizeTitlePattern.mockImplementation((pattern) => {
@@ -42,6 +48,8 @@ describe('SearchHandler', () => {
 
   afterEach(() => {
     mockConsoleError.mockRestore();
+    mockConsoleWarn.mockRestore();
+    mockConsoleLog.mockRestore();
   });
 
   describe('createPattern', () => {
