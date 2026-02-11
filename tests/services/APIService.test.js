@@ -1,5 +1,5 @@
-const { default: APIService } = require('../../../src/services/APIService');
-const { default: Validator } = require('../../../src/utils/Validator');
+const { default: APIService } = require('../../src/services/APIService');
+const { default: Validator } = require('../../src/utils/Validator');
 
 describe('APIService', () => {
   let service;

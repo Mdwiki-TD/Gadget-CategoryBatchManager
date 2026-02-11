@@ -1,4 +1,4 @@
-const { default: BatchProcessor } = require('../../../src/services/BatchProcessor');
+const { default: BatchProcessor } = require('../../src/services/BatchProcessor');
 
 // Mock RateLimiter
 global.RateLimiter = class {

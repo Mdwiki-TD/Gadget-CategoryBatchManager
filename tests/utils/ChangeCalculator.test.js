@@ -1,4 +1,4 @@
-const { default: ChangeCalculator } = require('../../../src/utils/ChangeCalculator');
+const { default: ChangeCalculator } = require('../../src/utils/ChangeCalculator');
 
 // Mock Validator
 global.Validator = {

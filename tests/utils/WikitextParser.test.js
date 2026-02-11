@@ -1,4 +1,4 @@
-const { default: WikitextParser } = require('../../../src/utils/WikitextParser');
+const { default: WikitextParser } = require('../../src/utils/WikitextParser');
 
 describe('WikitextParser', () => {
   let parser;
