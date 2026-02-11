@@ -27,5 +27,16 @@ class Api {
         return [];
     }
 }
+const config = {
+    get: (key) => {
+        const configData = {
+            wgPageName: 'Category:Our World in Data graphs of Austria',
+            wgUserName: 'ExampleUser',
+            wgCanonicalNamespace: 'Category',
+            wgUserGroups: ['*'],
+        };
+        return configData[key] || null;
+    }
+};
 
-export default Api;
+export default { Api, config };
