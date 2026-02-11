@@ -90,8 +90,9 @@ describe('PreviewHandler', () => {
                 'B',
                 null
             );
+            const expectedResult = { "filesToProcess": [{ "currentCategories": ["A"], "file": "File1.svg", "newCategories": ["A", "B"] }], "valid": true };
 
-            expect(result).toBeUndefined(); // Method doesn't return preparation
+            expect(result).toEqual(expectedResult);
         });
 
         test('should handle empty callbacks object', () => {

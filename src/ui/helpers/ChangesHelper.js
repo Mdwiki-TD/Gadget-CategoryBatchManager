@@ -87,7 +87,7 @@ class ChangesHelper {
     }
 
     validateAndPrepare(sourceCategory, selectedFiles, addCategorySelected, removeCategorySelected, callbacks = {}) {
-        console.log('validateAndPrepare ');
+        console.log('validateAndPrepare start');
 
         const {
             showWarningMessage = () => { },

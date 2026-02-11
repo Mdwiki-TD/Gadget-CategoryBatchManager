@@ -337,7 +337,7 @@ describe('ChangesHelper', () => {
                 removeCategories
             );
 
-            expect(consoleLogSpy).toHaveBeenCalledWith('[CBM] Preview button clicked');
+            expect(consoleLogSpy).toHaveBeenCalledWith('validateAndPrepare start');
 
             consoleLogSpy.mockRestore();
         });
