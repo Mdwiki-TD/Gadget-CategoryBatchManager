@@ -163,7 +163,7 @@ describe('ValidationHelper', () => {
 
       const result = validationHelper.filterCircularCategories(addCategories, sourceCategory);
 
-      expect(result.validCategories).toEqual(['Category:Valid']);
+      expect(result.validAddCategories).toEqual(['Category:Valid']);
       expect(result.circularCategories).toEqual(['Category:Circular']);
     });
 
@@ -175,7 +175,7 @@ describe('ValidationHelper', () => {
 
       const result = validationHelper.filterCircularCategories(addCategories, sourceCategory);
 
-      expect(result.validCategories).toEqual([]);
+      expect(result.validAddCategories).toEqual([]);
       expect(result.circularCategories).toEqual(['Category:Circular1', 'Category:Circular2']);
     });
 
@@ -187,7 +187,7 @@ describe('ValidationHelper', () => {
 
       const result = validationHelper.filterCircularCategories(addCategories, sourceCategory);
 
-      expect(result.validCategories).toEqual(['Category:A', 'Category:B']);
+      expect(result.validAddCategories).toEqual(['Category:A', 'Category:B']);
       expect(result.circularCategories).toEqual([]);
     });
   });

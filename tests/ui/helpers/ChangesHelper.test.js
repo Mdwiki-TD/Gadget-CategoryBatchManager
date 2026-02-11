@@ -112,7 +112,7 @@ describe('ChangesHelper', () => {
 
             mockValidator.hasDuplicateCategories.mockReturnValue({ valid: true });
             mockValidator.filterCircularCategories.mockReturnValue({
-                filteredToAdd: ['Category:C'],
+                validAddCategories: ['Category:C'],
                 circularCategories: []
             });
             filterFilesThatWillChange.mockReturnValue(selectedFiles);
@@ -128,7 +128,7 @@ describe('ChangesHelper', () => {
 
             expect(result).toEqual({
                 valid: true,
-                filteredToAdd: ['Category:C'],
+                validAddCategories: ['Category:C'],
                 removeCategories: ['Category:D'],
                 filesCount: 2,
                 filesToProcess: selectedFiles
@@ -156,7 +156,7 @@ describe('ChangesHelper', () => {
 
         test('should return error when all categories are circular', () => {
             mockValidator.filterCircularCategories.mockReturnValue({
-                filteredToAdd: [],
+                validAddCategories: [],
                 circularCategories: ['Category:C']
             });
 
@@ -176,7 +176,7 @@ describe('ChangesHelper', () => {
 
         test('should return valid with empty files when no files will change', () => {
             mockValidator.filterCircularCategories.mockReturnValue({
-                filteredToAdd: ['Category:C'],
+                validAddCategories: ['Category:C'],
                 circularCategories: []
             });
 
@@ -198,7 +198,7 @@ describe('ChangesHelper', () => {
 
         test('should filter circular categories from add list', () => {
             mockValidator.filterCircularCategories.mockReturnValue({
-                filteredToAdd: ['Category:C'], // Some categories filtered
+                validAddCategories: ['Category:C'], // Some categories filtered
                 circularCategories: ['Category:Circular']
             });
 
@@ -209,7 +209,7 @@ describe('ChangesHelper', () => {
                 removeCategories
             );
 
-            expect(result.filteredToAdd).toEqual(['Category:C']);
+            expect(result.validAddCategories).toEqual(['Category:C']);
             expect(mockValidator.filterCircularCategories).toHaveBeenCalledWith(
                 ['Category:C', 'Category:Circular'],
                 'Category:Source'
@@ -230,7 +230,7 @@ describe('ChangesHelper', () => {
 
             mockValidator.hasDuplicateCategories.mockReturnValue({ valid: true });
             mockValidator.filterCircularCategories.mockReturnValue({
-                filteredToAdd: ['Category:A'],
+                validAddCategories: ['Category:A'],
                 circularCategories: []
             });
             filterFilesThatWillChange.mockReturnValue(selectedFiles);
@@ -253,7 +253,7 @@ describe('ChangesHelper', () => {
 
             expect(result).toEqual({
                 valid: true,
-                filteredToAdd: ['Category:A'],
+                validAddCategories: ['Category:A'],
                 removeCategories: [],
                 filesCount: 1,
                 filesToProcess: selectedFiles
@@ -278,7 +278,7 @@ describe('ChangesHelper', () => {
 
         test('should call onError when preparation fails with message', () => {
             mockValidator.filterCircularCategories.mockReturnValue({
-                filteredToAdd: [],
+                validAddCategories: [],
                 circularCategories: ['Category:A']
             });
 
@@ -298,7 +298,7 @@ describe('ChangesHelper', () => {
 
         test('should call onWarning when preparation fails without message', () => {
             mockValidator.filterCircularCategories.mockReturnValue({
-                filteredToAdd: [],
+                validAddCategories: [],
                 circularCategories: []
             });
 

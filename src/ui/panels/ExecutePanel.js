@@ -111,7 +111,7 @@ function ExecutePanel(execute_operation_handler, progress_handler, changes_helpe
                 // Generate confirmation message
                 this.confirmMessage = execute_operation_handler.generateConfirmMessage(
                     preparation.filesCount,
-                    preparation.filteredToAdd,
+                    preparation.validAddCategories,
                     preparation.removeCategories
                 );
 
@@ -161,7 +161,7 @@ function ExecutePanel(execute_operation_handler, progress_handler, changes_helpe
 
                     const results = await execute_operation_handler.executeBatch(
                         preparation.filesToProcess, // [CBM-E] Batch processing error: TypeError: Cannot read properties of undefined (reading 'length')
-                        preparation.filteredToAdd,
+                        preparation.validAddCategories,
                         preparation.removeCategories,
                         callbacks
                     );
