@@ -57,6 +57,7 @@ class ChangeCalculator {
         });
 
         return {
+            title: file.title,
             file: file.title,
             currentCategories: current,
             newCategories: after,
