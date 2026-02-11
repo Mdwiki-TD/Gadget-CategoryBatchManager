@@ -1,23 +1,25 @@
 // Mock the mw module before importing APIService
 jest.mock('../../src/services/mw.js', () => {
-  // Create plain functions that will be replaced with jest mocks in beforeEach
-  const mockApi = {
-    get: () => {},
-    edit: () => {},
-    getCategories: () => {},
-  };
-
-  function MockApi() {
-    return mockApi;
-  }
-
+  // This mock will be configured in beforeEach
   const mockModule = {
-    Api: MockApi,
-    __mockApi: mockApi
+    Api: class MockApi {
+      constructor() {
+        return mockModule._instance;
+      }
+    },
+    _instance: {
+      get: () => {},
+      edit: () => {},
+      getCategories: () => {},
+    }
   };
 
   return {
-    default: mockModule
+    default: {
+      Api: mockModule.Api,
+      __mockApi: mockModule._instance,
+      setMockInstance: (instance) => { mockModule._instance = instance; }
+    }
   };
 });
 
