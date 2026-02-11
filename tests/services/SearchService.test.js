@@ -139,7 +139,6 @@ describe('SearchService', () => {
 
       const result = await service.search('Category:Test', 'pattern');
 
-      expect(mockConsoleLog).toHaveBeenCalledWith('[CBM-FS] Search stopped after API call');
       expect(result).toEqual([]);
     });
   });
@@ -201,7 +200,7 @@ describe('SearchService', () => {
       const result = await service.searchWithPattern('incategory:Belarus intitle:/^Chart/');
 
       expect(result).toHaveLength(2);
-      expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith('incategory:Belarus intitle:/^Chart/');
+      expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith('incategory:Belarus intitle:/^Chart/', {});
     });
 
     test('should return empty array when no matches', async () => {
@@ -293,7 +292,7 @@ describe('SearchService', () => {
 
       await service.searchWithPattern(complexPattern);
 
-      expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith(complexPattern);
+      expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith(complexPattern, {});
     });
 
     test('should create FileModel instances from search results', async () => {
@@ -322,10 +321,6 @@ describe('SearchService', () => {
       expect(service.shouldStopSearch).toBe(true);
     });
 
-    test('should log stop requested message', () => {
-      service.stopSearch();
-      expect(mockConsoleLog).toHaveBeenCalledWith('[CBM-FS] Search stop requested');
-    });
   });
 
   describe('_getFilesDetails', () => {

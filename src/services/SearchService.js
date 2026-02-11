@@ -1,7 +1,7 @@
 /**
- * Service for file operations — data layer only.
- * Responsible for API communication and raw data parsing.
- * Has no knowledge of UI state or progress reporting.
+ * Data-layer service responsible for file search and detail enrichment.
+ * Has no knowledge of UI state or progress reporting beyond the callbacks
+ * it receives.
  * @class SearchService
  */
 
@@ -10,10 +10,10 @@ import APIService from './APIService.js';
 
 class SearchService {
     /**
-     * @param {APIService} api_service - API service instance
+     * @param {APIService} api - API service instance
      */
-    constructor(api_service) {
-        this.api = api_service;
+    constructor(api) {
+        this.api = api;
         this.shouldStopSearch = false;
     }
 
@@ -23,7 +23,7 @@ class SearchService {
      */
     stopSearch() {
         this.shouldStopSearch = true;
-        console.log('[CBM-FS] Search stop requested');
+        console.log('[CBM-FS] Stop requested');
     }
 
     /**
@@ -57,24 +57,8 @@ class SearchService {
         return await this._getFilesDetails(searchResults);
     }
 
-    /**
-     * Search files by pattern within a category.
-     * Uses the MediaWiki search API for efficiency instead of loading all
-     * category members.
-     *
-     * @param {string} srsearch   - Search query string
-     * @returns {Promise<Array<FileModel>>} Matching file models
-     */
     async searchWithPattern(srsearch) {
-        this.resetSearchFlag();
-        const searchResults = await this.api.searchInCategoryWithPattern(srsearch);
-
-        if (this.shouldStopSearch) {
-            console.log('[CBM-FS] Search stopped after API call');
-            return [];
-        }
-
-        return await this._getFilesDetails(searchResults);
+        return this.searchWithPatternCallback(srsearch, {});
     }
     /**
      * Search files by pattern within a category.
