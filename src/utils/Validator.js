@@ -4,7 +4,7 @@
  */
 class Validator {
     /**
-     * TODO: use it in the workflow or remove if not needed
+     * TODO: use it in the workflow
      * Check if a category name is valid
      * @param {string} name - Category name to validate
      * @returns {boolean} True if valid
@@ -54,7 +54,7 @@ class Validator {
             .replace(/'/g, "\\'");    // Escape single quotes
     }
     /**
-     * TODO: use it in the workflow or remove if not needed
+     * TODO: use it in the workflow
      * Sanitize user input to prevent injection
      * @param {string} input - Raw user input
      * @returns {string} Sanitized input
