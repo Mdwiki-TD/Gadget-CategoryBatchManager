@@ -1,3 +1,8 @@
+/**
+ *
+ * @returns {Object} Vue component configuration for category lookup input
+ */
+
 function CategoryLookup() {
     return {
         name: "CategoryLookup",
@@ -84,3 +89,5 @@ function CategoryLookup() {
         },
     }
 }
+
+export default CategoryLookup;
