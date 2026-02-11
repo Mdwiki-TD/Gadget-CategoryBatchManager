@@ -34,29 +34,6 @@ class SearchService {
         this.shouldStopSearch = false;
     }
 
-    /**
-     * Search files by pattern within a category.
-     * Uses the MediaWiki search API for efficiency instead of loading all
-     * category members.
-     *
-     * @param {string} categoryName   - Category to search in
-     * @param {string} titlePattern  - Pattern to match against file titles
-     * @returns {Promise<Array<FileModel>>} Matching file models
-     */
-    async search(categoryName, titlePattern) {
-        this.resetSearchFlag();
-        // Normalize category name
-        const cleanCategoryName = categoryName.replace(/^Category:/i, '');
-        const searchResults = await this.api.searchInCategory(cleanCategoryName, titlePattern);
-
-        if (this.shouldStopSearch) {
-            console.log('[CBM-FS] Search stopped after API call');
-            return [];
-        }
-
-        return await this._getFilesDetails(searchResults);
-    }
-
     async searchWithPattern(srsearch) {
         return this.searchWithPatternCallback(srsearch, {});
     }
