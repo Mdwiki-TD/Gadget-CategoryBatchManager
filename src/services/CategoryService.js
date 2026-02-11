@@ -31,7 +31,7 @@ class CategoryService {
                 newWikitext = this.parser.addCategory(newWikitext, category);
             }
         }
-        let success = false;
+        let success = true;
         if (newWikitext !== wikitext) {
             let result = await this.api.editPage(
                 fileTitle,
@@ -58,7 +58,7 @@ class CategoryService {
         for (const category of categoriesToRemove) {
             newWikitext = this.parser.removeCategory(newWikitext, category);
         }
-        let success = false;
+        let success = true;
         if (newWikitext !== wikitext) {
             let result = await this.api.editPage(
                 fileTitle,
