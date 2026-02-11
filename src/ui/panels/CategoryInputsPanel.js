@@ -5,6 +5,7 @@
  */
 
 import { CategoryLookup } from "../components";
+import { CategoryInputsHandler } from './../handlers';
 
 function CategoryInputsPanel(category_inputs_handler) {
     /** Default shape for a lookup model object */
