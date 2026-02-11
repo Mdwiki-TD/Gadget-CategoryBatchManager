@@ -236,7 +236,8 @@ describe('ChangesHandler', () => {
 
             mockCallbacks = {
                 showWarningMessage: jest.fn(),
-                displayAddCategoryMessage: jest.fn()
+                onWarning: jest.fn(),
+                onError: jest.fn(),
             };
         });
 
@@ -274,7 +275,7 @@ describe('ChangesHandler', () => {
             );
         });
 
-        test('should call displayAddCategoryMessage when preparation fails with message', () => {
+        test('should call onError when preparation fails with message', () => {
             mockValidator.filterCircularCategories.mockReturnValue({
                 filteredToAdd: [],
                 circularCategories: ['Category:A']
@@ -289,20 +290,12 @@ describe('ChangesHandler', () => {
             );
 
             expect(result).toBeUndefined();
-            expect(mockCallbacks.displayAddCategoryMessage).toHaveBeenCalledTimes(2);
-            expect(mockCallbacks.displayAddCategoryMessage).toHaveBeenNthCalledWith(
-                1,
-                expect.stringContaining('all categorie(s) are circular'),
-                'error',
-            );
-            expect(mockCallbacks.displayAddCategoryMessage).toHaveBeenNthCalledWith(
-                2,
-                'Circular categories detected.',
-                'warning',
-            );
+            expect(mockCallbacks.onError).toHaveBeenCalledTimes(1);
+            expect(mockCallbacks.onError).toHaveBeenNthCalledWith(1, expect.stringContaining('all categorie(s) are circular'));
+            expect(mockCallbacks.onWarning).toHaveBeenNthCalledWith(1, 'Circular categories detected.');
         });
 
-        test('should call displayAddCategoryMessage when preparation fails without message', () => {
+        test('should call onWarning when preparation fails without message', () => {
             mockValidator.filterCircularCategories.mockReturnValue({
                 filteredToAdd: [],
                 circularCategories: []
@@ -317,10 +310,7 @@ describe('ChangesHandler', () => {
             );
 
             expect(result).toBeUndefined();
-            expect(mockCallbacks.displayAddCategoryMessage).toHaveBeenCalledWith(
-                'No valid categories to add or remove.',
-                'warning'
-            );
+            expect(mockCallbacks.onWarning).toHaveBeenCalledWith('No valid categories to add or remove.');
         });
 
         test('should handle missing callbacks gracefully', () => {

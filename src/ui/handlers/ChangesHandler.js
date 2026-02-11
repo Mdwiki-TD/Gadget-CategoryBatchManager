@@ -91,7 +91,8 @@ class ChangesHandler {
 
         const {
             showWarningMessage = () => { },
-            displayAddCategoryMessage = () => { }
+            onWarning = () => { },
+            onError = () => { }
         } = callbacks;
 
         // Validate
@@ -115,10 +116,10 @@ class ChangesHandler {
 
         if (!preparation.valid) {
             if (preparation?.message) {
-                displayAddCategoryMessage(preparation.message, 'error');
+                onError(preparation.message);
             }
             console.log('[CBM-V] No valid categories after filtering');
-            displayAddCategoryMessage(preparation.error, 'warning');
+            onWarning(preparation.error);
             return;
         }
         return preparation;
