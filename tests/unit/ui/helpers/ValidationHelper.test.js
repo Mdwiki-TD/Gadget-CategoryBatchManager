@@ -1,4 +1,4 @@
-const ValidationHelper = require('../../../../src/ui/helpers/ValidationHelper');
+const { default: ValidationHelper } = require('../../../../src/ui/helpers/ValidationHelper');
 
 // Mock Validator
 global.Validator = {

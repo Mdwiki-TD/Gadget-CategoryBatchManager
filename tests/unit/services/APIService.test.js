@@ -1,4 +1,4 @@
-const APIService = require('../../../src/services/APIService');
+const { default: APIService } = require('../../../src/services/APIService');
 
 describe('APIService', () => {
   let service;
