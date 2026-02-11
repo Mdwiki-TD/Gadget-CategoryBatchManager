@@ -228,13 +228,13 @@ class APIService {
                     timestamp: file.timestamp
                 }));
 
+                results.push(...searchResults);
+
                 // Call progress callback with the number of results found so far
                 if (callbacks.onProgress) {
                     const text = `Searching for files… (${results.length} found so far)`;
                     callbacks.onProgress(text);
                 }
-
-                results.push(...searchResults);
             }
 
             // Check if there are more results
