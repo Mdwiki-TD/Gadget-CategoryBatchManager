@@ -9,7 +9,32 @@ import { CategoryInputsHandler, ExecuteHandler, FileListHandler, SearchHandler, 
 import CategoryLookup from './ui/components/CategoryLookup.js';
 import { ChangesHelper, ValidationHelper } from './ui/helpers';
 
-function BatchManager() {
+function load_template(portletLink, mainTemplate) {
+    if (portletLink) {
+        // If portletLink is provided, we are in a category page and want to use a dialog
+        return `
+            <cdx-dialog
+                v-model:open="showMainDialog"
+                class="cbm-container"
+                title="Category Batch Manager"
+                :use-close-button="true"
+                close-button-label="Close"
+                @default="showMainDialog = false"
+            >
+                ${mainTemplate}
+            </cdx-dialog>
+        `;
+    } else {
+        // If no portletLink, we are likely in a special page and can render directly without a dialog
+        return `
+            <div class="cbm-container">
+                <h2 class="cbm-title">Category Batch Manager</h2>
+                ${mainTemplate}
+            </div>`;
+    }
+}
+
+function BatchManager(portletLink = null) {
 
     // services
     const api_service = new APIService();
@@ -36,56 +61,50 @@ function BatchManager() {
     const search_panel_app = SearchPanel(search_handler);
     const files_list_app = FilesListPanel(files_list);
 
-    const template = `
-        <cdx-dialog
-            v-model:open="showDialog"
-            class="cbm-container"
-            title="Category Batch Manager"
-            :use-close-button="true"
-            close-button-label="Close"
-            @default="showDialog = true"
-        >
-            <div class="cbm-main-layout">
-                <!-- Left Panel: Search and Actions -->
-                <div class="cbm-left-panel">
-                    <!-- Search Section -->
-                    ${search_panel_app.template}
+    const default_state = portletLink === null;
 
-                    <!-- Actions Section -->
-                    <div>
-                        ${category_inputs_app.template}
+    const template = load_template(portletLink, `
+        <div class="cbm-main-layout">
+            <!-- Left Panel: Search and Actions -->
+            <div class="cbm-left-panel">
+                <!-- Search Section -->
+                ${search_panel_app.template}
 
-                        <div class="margin-bottom-20 hidden">
-                            <cdx-label input-id="cbm-summary" class="cbm-label">
-                                Edit Summary
-                            </cdx-label>
-                            <cdx-text-input id="cbm-summary" v-model="editSummary" />
-                        </div>
+                <!-- Actions Section -->
+                <div>
+                    ${category_inputs_app.template}
 
-                        <div class="cbm-button-group">
-                            ${preview_panel_app.template}
-                            ${execute_panel.template}
-                        </div>
+                    <div class="margin-bottom-20 hidden">
+                        <cdx-label input-id="cbm-summary" class="cbm-label">
+                            Edit Summary
+                        </cdx-label>
+                        <cdx-text-input id="cbm-summary" v-model="editSummary" />
                     </div>
-                    ${execute_panel.progress_template}
-                </div>
 
-                <!-- Right Panel: File List -->
-                <div class="cbm-right-panel">
-                    ${files_list_app.template}
-
-                    <!-- Progress Section -->
-                    ${search_panel_app.progress_template}
+                    <div class="cbm-button-group">
+                        ${preview_panel_app.template}
+                        ${execute_panel.template}
+                    </div>
                 </div>
+                ${execute_panel.progress_template}
             </div>
-            <!-- Message Display -->
-            ${message_display_app.template}
-        </cdx-dialog>
-    `;
+
+            <!-- Right Panel: File List -->
+            <div class="cbm-right-panel">
+                ${files_list_app.template}
+
+                <!-- Progress Section -->
+                ${search_panel_app.progress_template}
+            </div>
+        </div>
+        <!-- Message Display -->
+        ${message_display_app.template}
+    `);
 
     const app = {
         data: function () {
             return {
+                showMainDialog: default_state,
                 // vue apps handlers
                 execute_handler: execute_handler,
                 progress_handler: progress_handler,
@@ -119,6 +138,9 @@ function BatchManager() {
             ...files_list_app.computed,
         },
         methods: {
+            openMainDialog() {
+                this.showMainDialog = true;
+            },
 
             // SearchPanel methods
             ...search_panel_app.methods,
@@ -141,8 +163,20 @@ function BatchManager() {
         template: template,
         components: {
             CategoryLookup: CategoryLookup(),
-        }
+        },
+
     };
+    if (portletLink) {
+        app.mounted = function () {
+            portletLink.addEventListener('click', this.openMainDialog);
+        };
+        app.unmounted = function () {
+            portletLink.removeEventListener('click', this.openMainDialog);
+        };
+        app.beforeUnmount = function () {
+            portletLink.removeEventListener('click', this.openMainDialog);
+        };
+    }
     return app;
 }
 

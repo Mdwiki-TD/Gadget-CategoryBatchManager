@@ -235,7 +235,6 @@ class APIService {
                     const text = `Searching for files… (${results.length} found so far)`;
                     callbacks.onProgress(text);
                 }
-
             }
 
             // Check if there are more results
