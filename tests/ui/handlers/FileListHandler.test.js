@@ -4,7 +4,7 @@ describe('FileListHandler', () => {
   let handler;
 
   beforeEach(() => {
-    handler = new FileListHandler({});
+    handler = new FileListHandler();
   });
 
   describe('selectAll', () => {

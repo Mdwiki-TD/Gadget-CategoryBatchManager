@@ -2,30 +2,23 @@ const { default: PreviewHandler } = require('../../../src/ui/handlers/PreviewHan
 
 describe('PreviewHandler', () => {
     let previewHandler;
-    let mockValidator;
     let mockChangesHandler;
 
     beforeEach(() => {
-        mockValidator = {
-            isValidCategoryName: jest.fn(() => true),
-            normalizeCategoryName: jest.fn(name => name.replace(/_/g, ' '))
-        };
-
         mockChangesHandler = {
             validateAndPrepare: jest.fn()
         };
 
-        previewHandler = new PreviewHandler(mockValidator, mockChangesHandler);
+        previewHandler = new PreviewHandler(mockChangesHandler);
     });
 
     describe('constructor', () => {
         test('should initialize with validator and changes_handler', () => {
-            expect(previewHandler.validator).toBe(mockValidator);
-            expect(previewHandler.changes_handler).toBe(mockChangesHandler);
+            expect(previewHandler.changes_helpers).toBe(mockChangesHandler);
         });
 
         test('should work without optional callbacks', () => {
-            expect(() => new PreviewHandler(mockValidator, mockChangesHandler)).not.toThrow();
+            expect(() => new PreviewHandler(mockChangesHandler)).not.toThrow();
         });
     });
 

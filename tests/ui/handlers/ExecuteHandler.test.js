@@ -3,16 +3,14 @@ const { default: ExecuteHandler } = require('../../../src/ui/handlers/ExecuteHan
 
 describe('ExecuteHandler', () => {
   let handler;
-  let mockValidator;
   let mockBatchProcessor;
 
   beforeEach(() => {
-    mockValidator = {};
     mockBatchProcessor = {
       processBatch: jest.fn(),
       stop: jest.fn()
     };
-    handler = new ExecuteHandler(mockValidator, mockBatchProcessor);
+    handler = new ExecuteHandler(mockBatchProcessor);
   });
 
   describe('generateConfirmMessage', () => {

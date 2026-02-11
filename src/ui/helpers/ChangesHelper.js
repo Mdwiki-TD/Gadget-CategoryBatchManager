@@ -8,10 +8,10 @@ import ValidationHelper from './ValidationHelper.js';
 
 class ChangesHelper {
     /**
-     * @param {ValidationHelper} validator - Validation helper instance for validating operations
+     * @param {ValidationHelper} validation_helper - Validation helper instance for validating operations
      */
-    constructor(validator) {
-        this.validator = validator;
+    constructor(validation_helper) {
+        this.validation_helper = validation_helper;
     }
     /**
      * Handle preview button click
@@ -47,7 +47,7 @@ class ChangesHelper {
      */
     prepareOperation(sourceCategory, selectedFiles, addCategorySelected, removeCategorySelected) {
         // Check for duplicate categories in both add and remove lists
-        const duplicateCheck = this.validator.hasDuplicateCategories(addCategorySelected, removeCategorySelected);
+        const duplicateCheck = this.validation_helper.hasDuplicateCategories(addCategorySelected, removeCategorySelected);
         if (!duplicateCheck.valid) {
             return {
                 valid: false,
@@ -56,22 +56,16 @@ class ChangesHelper {
         }
 
         // Filter out circular categories (returns null if ALL are circular)
-        const { filteredToAdd, circularCategories } = this.validator.filterCircularCategories(addCategorySelected, sourceCategory);
+        const { validAddCategories, circularCategories } = this.validation_helper.filterCircularCategories(addCategorySelected, sourceCategory);
 
         // If all categories are circular, show error
-        if (circularCategories.length > 0 && filteredToAdd.length === 0) {
+        if (circularCategories.length > 0 && validAddCategories.length === 0) {
             const message = `❌ Cannot add: all categorie(s) are circular references to the current page. Cannot add "${circularCategories.join(', ')}" to itself.`;
             return { valid: false, error: 'Circular categories detected.', message: message };
         }
 
-        // Check if there are any valid operations remaining
-        if (!filteredToAdd) {
-            console.error('[CBM-V] Error filtering circular categories');
-            return { valid: false, error: 'An error occurred while processing categories to add.' };
-        }
-
-        // `filteredToAdd.length` TypeError: Cannot read properties of undefined (reading 'length')
-        if (filteredToAdd.length === 0 && removeCategorySelected.length === 0) {
+        // Check if there are no valid categories to add or remove
+        if (validAddCategories.length === 0 && removeCategorySelected.length === 0) {
             return { valid: false, error: 'No valid categories to add or remove.' };
         }
 
@@ -79,13 +73,13 @@ class ChangesHelper {
         // This ensures the confirmation message shows the correct count
         const filesThatWillChange = ChangeCalculator.filterFilesThatWillChange(
             selectedFiles,
-            filteredToAdd,
+            validAddCategories,
             removeCategorySelected
         );
 
         return {
             valid: true,
-            filteredToAdd,
+            validAddCategories: validAddCategories,
             removeCategories: removeCategorySelected,
             filesCount: filesThatWillChange.length,
             filesToProcess: filesThatWillChange

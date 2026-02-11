@@ -10,10 +10,10 @@ import APIService from './APIService.js';
 
 class SearchService {
     /**
-     * @param {APIService} apiService - API service instance
+     * @param {APIService} api_service - API service instance
      */
-    constructor(apiService) {
-        this.api = apiService;
+    constructor(api_service) {
+        this.api = api_service;
         this.shouldStopSearch = false;
     }
 

@@ -11,14 +11,20 @@
  */
 
 import { Validator } from './../utils';
+import mw from './mw.js';
+import Api from './mw.js';
 
 class APIService {
     constructor() {
         /**
          * Native MediaWiki API helper
-         * @type {mw.Api}
+         * @typeof {mw.Api}
          */
-        this.mwApi = new mw.Api();
+        try {
+            this.mwApi = new mw.Api();
+        } catch (error) {
+            this.mwApi = new Api();
+        }
     }
     /* ------------------------------------------------------------------ */
     /*  Public helpers used by other services                              */
