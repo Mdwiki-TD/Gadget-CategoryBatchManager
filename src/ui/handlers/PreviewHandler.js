@@ -6,15 +6,17 @@
  * Manages preview generation, modal display, and validation.
  *
  * @requires ValidationHelper - For common validation logic
- * @requires ChangeCalculator - For calculating category changes
+ * @requires ChangesHelper - For preparing and validating category changes before preview
  */
+
+import { ChangesHelper } from "../helpers";
 
 class PreviewHandler {
     /**
+     * @param {ChangesHelper} changes_helpers - Changes helper instance
      */
-    constructor(validator, changes_handler) {
-        this.validator = validator;
-        this.changes_handler = changes_handler;
+    constructor(changes_helpers) {
+        this.changes_helpers = changes_helpers;
     }
     /**
      * Handle preview button click
@@ -28,7 +30,7 @@ class PreviewHandler {
         removeCategorySelected,
         callbacks = {}
     ) {
-        const preparation = this.changes_handler.validateAndPrepare(
+        const preparation = this.changes_helpers.validateAndPrepare(
             sourceCategory,
             selectedFiles,
             addCategorySelected,

@@ -2,18 +2,22 @@
  * Execute Panel Vue app factory
  * UI component only - delegates business logic to handlers
  * @see https://doc.wikimedia.org/codex/latest/
- * @param {Object} execute_operation_handler - ExecuteHandler instance
- * @param {Object} progress_handler - ProgressHandler instance
+ * @param {ExecuteHandler} execute_operation_handler - ExecuteHandler instance
+ * @param {ProgressHandler} progress_handler - ProgressHandler instance
+ * @param {ChangesHelper} changes_helpers
  * @returns {Object} Vue app configuration
  */
 
-function ExecutePanel(execute_operation_handler, progress_handler, changes_handler) {
+import { ExecuteHandler, ProgressHandler } from "../handlers";
+import { ChangesHelper } from "../helpers";
+
+function ExecutePanel(execute_operation_handler, progress_handler, changes_helpers) {
     const app = {
         data: function () {
             return {
                 execute_operation_handler: execute_operation_handler,
                 progress_handler: progress_handler,
-                changes_handler: changes_handler,
+                changes_helpers: changes_helpers,
 
                 // Processing state
                 isProcessing: false,
@@ -83,7 +87,7 @@ function ExecutePanel(execute_operation_handler, progress_handler, changes_handl
              */
             executeOperation() {
                 // Validate
-                const preparation = changes_handler.validateAndPrepare(
+                const preparation = changes_helpers.validateAndPrepare(
                     this.sourceCategory,
                     this.selectedFiles,
                     this.addCategory.selected,
@@ -124,7 +128,7 @@ function ExecutePanel(execute_operation_handler, progress_handler, changes_handl
 
                 this.isProcessing = true;
 
-                const preparation = changes_handler.prepareOperation(
+                const preparation = changes_helpers.prepareOperation(
                     this.sourceCategory,
                     this.selectedFiles,
                     this.addCategory.selected,

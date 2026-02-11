@@ -6,15 +6,12 @@
  */
 
 import { BatchProcessor } from './../../services';
-import ValidationHelper from './../helpers/ValidationHelper.js';
 
 class ExecuteHandler {
     /**
-     * @param {ValidationHelper} validator - Validation helper instance for validating operations
      * @param {BatchProcessor} batch_processor - Batch processor instance for executing batch operations
      */
-    constructor(validator, batch_processor) {
-        this.validator = validator;
+    constructor(batch_processor) {
         this.batch_processor = batch_processor;
     }
 
