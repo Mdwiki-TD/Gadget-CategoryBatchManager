@@ -18,7 +18,6 @@ class APIService {
     constructor() {
         /**
          * Native MediaWiki API helper
-         * @typeof {mw.Api}
          */
         try {
             this.mwApi = new mw.Api();
@@ -248,7 +247,11 @@ class APIService {
             }
 
         } while (continueToken);
-
+        // Call progress callback with the number of results found so far
+        if (callbacks.onProgress) {
+            const text = `Searching for files… (${results.length} found)`;
+            callbacks.onProgress(text);
+        }
         return results;
     }
 
