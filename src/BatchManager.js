@@ -3,6 +3,12 @@
  * @returns {Object} Vue app definition object.
  */
 
+import { APIService, BatchProcessor, CategoryService, SearchService } from './services';
+import { CategoryInputsPanel, ExecutePanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel } from './ui/panels';
+import { CategoryInputsHandler, ExecuteHandler, FileListHandler, PreviewHandler, SearchHandler, ProgressHandler, ChangesHandler } from './ui/handlers';
+import CategoryLookup from './ui/components/CategoryLookup.js';
+import ValidationHelper from './ui/helpers/ValidationHelper.js';
+
 function BatchManager() {
     const mwApi = new APIService();
     const search_service = new SearchService(mwApi);
@@ -132,6 +138,4 @@ function BatchManager() {
     return app;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = BatchManager;
-}
+export default BatchManager;
