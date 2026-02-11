@@ -1,4 +1,4 @@
-function CategoryLookupComponent() {
+function CategoryLookup() {
     return {
         props: {
             model: Object,

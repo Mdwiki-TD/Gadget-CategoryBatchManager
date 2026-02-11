@@ -13,6 +13,8 @@ const SOURCE_FILES = [
     'src/utils/Validator.js',
     'src/utils/WikitextParser.js',
 
+    'src/components/CategoryLookup.js',
+
     'src/models/FileModel.js',
     'src/models/CategoryOperation.js',
 
