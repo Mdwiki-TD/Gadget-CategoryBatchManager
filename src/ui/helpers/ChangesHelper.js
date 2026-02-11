@@ -3,7 +3,6 @@
  *
  */
 
-import { ChangeCalculator } from '../../utils/index.js';
 import ValidationHelper from './ValidationHelper.js';
 
 class ChangesHelper {
@@ -40,12 +39,11 @@ class ChangesHelper {
     /**
      * Prepare batch operation data
      * @param {String} sourceCategory - The source category
-     * @param {Array} selectedFiles - Array of selected files
      * @param {Array} addCategorySelected - Categories to add
      * @param {Array} removeCategorySelected - Categories to remove
      * @returns {Object} Preparation result
      */
-    prepareOperation(sourceCategory, selectedFiles, addCategorySelected, removeCategorySelected) {
+    prepareOperation(sourceCategory, addCategorySelected, removeCategorySelected) {
         // Check for duplicate categories in both add and remove lists
         const duplicateCheck = this.validation_helper.hasDuplicateCategories(addCategorySelected, removeCategorySelected);
         if (!duplicateCheck.valid) {
@@ -69,48 +67,23 @@ class ChangesHelper {
             return { valid: false, error: 'No valid categories to add or remove.' };
         }
 
-        // Filter files to only those that will actually change
-        // This ensures the confirmation message shows the correct count
-        const filesThatWillChange = ChangeCalculator.filterFilesThatWillChange(
-            selectedFiles,
-            validAddCategories,
-            removeCategorySelected
-        );
-
         return {
             valid: true,
             validAddCategories: validAddCategories,
-            removeCategories: removeCategorySelected,
-            filesCount: filesThatWillChange.length,
-            filesToProcess: filesThatWillChange
+            removeCategories: removeCategorySelected
         };
     }
 
-    validateAndPrepare(sourceCategory, selectedFiles, addCategorySelected, removeCategorySelected, callbacks = {}) {
+    validateAndPrepare(sourceCategory, addCategorySelected, removeCategorySelected, callbacks = {}) {
         console.log('validateAndPrepare start');
 
         const {
-            showWarningMessage = () => { },
             onWarning = () => { },
             onError = () => { }
         } = callbacks;
 
-        // Validate
-        const validation = this.validateOperation(
-            selectedFiles,
-            addCategorySelected,
-            removeCategorySelected
-        );
-
-        if (!validation.valid) {
-            console.log('[CBM] Validation failed:', validation.error);
-            showWarningMessage(validation.error);
-            return;
-        }
-
         const preparation = this.prepareOperation(
             sourceCategory,
-            selectedFiles,
             addCategorySelected,
             removeCategorySelected
         );

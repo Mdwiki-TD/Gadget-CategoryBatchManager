@@ -98,15 +98,10 @@ describe('ChangesHelper', () => {
     });
 
     describe('prepareOperation', () => {
-        let selectedFiles;
         let addCategories;
         let removeCategories;
 
         beforeEach(() => {
-            selectedFiles = [
-                { title: 'File:Test1.svg', currentCategories: ['Category:A'] },
-                { title: 'File:Test2.svg', currentCategories: ['Category:B'] }
-            ];
             addCategories = ['Category:C'];
             removeCategories = ['Category:D'];
 
@@ -115,13 +110,11 @@ describe('ChangesHelper', () => {
                 validAddCategories: ['Category:C'],
                 circularCategories: []
             });
-            filterFilesThatWillChange.mockReturnValue(selectedFiles);
         });
 
         test('should prepare operation successfully', () => {
             const result = handler.prepareOperation(
                 'Category:Source',
-                selectedFiles,
                 addCategories,
                 removeCategories
             );
@@ -130,8 +123,7 @@ describe('ChangesHelper', () => {
                 valid: true,
                 validAddCategories: ['Category:C'],
                 removeCategories: ['Category:D'],
-                filesCount: 2,
-                filesToProcess: selectedFiles
+                filesCount: 2
             });
         });
 
@@ -143,7 +135,6 @@ describe('ChangesHelper', () => {
 
             const result = handler.prepareOperation(
                 'Category:Source',
-                selectedFiles,
                 addCategories,
                 removeCategories
             );
@@ -162,7 +153,6 @@ describe('ChangesHelper', () => {
 
             const result = handler.prepareOperation(
                 'Category:Source',
-                selectedFiles,
                 addCategories,
                 removeCategories
             );
@@ -185,7 +175,6 @@ describe('ChangesHelper', () => {
 
             const result = handler.prepareOperation(
                 'Category:Source',
-                selectedFiles,
                 ['Category:C'],
                 []
             );
@@ -204,7 +193,6 @@ describe('ChangesHelper', () => {
 
             const result = handler.prepareOperation(
                 'Category:Source',
-                selectedFiles,
                 ['Category:C', 'Category:Circular'],
                 removeCategories
             );
@@ -218,13 +206,11 @@ describe('ChangesHelper', () => {
     });
 
     describe('validateAndPrepare', () => {
-        let selectedFiles;
         let addCategories;
         let removeCategories;
         let mockCallbacks;
 
         beforeEach(() => {
-            selectedFiles = [{ title: 'File:Test.svg' }];
             addCategories = ['Category:A'];
             removeCategories = [];
 
@@ -233,7 +219,6 @@ describe('ChangesHelper', () => {
                 validAddCategories: ['Category:A'],
                 circularCategories: []
             });
-            filterFilesThatWillChange.mockReturnValue(selectedFiles);
 
             mockCallbacks = {
                 showWarningMessage: jest.fn(),
@@ -245,7 +230,6 @@ describe('ChangesHelper', () => {
         test('should return preparation result when validation passes', () => {
             const result = handler.validateAndPrepare(
                 'Category:Source',
-                selectedFiles,
                 addCategories,
                 removeCategories,
                 mockCallbacks
@@ -256,7 +240,6 @@ describe('ChangesHelper', () => {
                 validAddCategories: ['Category:A'],
                 removeCategories: [],
                 filesCount: 1,
-                filesToProcess: selectedFiles
             });
             expect(mockCallbacks.showWarningMessage).not.toHaveBeenCalled();
         });
@@ -284,7 +267,6 @@ describe('ChangesHelper', () => {
 
             const result = handler.validateAndPrepare(
                 'Category:Source',
-                selectedFiles,
                 addCategories,
                 removeCategories,
                 mockCallbacks
@@ -304,7 +286,6 @@ describe('ChangesHelper', () => {
 
             const result = handler.validateAndPrepare(
                 'Category:Source',
-                selectedFiles,
                 addCategories,
                 removeCategories,
                 mockCallbacks
@@ -317,7 +298,6 @@ describe('ChangesHelper', () => {
         test('should handle missing callbacks gracefully', () => {
             const result = handler.validateAndPrepare(
                 'Category:Source',
-                selectedFiles,
                 addCategories,
                 removeCategories,
                 {}
@@ -332,7 +312,6 @@ describe('ChangesHelper', () => {
 
             handler.validateAndPrepare(
                 'Category:Source',
-                selectedFiles,
                 addCategories,
                 removeCategories
             );

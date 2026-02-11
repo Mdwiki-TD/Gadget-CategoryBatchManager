@@ -1,4 +1,5 @@
 
+import { ChangeCalculator } from "../../utils";
 import { ChangesHelper } from "../helpers";
 
 /**
@@ -17,8 +18,12 @@ function PreviewPanel(changes_helpers) {
             };
         },
         template: `
-            <cdx-button @click="handlePreview" action="default" weight="normal"
-                :disabled="isProcessing">
+            <cdx-button
+                @click="handlePreview"
+                action="default"
+                weight="normal"
+                :disabled="isProcessing"
+                >
                 Preview Changes
             </cdx-button>
             <cdx-dialog
@@ -70,7 +75,6 @@ function PreviewPanel(changes_helpers) {
             </cdx-dialog>
         `,
         methods: {
-
             filterFilesToProcess(filesToProcess) {
                 return filesToProcess.map(row => {
                     // newCategories: undefined false
@@ -90,9 +94,6 @@ function PreviewPanel(changes_helpers) {
             handlePreview: function () {
                 console.log('[CBM-P] Preview button clicked');
                 const callbacks = {
-                    showWarningMessage: (msg) => {
-                        this.showWarningMessage(msg);
-                    },
                     onError: (msg) => {
                         this.displayCategoryMessage(msg, 'error', 'add');
                     },
@@ -100,17 +101,45 @@ function PreviewPanel(changes_helpers) {
                         this.displayCategoryMessage(msg, 'warning', 'add');
                     }
                 };
-                const preparation = changes_helpers.validateAndPrepare(
-                    this.sourceCategory,
+
+                // Validate
+                const validation = changes_helpers.validateOperation(
                     this.selectedFiles,
+                    this.addCategory.selected,
+                    this.removeCategory.selected,
+                );
+
+                if (!validation.valid) {
+                    console.log('[CBM-P] Validation failed:', validation.error);
+                    this.showWarningMessage(validation.error);
+                    return;
+                }
+
+                const preparationCheck = changes_helpers.validateAndPrepare(
+                    this.sourceCategory,
                     this.addCategory.selected,
                     this.removeCategory.selected,
                     callbacks
                 );
-                if (!preparation) {
-                    console.error('[CBM-P] Preview preparation failed');
+                if (!preparationCheck) {
+                    console.error('[CBM-P] Preview preparationCheck failed');
                     return;
                 }
+
+                // Filter files to only those that will actually change
+                // This ensures the confirmation message shows the correct count
+                const filesThatWillChange = ChangeCalculator.filterFilesThatWillChange(
+                    this.selectedFiles,
+                    preparationCheck.validAddCategories,
+                    this.removeCategory.selected
+                );
+
+                const preparation = {
+                    validAddCategories: preparationCheck.validAddCategories,
+                    removeCategories: this.removeCategory.selected,
+                    filesCount: filesThatWillChange.length,
+                    filesToProcess: filesThatWillChange
+                };
                 console.log('[CBM-P] Preview result:', preparation.filesToProcess.length, 'items');
 
                 this.previewRows = this.filterFilesToProcess(preparation.filesToProcess);

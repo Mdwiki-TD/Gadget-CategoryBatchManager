@@ -1,4 +1,5 @@
 
+import { ChangeCalculator } from "../../utils";
 import { ExecuteHandler, ProgressHandler } from "../handlers";
 import { ChangesHelper } from "../helpers";
 
@@ -91,9 +92,6 @@ function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
             executeOperation() {
                 console.log('[CBM-E] Starting batch operation');
                 const callbacks = {
-                    showWarningMessage: (msg) => {
-                        this.showWarningMessage(msg);
-                    },
                     onError: (msg) => {
                         this.displayCategoryMessage(msg, 'error', 'add');
                     },
@@ -101,18 +99,45 @@ function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
                         this.displayCategoryMessage(msg, 'warning', 'add');
                     }
                 };
-                const preparation = changes_helpers.validateAndPrepare(
-                    this.sourceCategory,
+
+                // Validate
+                const validation = changes_helpers.validateOperation(
                     this.selectedFiles,
+                    this.addCategory.selected,
+                    this.removeCategory.selected,
+                );
+
+                if (!validation.valid) {
+                    console.log('[CBM-P] Validation failed:', validation.error);
+                    this.showWarningMessage(validation.error);
+                    return;
+                }
+
+                const preparationCheck = changes_helpers.validateAndPrepare(
+                    this.sourceCategory,
                     this.addCategory.selected,
                     this.removeCategory.selected,
                     callbacks
                 );
-                if (!preparation) {
-                    console.error('[CBM-E] Execution preparation failed');
+                if (!preparationCheck) {
+                    console.error('[CBM-E] Execution preparationCheck failed');
                     return;
                 }
 
+                // Filter files to only those that will actually change
+                // This ensures the confirmation message shows the correct count
+                const filesThatWillChange = ChangeCalculator.filterFilesThatWillChange(
+                    this.selectedFiles,
+                    preparationCheck.validAddCategories,
+                    this.removeCategory.selected
+                );
+
+                const preparation = {
+                    validAddCategories: preparationCheck.validAddCategories,
+                    removeCategories: this.removeCategory.selected,
+                    filesCount: filesThatWillChange.length,
+                    filesToProcess: filesThatWillChange
+                };
                 console.log('[CBM-E] Execution result:', preparation.filesToProcess.length, 'items');
 
                 // Generate confirmation message
@@ -125,38 +150,6 @@ function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
 
                 // Show dialog
                 this.openConfirmDialog = true;
-            },
-
-            /**
-             * Handle confirmation dialog primary action
-             */
-            async confirmOnPrimaryActionOld() {
-                this.openConfirmDialog = false;
-                console.log('[CBM-E] User confirmed operation');
-
-                this.isProcessing = true;
-
-                const preparation = changes_helpers.prepareOperation(
-                    this.sourceCategory,
-                    this.selectedFiles,
-                    this.addCategory.selected,
-                    this.removeCategory.selected
-                );
-
-                if (!preparation.valid) {
-                    if (preparation?.message) {
-                        this.displayCategoryMessage(
-                            preparation.message,
-                            'error',
-                            'add'
-                        );
-                    }
-                    this.isProcessing = false;
-                    this.executionProgressText = "";
-                    return;
-                }
-
-                await this.processBatch(preparation);
             },
             /**
              * Handle confirmation dialog primary action
