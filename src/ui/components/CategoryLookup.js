@@ -44,6 +44,7 @@ function CategoryLookup() {
                     v-if="model.message?.show"
                     class="margin-bottom-20">
                     <cdx-message
+                        :key="model.message.key"
                         allow-user-dismiss
                         :type="model.message.type"
                         :inline="false"

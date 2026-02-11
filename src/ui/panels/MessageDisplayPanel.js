@@ -10,12 +10,14 @@ function MessageDisplayPanel() {
                 showMessage: false,
                 messageType: '',
                 messageContent: '',
+                messageKey: 0
             };
         },
         template: `
             <!-- Message Display -->
             <div v-if="showMessage" class="cbm-fixed-message">
                 <cdx-message
+                :key="messageKey"
                 allow-user-dismiss
                 :type="messageType"
                 :fade-in="true"
@@ -42,13 +44,19 @@ function MessageDisplayPanel() {
 
             renderMessage: function (message, type = 'info') {
                 console.warn(`[CBM] ${type}:`, message);
-                this.messageType = type;
-                this.messageContent = message;
-                this.showMessage = true;
+
+                // Hide first to trigger reactivity if it was already showing
+                this.showMessage = false;
+
+                this.$nextTick(() => {
+                    this.messageType = type;
+                    this.messageContent = message;
+                    this.messageKey++; // Increment key to force component re-render
+                    this.showMessage = true;
+                });
             },
 
             showWarningMessage: function (message) {
-                // TODO: this message shows up one time only.
                 this.renderMessage(message, 'warning');
             },
 
