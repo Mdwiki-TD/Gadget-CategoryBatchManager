@@ -101,45 +101,17 @@ function PreviewPanel(changes_helpers) {
                         this.displayCategoryMessage(msg, 'warning', 'add');
                     }
                 };
-
-                // Validate
-                const validation = changes_helpers.validateOperation(
-                    this.selectedFiles,
-                    this.addCategory.selected,
-                    this.removeCategory.selected,
-                );
-
-                if (!validation.valid) {
-                    console.log('[CBM-P] Validation failed:', validation.error);
-                    this.showWarningMessage(validation.error);
-                    return;
-                }
-
-                const preparationCheck = changes_helpers.validateAndPrepare(
+                const preparation = changes_helpers.validateAndReturnPreparation(
                     this.sourceCategory,
+                    this.selectedFiles,
                     this.addCategory.selected,
                     this.removeCategory.selected,
                     callbacks
                 );
-                if (!preparationCheck) {
-                    console.error('[CBM-P] Preview preparationCheck failed');
+                if (!preparation) {
+                    console.error('[CBM] preparation failed');
                     return;
                 }
-
-                // Filter files to only those that will actually change
-                // This ensures the confirmation message shows the correct count
-                const filesThatWillChange = ChangeCalculator.filterFilesThatWillChange(
-                    this.selectedFiles,
-                    preparationCheck.validAddCategories,
-                    this.removeCategory.selected
-                );
-
-                const preparation = {
-                    validAddCategories: preparationCheck.validAddCategories,
-                    removeCategories: this.removeCategory.selected,
-                    filesCount: filesThatWillChange.length,
-                    filesToProcess: filesThatWillChange
-                };
                 console.log('[CBM-P] Preview result:', preparation.filesToProcess.length, 'items');
 
                 this.previewRows = this.filterFilesToProcess(preparation.filesToProcess);

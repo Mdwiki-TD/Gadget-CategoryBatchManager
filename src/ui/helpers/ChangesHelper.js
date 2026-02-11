@@ -3,6 +3,7 @@
  *
  */
 
+import { ChangeCalculator } from '../../utils';
 import ValidationHelper from './ValidationHelper.js';
 
 class ChangesHelper {
@@ -96,6 +97,49 @@ class ChangesHelper {
             onWarning(preparation.error);
             return;
         }
+        return preparation;
+    }
+
+    validateAndReturnPreparation(sourceCategory, selectedFiles, addCategorySelected, removeCategorySelected, callbacks = {}) {
+
+        // Validate
+        const validation = this.validateOperation(
+            selectedFiles,
+            addCategorySelected,
+            removeCategorySelected,
+        );
+
+        if (!validation.valid) {
+            console.log('[CBM-P] Validation failed:', validation.error);
+            callbacks?.onWarning(validation.error);
+            return;
+        }
+
+        const preparationCheck = this.validateAndPrepare(
+            sourceCategory,
+            addCategorySelected,
+            removeCategorySelected,
+            callbacks
+        );
+        if (!preparationCheck) {
+            console.error('[CBM] preparationCheck failed');
+            return;
+        }
+
+        // Filter files to only those that will actually change
+        // This ensures the confirmation message shows the correct count
+        const filesThatWillChange = ChangeCalculator.filterFilesThatWillChange(
+            selectedFiles,
+            preparationCheck.validAddCategories,
+            removeCategorySelected
+        );
+
+        const preparation = {
+            validAddCategories: preparationCheck.validAddCategories,
+            removeCategories: removeCategorySelected,
+            filesCount: filesThatWillChange.length,
+            filesToProcess: filesThatWillChange
+        };
         return preparation;
     }
 }

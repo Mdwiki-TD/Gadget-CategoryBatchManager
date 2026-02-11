@@ -100,44 +100,17 @@ function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
                     }
                 };
 
-                // Validate
-                const validation = changes_helpers.validateOperation(
-                    this.selectedFiles,
-                    this.addCategory.selected,
-                    this.removeCategory.selected,
-                );
-
-                if (!validation.valid) {
-                    console.log('[CBM-P] Validation failed:', validation.error);
-                    this.showWarningMessage(validation.error);
-                    return;
-                }
-
-                const preparationCheck = changes_helpers.validateAndPrepare(
+                const preparation = changes_helpers.validateAndReturnPreparation(
                     this.sourceCategory,
+                    this.selectedFiles,
                     this.addCategory.selected,
                     this.removeCategory.selected,
                     callbacks
                 );
-                if (!preparationCheck) {
-                    console.error('[CBM-E] Execution preparationCheck failed');
+                if (!preparation) {
+                    console.error('[CBM] preparation failed');
                     return;
                 }
-
-                // Filter files to only those that will actually change
-                // This ensures the confirmation message shows the correct count
-                const filesThatWillChange = ChangeCalculator.filterFilesThatWillChange(
-                    this.selectedFiles,
-                    preparationCheck.validAddCategories,
-                    this.removeCategory.selected
-                );
-
-                const preparation = {
-                    validAddCategories: preparationCheck.validAddCategories,
-                    removeCategories: this.removeCategory.selected,
-                    filesCount: filesThatWillChange.length,
-                    filesToProcess: filesThatWillChange
-                };
                 console.log('[CBM-E] Execution result:', preparation.filesToProcess.length, 'items');
 
                 // Generate confirmation message
