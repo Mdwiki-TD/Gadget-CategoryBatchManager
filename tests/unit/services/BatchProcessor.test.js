@@ -29,8 +29,8 @@ describe('BatchProcessor', () => {
     };
     processor = new BatchProcessor(mockCategoryService);
 
-    // Mock rateLimiter.wait() to avoid 2 second delays in tests
-    processor.rateLimiter.wait = jest.fn().mockResolvedValue(undefined);
+    // Mock rate_limiter.wait() to avoid 2 second delays in tests
+    processor.rate_limiter.wait = jest.fn().mockResolvedValue(undefined);
   });
 
   afterEach(() => {
