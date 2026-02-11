@@ -124,9 +124,37 @@ class BatchProcessor {
 
             onProgress((results.processed / results.total) * 100, results);
         };
+        /**
+         * Process a single file and update shared results.
+         * Wrapped so it can be passed directly to RateLimiter.batch().
+         * @param {Object} file
+         */
+        const processFileNotTry = async (file) => {
+            if (this.shouldStop) return;
+
+            const result = await this.category_service.updateCategories(
+                file.title,
+                categoriesToAdd,
+                categoriesToRemove
+            );
+
+            results.processed++;
+            if (result.success) {
+                if (result.modified) {
+                    results.successful++;
+                    onFileComplete(file, true);
+                } else {
+                    results.skipped++;
+                    onFileComplete(file, false);
+                }
+            }
+
+            onProgress((results.processed / results.total) * 100, results);
+        };
 
         // Delegate concurrent execution and inter-batch pausing to RateLimiter
-        await this.rate_limiter.batch(files, this.rate_limiter.concurrency, processFile);
+        // await this.rate_limiter.batch(files, this.rate_limiter.concurrency, processFile);
+        await this.rate_limiter.batch(files, this.rate_limiter.concurrency, processFileNotTry);
 
         if (this.shouldStop) {
             console.log('[CBM-BP] Batch processing stopped by user');
