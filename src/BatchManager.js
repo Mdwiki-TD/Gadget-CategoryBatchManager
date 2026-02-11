@@ -7,26 +7,30 @@ import { APIService, BatchProcessor, CategoryService, SearchService } from './se
 import { CategoryInputsPanel, ExecutePanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel } from './ui/panels';
 import { CategoryInputsHandler, ExecuteHandler, FileListHandler, PreviewHandler, SearchHandler, ProgressHandler } from './ui/handlers';
 import CategoryLookup from './ui/components/CategoryLookup.js';
-import ValidationHelper from './ui/helpers/ValidationHelper.js';
-import { ChangesHelper } from './ui/helpers';
+import { ChangesHelper, ValidationHelper } from './ui/helpers';
 
 function BatchManager() {
+
+    // services
     const mwApi = new APIService();
     const search_service = new SearchService(mwApi);
-    const validator = new ValidationHelper();
     const categoryService = new CategoryService(mwApi);
     const batchProcessor = new BatchProcessor(categoryService);
 
+    // helpers
+    const validation_helper = new ValidationHelper();
+    const changes_helpers = new ChangesHelper(validation_helper);
+
+    // handlers
     const files_list = new FileListHandler(mwApi);
-    const changes_handler = new ChangesHelper(validator);
     const search_handler = new SearchHandler(search_service);
-    const preview_handler = new PreviewHandler(validator, changes_handler);
+    const preview_handler = new PreviewHandler(changes_helpers);
     const progress_handler = new ProgressHandler();
-    const execute_operation_handler = new ExecuteHandler(validator, batchProcessor);
+    const execute_operation_handler = new ExecuteHandler(batchProcessor);
     const category_inputs_handler = new CategoryInputsHandler(mwApi);
 
     // vue apps
-    const execute_panel = ExecutePanel(execute_operation_handler, progress_handler, changes_handler);
+    const execute_panel = ExecutePanel(execute_operation_handler, progress_handler, changes_helpers);
     const preview_panel_app = PreviewPanel(preview_handler);
     const category_inputs_app = CategoryInputsPanel(category_inputs_handler);
     const message_display_app = MessageDisplayPanel();
@@ -81,7 +85,7 @@ function BatchManager() {
                 // vue apps handlers
                 execute_operation_handler: execute_operation_handler,
                 progress_handler: progress_handler,
-                changes_handler: changes_handler,
+                changes_helpers: changes_helpers,
                 preview_handler: preview_handler,
                 category_inputs_handler: category_inputs_handler,
                 search_handler: search_handler,
