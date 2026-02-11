@@ -20,17 +20,18 @@ import mw from '../../services/mw.js';
 import SearchHandler from './../handlers/SearchHandler.js';
 
 function SearchPanel(search_handler) {
-    const sourceCategory = mw.config.get('wgCanonicalNamespace') === 'Category'
-        ? mw.config.get('wgPageName')
-        : 'Category:Our World in Data graphs of Austria';
+    const defaultCategory =
+        mw.config.get('wgCanonicalNamespace') === 'Category'
+            ? mw.config.get('wgPageName')
+            : '';
 
-    const app = {
+    return {
         data() {
             return {
                 search_handler: search_handler,
 
                 // ── User inputs ──────────────────────────────────────────
-                sourceCategory: sourceCategory,
+                sourceCategory: defaultCategory,
                 titlePattern: '',
                 searchPattern: '',
 
@@ -122,7 +123,7 @@ function SearchPanel(search_handler) {
              * Registers callbacks on the handler then delegates the work.
              */
             async searchFiles() {
-                if (this.sourceCategory.trim() === '' && this.searchPattern.trim() === '') {
+                if (!this.sourceCategory.trim() && !this.searchPattern.trim()) {
                     this.showWarningMessage('Please enter a source category or search pattern.');
                     return;
                 }
@@ -169,10 +170,8 @@ function SearchPanel(search_handler) {
                 this.searchProgressText = '';
                 this.searchProgressPercent = 0;
             },
-        }
-    };
-
-    return app;
+        },
+    }
 }
 
 export default SearchPanel;
