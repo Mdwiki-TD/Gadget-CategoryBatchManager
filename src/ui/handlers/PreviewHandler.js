@@ -51,18 +51,6 @@ class PreviewHandler {
                 diff: item.newCategories.length - item.currentCategories.length
             }));
     }
-
-    /**
-     * Preview changes without actually editing
-     * @param {Array} files - Files to preview
-     * @param {Array<string>} categoriesToAdd - Categories to add
-     * @param {Array<string>} categoriesToRemove - Categories to remove
-     * @returns {Promise<Array>} Preview of changes
-     */
-    async previewChanges(files, categoriesToAdd, categoriesToRemove) {
-        // Use shared ChangeCalculator utility
-        return ChangeCalculator.previewChanges(files, categoriesToAdd, categoriesToRemove);
-    }
 }
 
 if (typeof module !== 'undefined' && module.exports) {
