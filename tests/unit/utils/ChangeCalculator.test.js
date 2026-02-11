@@ -1,4 +1,4 @@
-const ChangeCalculator = require('../../src/utils/ChangeCalculator');
+const ChangeCalculator = require('../../../src/utils/ChangeCalculator');
 
 // Mock Validator
 global.Validator = {
@@ -147,6 +147,123 @@ describe('ChangeCalculator', () => {
       expect(result).toHaveLength(2);
       expect(result[0].willChange).toBe(true);  // Will add B to A
       expect(result[1].willChange).toBe(false); // B already exists
+    });
+  });
+
+  describe('previewChanges', () => {
+    test('should show files that will change', async () => {
+      const files = [
+        { title: 'File:Test.svg', currentCategories: ['Category:A'] }
+      ];
+
+      const result = ChangeCalculator.previewChanges(
+        files,
+        ['Category:B'],
+        []
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].willChange).toBe(true);
+      expect(result[0].newCategories).toContain('Category:B');
+      expect(result[0].newCategories).toContain('Category:A');
+    }); test('should show files that will not change when only removing non-existent categories', async () => {
+      const files = [
+        { title: 'File:Test.svg', currentCategories: ['Category:A'] }
+      ];
+
+      const result = ChangeCalculator.previewChanges(
+        files,
+        [],
+        ['Category:B']
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].willChange).toBe(false);
+    });
+
+    test('should handle removal preview', async () => {
+      const files = [
+        { title: 'File:Test.svg', currentCategories: ['Category:A', 'Category:B'] }
+      ];
+
+      const result = ChangeCalculator.previewChanges(
+        files,
+        [],
+        ['Category:A']
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].willChange).toBe(true);
+      expect(result[0].newCategories).toEqual(['Category:B']);
+    });
+
+    test('should handle combined add and remove', async () => {
+      const files = [
+        { title: 'File:Test.svg', currentCategories: ['Category:Old'] }
+      ];
+
+      const result = ChangeCalculator.previewChanges(
+        files,
+        ['Category:New'],
+        ['Category:Old']
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].willChange).toBe(true);
+      expect(result[0].newCategories).toEqual(['Category:New']);
+    });
+
+    test('should handle empty files array', async () => {
+      const result = ChangeCalculator.previewChanges([], ['Category:A'], []);
+      expect(result).toEqual([]);
+    });
+
+    test('should handle files without currentCategories', async () => {
+      const files = [
+        { title: 'File:Test.svg' }
+      ];
+
+      const result = ChangeCalculator.previewChanges(
+        files,
+        ['Category:A'],
+        []
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].willChange).toBe(true);
+      expect(result[0].newCategories).toEqual(['Category:A']);
+    });
+
+    test('should allow removing duplicate categories', async () => {
+      const files = [
+        { title: 'File:Test.svg', currentCategories: ['Category:A', 'Category:B'] }
+      ];
+
+      const result = ChangeCalculator.previewChanges(
+        files,
+        [],
+        ['Category:A']
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].willChange).toBe(true);
+      expect(result[0].newCategories).toEqual(['Category:B']);
+    });
+
+    test('should allow adding and removing different categories', async () => {
+      const files = [
+        { title: 'File:Test.svg', currentCategories: ['Category:A'] }
+      ];
+
+      const result = ChangeCalculator.previewChanges(
+        files,
+        ['Category:B'],
+        ['Category:A']
+      );
+
+      expect(result).toHaveLength(1);
+      expect(result[0].willChange).toBe(true);
+      expect(result[0].newCategories).toEqual(['Category:B']);
     });
   });
 

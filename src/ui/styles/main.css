@@ -237,6 +237,16 @@
     margin-bottom: 20px;
 }
 
+.cbm-two-column-row {
+    display: flex;
+    gap: 16px;
+}
+.cbm-column-two-thirds {
+    flex: 2;
+}
+.cbm-column-one-third {
+    flex: 1;
+}
 @media screen and (prefers-color-scheme: dark) {
 
     html.skin-theme-clientpref-os .cbm-progress-section {

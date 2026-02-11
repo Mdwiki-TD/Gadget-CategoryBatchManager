@@ -17,7 +17,7 @@ function FilesListPanel(file_list_handler) {
                 <!-- Results Header -->
                 <div class="cbm-files-header">
                     <div class="cbm-count-badge">
-                        Found <strong>{{ totalFilesCount }}</strong> files
+                        <strong>{{ totalFilesCount }}</strong> files
                     </div>
                     <div class="cbm-header-buttons">
                         <cdx-button @click="selectAll" action="default" weight="quiet" size="medium">

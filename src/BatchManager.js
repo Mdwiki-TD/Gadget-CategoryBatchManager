@@ -5,14 +5,14 @@
 
 function BatchManager() {
     const mwApi = new APIService();
-    const file_service = new SearchService(mwApi);
+    const search_service = new SearchService(mwApi);
     const validator = new ValidationHelper();
     const categoryService = new CategoryService(mwApi);
     const batchProcessor = new BatchProcessor(categoryService);
 
     const files_list = new FileListHandler(mwApi);
     const changes_handler = new ChangesHandler(validator);
-    const search_handler = new SearchHandler(file_service);
+    const search_handler = new SearchHandler(search_service);
     const preview_handler = new PreviewHandler(validator, changes_handler);
     const progress_handler = new ProgressHandler();
     const execute_operation_handler = new ExecuteHandler(validator, batchProcessor);

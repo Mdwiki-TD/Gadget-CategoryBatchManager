@@ -9,7 +9,7 @@
  *
  * State NOT owned here (lives in parent component or handler):
  *   - workFiles / previewRows        → passed up via onComplete callback
- *   - shouldStopSearch flag          → owned by FileService, managed by SearchHandler
+ *   - shouldStopSearch flag          → owned by SearchService, managed by SearchHandler
  *
  * @see https://doc.wikimedia.org/codex/latest/
  * @param {SearchHandler} search_handler
@@ -23,7 +23,8 @@ function SearchPanel(search_handler) {
 
                 // ── User inputs ──────────────────────────────────────────
                 sourceCategory: 'Category:Our World in Data graphs of Austria',
-                searchPattern: '1990',
+                titlePattern: '1990',
+                searchPattern: '',
 
                 workFiles: [],
                 // ── UI state (mirrors handler state via callbacks) ────────
@@ -35,44 +36,58 @@ function SearchPanel(search_handler) {
 
         template: `
             <div class="cbm-search-panel">
-                <div class="cbm-input-group">
-                    <cdx-label input-id="cbm-source-category" class="cbm-label">
-                        Source Category
-                    </cdx-label>
-                    <cdx-text-input
-                        id="cbm-source-category"
-                        v-model="sourceCategory"
-                        placeholder="Category:Our World in Data graphs of Austria"
-                    />
+                <div class="cbm-input-group cbm-two-column-row">
+                    <div class="cbm-input-group cbm-column-two-thirds">
+                        <cdx-label
+                            input-id="cbm-source-category"
+                            class="cbm-label">
+                            Source Category
+                        </cdx-label>
+                        <cdx-text-input
+                            id="cbm-source-category"
+                            v-model="sourceCategory"
+                            placeholder="Category:Our World in Data graphs of Austria" />
+                    </div>
+                    <div class="cbm-input-group cbm-column-one-third">
+                        <cdx-label
+                            input-id="cbm-title-pattern"
+                            class="cbm-label">
+                            In title Pattern
+                        </cdx-label>
+                        <cdx-text-input
+                            id="cbm-title-pattern"
+                            v-model="titlePattern"
+                            placeholder="(e.g., ,BLR.svg)" />
+                    </div>
                 </div>
 
                 <div class="cbm-input-group">
-                    <cdx-label input-id="cbm-pattern" class="cbm-label">
-                        Search Pattern
+                    <cdx-label
+                        input-id="cbm-pattern"
+                        class="cbm-label">
+                        Or Search Pattern
                     </cdx-label>
                     <span class="cbm-help-text">
-                        Enter a pattern to filter files (e.g., ,BLR.svg)
-                    </span>
+                        (e.g., <code>
+                        incategory:"CC-BY-4.0" "This chart is intentionally showing old data" Our World in Data -incategory:"Uploaded by OWID importer tool"</code>)</span
+                    >
                     <div class="cbm-input-button-group">
                         <cdx-text-input
                             id="cbm-pattern"
                             v-model="searchPattern"
-                            placeholder="e.g., ,BLR.svg"
-                        />
+                            placeholder="" />
                         <cdx-button
                             v-if="!isSearching"
                             @click="searchFiles"
                             action="progressive"
-                            weight="primary"
-                        >
+                            weight="primary">
                             Search
                         </cdx-button>
                         <cdx-button
                             v-if="isSearching"
                             @click="stopSearch"
                             action="destructive"
-                            weight="primary"
-                        >
+                            weight="primary">
                             Stop Search
                         </cdx-button>
                     </div>
@@ -99,9 +114,8 @@ function SearchPanel(search_handler) {
              * Registers callbacks on the handler then delegates the work.
              */
             async searchFiles() {
-                if (this.sourceCategory.trim() === '') {
-                    this.showWarningMessage('Please enter a source category.');
-                    // this.$emit('warning', 'Please enter a source category.');
+                if (this.sourceCategory.trim() === '' && this.searchPattern.trim() === '') {
+                    this.showWarningMessage('Please enter a source category or search pattern.');
                     return;
                 }
 
@@ -115,12 +129,10 @@ function SearchPanel(search_handler) {
                     this.clearStatus();
                     this.workFiles = results || [];
                     // Bubble results up to the parent component
-                    // this.$emit('search-complete', results);
                 };
 
                 this.search_handler.onError = (error) => {
                     this.clearStatus();
-                    // this.$emit('warning', `Search failed: ${error.message}`);
                     this.showWarningMessage(`Search failed: ${error.message}`);
                 };
 
@@ -131,7 +143,7 @@ function SearchPanel(search_handler) {
                 // Clear all files and messages from previous search
                 this.workFiles = [];
 
-                await this.search_handler.startSearch(this.sourceCategory, this.searchPattern);
+                await this.search_handler.startSearch(this.sourceCategory, this.titlePattern, this.searchPattern);
             },
 
             /**
@@ -142,7 +154,6 @@ function SearchPanel(search_handler) {
                 this.clearStatus();
 
                 this.search_handler.stop();
-                // this.$emit('warning', 'Search stopped by user.');
                 this.showWarningMessage('Search stopped by user.');
             },
             clearStatus() {
