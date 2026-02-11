@@ -2,356 +2,353 @@ const { default: ChangesHandler } = require('../../../src/ui/handlers/ChangesHan
 
 // Mock ChangeCalculator globally
 global.ChangeCalculator = {
-  filterFilesThatWillChange: jest.fn()
+    filterFilesThatWillChange: jest.fn()
 };
 
 describe('ChangesHandler', () => {
-  let handler;
-  let mockValidator;
-  let mockConsoleLog;
-
-  beforeEach(() => {
-    // Suppress console.log in tests
-    mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
-
-    mockValidator = {
-      hasDuplicateCategories: jest.fn(),
-      filterCircularCategories: jest.fn()
-    };
-    handler = new ChangesHandler(mockValidator);
-  });
-
-  afterEach(() => {
-    mockConsoleLog.mockRestore();
-  });
-
-  describe('validateOperation', () => {
-    test('should return valid when selectedFiles and categories provided', () => {
-      const result = handler.validateOperation(
-        [{ title: 'File:Test.svg' }],
-        ['Category:A'],
-        ['Category:B']
-      );
-
-      expect(result).toEqual({ valid: true });
-    });
-
-    test('should return error when no files selected', () => {
-      const result = handler.validateOperation(
-        [],
-        ['Category:A'],
-        []
-      );
-
-      expect(result).toEqual({
-        valid: false,
-        error: 'Please select at least one file.'
-      });
-    });
-
-    test('should return error when selectedFiles is null', () => {
-      const result = handler.validateOperation(
-        null,
-        ['Category:A'],
-        []
-      );
-
-      expect(result).toEqual({
-        valid: false,
-        error: 'Please select at least one file.'
-      });
-    });
-
-    test('should return error when no categories to add or remove', () => {
-      const result = handler.validateOperation(
-        [{ title: 'File:Test.svg' }],
-        [],
-        []
-      );
-
-      expect(result).toEqual({
-        valid: false,
-        error: 'Please specify categories to add or remove.'
-      });
-    });
-
-    test('should return valid when only categories to add', () => {
-      const result = handler.validateOperation(
-        [{ title: 'File:Test.svg' }],
-        ['Category:A'],
-        []
-      );
-
-      expect(result).toEqual({ valid: true });
-    });
-
-    test('should return valid when only categories to remove', () => {
-      const result = handler.validateOperation(
-        [{ title: 'File:Test.svg' }],
-        [],
-        ['Category:B']
-      );
-
-      expect(result).toEqual({ valid: true });
-    });
-  });
-
-  describe('prepareOperation', () => {
-    let selectedFiles;
-    let addCategories;
-    let removeCategories;
+    let handler;
+    let mockValidator;
+    let mockConsoleLog;
 
     beforeEach(() => {
-      selectedFiles = [
-        { title: 'File:Test1.svg', currentCategories: ['Category:A'] },
-        { title: 'File:Test2.svg', currentCategories: ['Category:B'] }
-      ];
-      addCategories = ['Category:C'];
-      removeCategories = ['Category:D'];
+        // Suppress console.log in tests
+        mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => { });
 
-      mockValidator.hasDuplicateCategories.mockReturnValue({ valid: true });
-      mockValidator.filterCircularCategories.mockReturnValue({
-        filteredToAdd: ['Category:C'],
-        circularCategories: []
-      });
-      global.ChangeCalculator.filterFilesThatWillChange.mockReturnValue(selectedFiles);
+        mockValidator = {
+            hasDuplicateCategories: jest.fn(),
+            filterCircularCategories: jest.fn()
+        };
+        handler = new ChangesHandler(mockValidator);
     });
 
-    test('should prepare operation successfully', () => {
-      const result = handler.prepareOperation(
-        'Category:Source',
-        selectedFiles,
-        addCategories,
-        removeCategories
-      );
-
-      expect(result).toEqual({
-        valid: true,
-        filteredToAdd: ['Category:C'],
-        removeCategories: ['Category:D'],
-        filesCount: 2,
-        filesToProcess: selectedFiles
-      });
+    afterEach(() => {
+        mockConsoleLog.mockRestore();
     });
 
-    test('should return error when duplicate categories detected', () => {
-      mockValidator.hasDuplicateCategories.mockReturnValue({
-        valid: false,
-        duplicates: ['Category:Test']
-      });
+    describe('validateOperation', () => {
+        test('should return valid when selectedFiles and categories provided', () => {
+            const result = handler.validateOperation(
+                [{ title: 'File:Test.svg' }],
+                ['Category:A'],
+                ['Category:B']
+            );
 
-      const result = handler.prepareOperation(
-        'Category:Source',
-        selectedFiles,
-        addCategories,
-        removeCategories
-      );
+            expect(result).toEqual({ valid: true });
+        });
 
-      expect(result).toEqual({
-        valid: false,
-        error: 'Cannot add and remove the same category: "Category:Test". Please remove it from one of the lists.'
-      });
+        test('should return error when no files selected', () => {
+            const result = handler.validateOperation(
+                [],
+                ['Category:A'],
+                []
+            );
+
+            expect(result).toEqual({
+                valid: false,
+                error: 'Please select at least one file.'
+            });
+        });
+
+        test('should return error when selectedFiles is null', () => {
+            const result = handler.validateOperation(
+                null,
+                ['Category:A'],
+                []
+            );
+
+            expect(result).toEqual({
+                valid: false,
+                error: 'Please select at least one file.'
+            });
+        });
+
+        test('should return error when no categories to add or remove', () => {
+            const result = handler.validateOperation(
+                [{ title: 'File:Test.svg' }],
+                [],
+                []
+            );
+
+            expect(result).toEqual({
+                valid: false,
+                error: 'Please specify categories to add or remove.'
+            });
+        });
+
+        test('should return valid when only categories to add', () => {
+            const result = handler.validateOperation(
+                [{ title: 'File:Test.svg' }],
+                ['Category:A'],
+                []
+            );
+
+            expect(result).toEqual({ valid: true });
+        });
+
+        test('should return valid when only categories to remove', () => {
+            const result = handler.validateOperation(
+                [{ title: 'File:Test.svg' }],
+                [],
+                ['Category:B']
+            );
+
+            expect(result).toEqual({ valid: true });
+        });
     });
 
-    test('should return error when all categories are circular', () => {
-      mockValidator.filterCircularCategories.mockReturnValue({
-        filteredToAdd: [],
-        circularCategories: ['Category:C']
-      });
+    describe('prepareOperation', () => {
+        let selectedFiles;
+        let addCategories;
+        let removeCategories;
 
-      const result = handler.prepareOperation(
-        'Category:Source',
-        selectedFiles,
-        addCategories,
-        removeCategories
-      );
+        beforeEach(() => {
+            selectedFiles = [
+                { title: 'File:Test1.svg', currentCategories: ['Category:A'] },
+                { title: 'File:Test2.svg', currentCategories: ['Category:B'] }
+            ];
+            addCategories = ['Category:C'];
+            removeCategories = ['Category:D'];
 
-      expect(result).toEqual({
-        valid: false,
-        error: 'Circular categories detected.',
-        message: '❌ Cannot add: all categorie(s) are circular references to the current page. Cannot add "Category:C" to itself.'
-      });
+            mockValidator.hasDuplicateCategories.mockReturnValue({ valid: true });
+            mockValidator.filterCircularCategories.mockReturnValue({
+                filteredToAdd: ['Category:C'],
+                circularCategories: []
+            });
+            global.ChangeCalculator.filterFilesThatWillChange.mockReturnValue(selectedFiles);
+        });
+
+        test('should prepare operation successfully', () => {
+            const result = handler.prepareOperation(
+                'Category:Source',
+                selectedFiles,
+                addCategories,
+                removeCategories
+            );
+
+            expect(result).toEqual({
+                valid: true,
+                filteredToAdd: ['Category:C'],
+                removeCategories: ['Category:D'],
+                filesCount: 2,
+                filesToProcess: selectedFiles
+            });
+        });
+
+        test('should return error when duplicate categories detected', () => {
+            mockValidator.hasDuplicateCategories.mockReturnValue({
+                valid: false,
+                duplicates: ['Category:Test']
+            });
+
+            const result = handler.prepareOperation(
+                'Category:Source',
+                selectedFiles,
+                addCategories,
+                removeCategories
+            );
+
+            expect(result).toEqual({
+                valid: false,
+                error: 'Cannot add and remove the same category: "Category:Test". Please remove it from one of the lists.'
+            });
+        });
+
+        test('should return error when all categories are circular', () => {
+            mockValidator.filterCircularCategories.mockReturnValue({
+                filteredToAdd: [],
+                circularCategories: ['Category:C']
+            });
+
+            const result = handler.prepareOperation(
+                'Category:Source',
+                selectedFiles,
+                addCategories,
+                removeCategories
+            );
+
+            expect(result).toEqual({
+                valid: false,
+                error: 'Circular categories detected.',
+                message: '❌ Cannot add: all categorie(s) are circular references to the current page. Cannot add "Category:C" to itself.'
+            });
+        });
+
+        test('should return valid with empty files when no files will change', () => {
+            mockValidator.filterCircularCategories.mockReturnValue({
+                filteredToAdd: ['Category:C'],
+                circularCategories: []
+            });
+
+            // When no files will change
+            global.ChangeCalculator.filterFilesThatWillChange.mockReturnValue([]);
+
+            const result = handler.prepareOperation(
+                'Category:Source',
+                selectedFiles,
+                ['Category:C'],
+                []
+            );
+
+            // The implementation returns valid: true with 0 files count
+            expect(result.valid).toBe(true);
+            expect(result.filesCount).toBe(0);
+            expect(result.filesToProcess).toEqual([]);
+        });
+
+        test('should filter circular categories from add list', () => {
+            mockValidator.filterCircularCategories.mockReturnValue({
+                filteredToAdd: ['Category:C'], // Some categories filtered
+                circularCategories: ['Category:Circular']
+            });
+
+            const result = handler.prepareOperation(
+                'Category:Source',
+                selectedFiles,
+                ['Category:C', 'Category:Circular'],
+                removeCategories
+            );
+
+            expect(result.filteredToAdd).toEqual(['Category:C']);
+            expect(mockValidator.filterCircularCategories).toHaveBeenCalledWith(
+                ['Category:C', 'Category:Circular'],
+                'Category:Source'
+            );
+        });
     });
 
-    test('should return valid with empty files when no files will change', () => {
-      mockValidator.filterCircularCategories.mockReturnValue({
-        filteredToAdd: ['Category:C'],
-        circularCategories: []
-      });
+    describe('validateAndPrepare', () => {
+        let selectedFiles;
+        let addCategories;
+        let removeCategories;
+        let mockCallbacks;
 
-      // When no files will change
-      global.ChangeCalculator.filterFilesThatWillChange.mockReturnValue([]);
+        beforeEach(() => {
+            selectedFiles = [{ title: 'File:Test.svg' }];
+            addCategories = ['Category:A'];
+            removeCategories = [];
 
-      const result = handler.prepareOperation(
-        'Category:Source',
-        selectedFiles,
-        ['Category:C'],
-        []
-      );
+            mockValidator.hasDuplicateCategories.mockReturnValue({ valid: true });
+            mockValidator.filterCircularCategories.mockReturnValue({
+                filteredToAdd: ['Category:A'],
+                circularCategories: []
+            });
+            global.ChangeCalculator.filterFilesThatWillChange.mockReturnValue(selectedFiles);
 
-      // The implementation returns valid: true with 0 files count
-      expect(result.valid).toBe(true);
-      expect(result.filesCount).toBe(0);
-      expect(result.filesToProcess).toEqual([]);
+            mockCallbacks = {
+                showWarningMessage: jest.fn(),
+                displayAddCategoryMessage: jest.fn()
+            };
+        });
+
+        test('should return preparation result when validation passes', () => {
+            const result = handler.validateAndPrepare(
+                'Category:Source',
+                selectedFiles,
+                addCategories,
+                removeCategories,
+                mockCallbacks
+            );
+
+            expect(result).toEqual({
+                valid: true,
+                filteredToAdd: ['Category:A'],
+                removeCategories: [],
+                filesCount: 1,
+                filesToProcess: selectedFiles
+            });
+            expect(mockCallbacks.showWarningMessage).not.toHaveBeenCalled();
+        });
+
+        test('should call showWarningMessage when validation fails', () => {
+            const result = handler.validateAndPrepare(
+                'Category:Source',
+                [], // Empty files - validation will fail
+                addCategories,
+                removeCategories,
+                mockCallbacks
+            );
+
+            expect(result).toBeUndefined();
+            expect(mockCallbacks.showWarningMessage).toHaveBeenCalledWith(
+                'Please select at least one file.'
+            );
+        });
+
+        test('should call displayAddCategoryMessage when preparation fails with message', () => {
+            mockValidator.filterCircularCategories.mockReturnValue({
+                filteredToAdd: [],
+                circularCategories: ['Category:A']
+            });
+
+            const result = handler.validateAndPrepare(
+                'Category:Source',
+                selectedFiles,
+                addCategories,
+                removeCategories,
+                mockCallbacks
+            );
+
+            expect(result).toBeUndefined();
+            expect(mockCallbacks.displayAddCategoryMessage).toHaveBeenCalledTimes(2);
+            expect(mockCallbacks.displayAddCategoryMessage).toHaveBeenNthCalledWith(
+                1,
+                expect.stringContaining('all categorie(s) are circular'),
+                'error',
+            );
+            expect(mockCallbacks.displayAddCategoryMessage).toHaveBeenNthCalledWith(
+                2,
+                'Circular categories detected.',
+                'warning',
+            );
+        });
+
+        test('should call displayAddCategoryMessage when preparation fails without message', () => {
+            mockValidator.filterCircularCategories.mockReturnValue({
+                filteredToAdd: [],
+                circularCategories: []
+            });
+
+            const result = handler.validateAndPrepare(
+                'Category:Source',
+                selectedFiles,
+                addCategories,
+                removeCategories,
+                mockCallbacks
+            );
+
+            expect(result).toBeUndefined();
+            expect(mockCallbacks.displayAddCategoryMessage).toHaveBeenCalledWith(
+                'No valid categories to add or remove.',
+                'warning'
+            );
+        });
+
+        test('should handle missing callbacks gracefully', () => {
+            const result = handler.validateAndPrepare(
+                'Category:Source',
+                selectedFiles,
+                addCategories,
+                removeCategories,
+                {}
+            );
+
+            expect(result).toBeDefined();
+            expect(result.valid).toBe(true);
+        });
+
+        test('should use default callbacks when not provided', () => {
+            const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+
+            handler.validateAndPrepare(
+                'Category:Source',
+                selectedFiles,
+                addCategories,
+                removeCategories
+            );
+
+            expect(consoleLogSpy).toHaveBeenCalledWith('[CBM-P] Preview button clicked');
+
+            consoleLogSpy.mockRestore();
+        });
     });
-
-    test('should filter circular categories from add list', () => {
-      mockValidator.filterCircularCategories.mockReturnValue({
-        filteredToAdd: ['Category:C'], // Some categories filtered
-        circularCategories: ['Category:Circular']
-      });
-
-      const result = handler.prepareOperation(
-        'Category:Source',
-        selectedFiles,
-        ['Category:C', 'Category:Circular'],
-        removeCategories
-      );
-
-      expect(result.filteredToAdd).toEqual(['Category:C']);
-      expect(mockValidator.filterCircularCategories).toHaveBeenCalledWith(
-        ['Category:C', 'Category:Circular'],
-        'Category:Source'
-      );
-    });
-  });
-
-  describe('validateAndPrepare', () => {
-    let selectedFiles;
-    let addCategories;
-    let removeCategories;
-    let mockCallbacks;
-
-    beforeEach(() => {
-      selectedFiles = [{ title: 'File:Test.svg' }];
-      addCategories = ['Category:A'];
-      removeCategories = [];
-
-      mockValidator.hasDuplicateCategories.mockReturnValue({ valid: true });
-      mockValidator.filterCircularCategories.mockReturnValue({
-        filteredToAdd: ['Category:A'],
-        circularCategories: []
-      });
-      global.ChangeCalculator.filterFilesThatWillChange.mockReturnValue(selectedFiles);
-
-      mockCallbacks = {
-        showWarningMessage: jest.fn(),
-        displayCategoryMessage: jest.fn()
-      };
-    });
-
-    test('should return preparation result when validation passes', () => {
-      const result = handler.validateAndPrepare(
-        'Category:Source',
-        selectedFiles,
-        addCategories,
-        removeCategories,
-        mockCallbacks
-      );
-
-      expect(result).toEqual({
-        valid: true,
-        filteredToAdd: ['Category:A'],
-        removeCategories: [],
-        filesCount: 1,
-        filesToProcess: selectedFiles
-      });
-      expect(mockCallbacks.showWarningMessage).not.toHaveBeenCalled();
-    });
-
-    test('should call showWarningMessage when validation fails', () => {
-      const result = handler.validateAndPrepare(
-        'Category:Source',
-        [], // Empty files - validation will fail
-        addCategories,
-        removeCategories,
-        mockCallbacks
-      );
-
-      expect(result).toBeUndefined();
-      expect(mockCallbacks.showWarningMessage).toHaveBeenCalledWith(
-        'Please select at least one file.'
-      );
-    });
-
-    test('should call displayCategoryMessage when preparation fails with message', () => {
-      mockValidator.filterCircularCategories.mockReturnValue({
-        filteredToAdd: [],
-        circularCategories: ['Category:A']
-      });
-
-      const result = handler.validateAndPrepare(
-        'Category:Source',
-        selectedFiles,
-        addCategories,
-        removeCategories,
-        mockCallbacks
-      );
-
-      expect(result).toBeUndefined();
-      expect(mockCallbacks.displayCategoryMessage).toHaveBeenCalledTimes(2);
-      expect(mockCallbacks.displayCategoryMessage).toHaveBeenNthCalledWith(
-        1,
-        expect.stringContaining('all categorie(s) are circular'),
-        'error',
-        'add'
-      );
-      expect(mockCallbacks.displayCategoryMessage).toHaveBeenNthCalledWith(
-        2,
-        'Circular categories detected.',
-        'warning',
-        'add'
-      );
-    });
-
-    test('should call displayCategoryMessage when preparation fails without message', () => {
-      mockValidator.filterCircularCategories.mockReturnValue({
-        filteredToAdd: [],
-        circularCategories: []
-      });
-
-      const result = handler.validateAndPrepare(
-        'Category:Source',
-        selectedFiles,
-        addCategories,
-        removeCategories,
-        mockCallbacks
-      );
-
-      expect(result).toBeUndefined();
-      expect(mockCallbacks.displayCategoryMessage).toHaveBeenCalledWith(
-        'No valid categories to add or remove.',
-        'warning',
-        'add'
-      );
-    });
-
-    test('should handle missing callbacks gracefully', () => {
-      const result = handler.validateAndPrepare(
-        'Category:Source',
-        selectedFiles,
-        addCategories,
-        removeCategories,
-        {}
-      );
-
-      expect(result).toBeDefined();
-      expect(result.valid).toBe(true);
-    });
-
-    test('should use default callbacks when not provided', () => {
-      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
-
-      handler.validateAndPrepare(
-        'Category:Source',
-        selectedFiles,
-        addCategories,
-        removeCategories
-      );
-
-      expect(consoleLogSpy).toHaveBeenCalledWith('[CBM-P] Preview button clicked');
-
-      consoleLogSpy.mockRestore();
-    });
-  });
 });

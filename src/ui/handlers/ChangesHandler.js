@@ -3,8 +3,12 @@
  *
  */
 
+import { ChangeCalculator } from '../../utils/';
+import ValidationHelper from './../helpers/ValidationHelper.js';
+
 class ChangesHandler {
     /**
+     * @param {ValidationHelper} validator - Validation helper instance for validating operations
      */
     constructor(validator) {
         this.validator = validator;
@@ -87,7 +91,7 @@ class ChangesHandler {
 
         const {
             showWarningMessage = () => { },
-            displayCategoryMessage = () => { }
+            displayAddCategoryMessage = () => { }
         } = callbacks;
 
         // Validate
@@ -111,14 +115,10 @@ class ChangesHandler {
 
         if (!preparation.valid) {
             if (preparation?.message) {
-                displayCategoryMessage(
-                    preparation.message,
-                    'error',
-                    'add'
-                );
+                displayAddCategoryMessage(preparation.message, 'error');
             }
             console.log('[CBM-V] No valid categories after filtering');
-            displayCategoryMessage(preparation.error, 'warning', 'add');
+            displayAddCategoryMessage(preparation.error, 'warning');
             return;
         }
         return preparation;

@@ -92,8 +92,8 @@ function ExecutePanel(execute_operation_handler, progress_handler, changes_handl
                         showWarningMessage: (msg) => {
                             this.showWarningMessage(msg);
                         },
-                        displayCategoryMessage: (msg, notice_type, msg_type) => {
-                            this.displayCategoryMessage(msg, notice_type, msg_type);
+                        displayAddCategoryMessage: (msg, notice_type) => {
+                            this.displayCategoryMessage(msg, notice_type, 'add');
                         }
                     }
                 );

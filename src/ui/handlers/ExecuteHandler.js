@@ -5,14 +5,17 @@
  * @requires ChangeCalculator - For calculating which files will actually change
  */
 
+import { BatchProcessor } from './../../services';
+import ValidationHelper from './../helpers/ValidationHelper.js';
+
 class ExecuteHandler {
     /**
-     * @param {Object} validator - ValidationHelper instance
-     * @param {Object} batchProcessor - BatchProcessor instance
+     * @param {ValidationHelper} validator - Validation helper instance for validating operations
+     * @param {BatchProcessor} batch_processor - Batch processor instance for executing batch operations
      */
-    constructor(validator, batchProcessor) {
+    constructor(validator, batch_processor) {
         this.validator = validator;
-        this.batchProcessor = batchProcessor;
+        this.batch_processor = batch_processor;
     }
 
     /**
@@ -38,7 +41,7 @@ class ExecuteHandler {
      * @returns {Promise<Object>} Processing results
      */
     async executeBatch(files, addCategories, removeCategories, callbacks) {
-        return await this.batchProcessor.processBatch(
+        return await this.batch_processor.processBatch(
             files,
             addCategories,
             removeCategories,
@@ -50,7 +53,7 @@ class ExecuteHandler {
      * Stop batch processing
      */
     stopBatch() {
-        this.batchProcessor.stop();
+        this.batch_processor.stop();
     }
 }
 
