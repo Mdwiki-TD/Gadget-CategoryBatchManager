@@ -11,7 +11,7 @@ class CategoryService {
      */
     constructor(apiService) {
         this.api = apiService;
-        this.parser = typeof WikitextParser !== 'undefined' ? new WikitextParser() : null;
+        this.parser = new WikitextParser();
     }
 
     /**

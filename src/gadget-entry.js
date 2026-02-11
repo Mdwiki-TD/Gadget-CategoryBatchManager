@@ -105,14 +105,14 @@ async function initApp(require) {
         await createVueBatchManager(Vue, Codex);
     } else {
         // In category pages - mount with overlay
-        var isCategoryPage = mw.config.get('wgCanonicalNamespace') === 'Category';
+        let isCategoryPage = mw.config.get('wgCanonicalNamespace') === 'Category';
         if (!isCategoryPage) return;
 
         // Create overlay structure
         const overlay = createOverlay();
 
         // Add button to trigger overlay
-        var portletLink = mw.util.addPortletLink(
+        let portletLink = mw.util.addPortletLink(
             'p-cactions',
             '#',
             'Batch Manager',

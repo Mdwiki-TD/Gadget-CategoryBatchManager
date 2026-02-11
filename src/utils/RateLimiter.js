@@ -16,7 +16,6 @@ class RateLimiter {
     }
 
     /**
-     * TODO: use it in the workflow
      * Throttle a function call with a delay
      * @param {Function} fn - Function to execute
      * @param {number} delay - Delay in milliseconds

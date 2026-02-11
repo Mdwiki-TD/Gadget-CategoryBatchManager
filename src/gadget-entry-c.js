@@ -85,11 +85,11 @@ async function initApp(require) {
         await createVueBatchManager(Vue, Codex);
     } else {
         // In category pages - mount with dialog overlay
-        var isCategoryPage = mw.config.get('wgCanonicalNamespace') === 'Category';
+        let isCategoryPage = mw.config.get('wgCanonicalNamespace') === 'Category';
         if (!isCategoryPage) return;
 
         // Add button to trigger dialog
-        var portletLink = mw.util.addPortletLink(
+        let portletLink = mw.util.addPortletLink(
             'p-cactions',
             '#',
             'Batch Manager',

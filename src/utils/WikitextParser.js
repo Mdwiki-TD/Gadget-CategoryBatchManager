@@ -107,7 +107,7 @@ class WikitextParser {
     }
 
     /**
-     * TODO: use it in the workflow or remove if not needed
+     * TODO: use it in the workflow
      * Get the proper wikitext syntax for a category
      * @param {string} categoryName - Category name (with or without "Category:" prefix)
      * @returns {string} Wikitext category syntax

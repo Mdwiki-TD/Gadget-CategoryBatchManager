@@ -49,7 +49,7 @@ class SearchHandler {
         if (searchCategoryName.trim() === '') {
             return '';
         }
-        var srsearch = `incategory:${searchCategoryName}`;
+        let srsearch = `incategory:${searchCategoryName}`;
         // MediaWiki search uses special characters like /, ", ", etc.
         const sanitizedPattern = Validator.sanitizeTitlePattern(titlePattern);
 
