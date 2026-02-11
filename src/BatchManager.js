@@ -173,9 +173,6 @@ function BatchManager(portletLink = null) {
         app.unmounted = function () {
             portletLink.removeEventListener('click', this.openMainDialog);
         };
-        app.beforeUnmount = function () {
-            portletLink.removeEventListener('click', this.openMainDialog);
-        };
     }
     return app;
 }
