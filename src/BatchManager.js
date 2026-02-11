@@ -5,9 +5,10 @@
 
 import { APIService, BatchProcessor, CategoryService, SearchService } from './services';
 import { CategoryInputsPanel, ExecutePanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel } from './ui/panels';
-import { CategoryInputsHandler, ExecuteHandler, FileListHandler, PreviewHandler, SearchHandler, ProgressHandler, ChangesHandler } from './ui/handlers';
+import { CategoryInputsHandler, ExecuteHandler, FileListHandler, PreviewHandler, SearchHandler, ProgressHandler } from './ui/handlers';
 import CategoryLookup from './ui/components/CategoryLookup.js';
 import ValidationHelper from './ui/helpers/ValidationHelper.js';
+import { ChangesHelper } from './ui/helpers';
 
 function BatchManager() {
     const mwApi = new APIService();
@@ -17,7 +18,7 @@ function BatchManager() {
     const batchProcessor = new BatchProcessor(categoryService);
 
     const files_list = new FileListHandler(mwApi);
-    const changes_handler = new ChangesHandler(validator);
+    const changes_handler = new ChangesHelper(validator);
     const search_handler = new SearchHandler(search_service);
     const preview_handler = new PreviewHandler(validator, changes_handler);
     const progress_handler = new ProgressHandler();

@@ -1,12 +1,12 @@
-// Mock ChangeCalculator module before importing ChangesHandler
+// Mock ChangeCalculator module before importing ChangesHelper
 jest.mock('../../../src/utils/ChangeCalculator', () => ({
     filterFilesThatWillChange: jest.fn()
 }));
 
-const { default: ChangesHandler } = require('../../../src/ui/handlers/ChangesHandler');
+const { default: ChangesHelper } = require('../../../src/ui/helpers/ChangesHelper');
 const { filterFilesThatWillChange } = require('../../../src/utils/ChangeCalculator');
 
-describe('ChangesHandler', () => {
+describe('ChangesHelper', () => {
     let handler;
     let mockValidator;
     let mockConsoleLog;
@@ -19,7 +19,7 @@ describe('ChangesHandler', () => {
             hasDuplicateCategories: jest.fn(),
             filterCircularCategories: jest.fn()
         };
-        handler = new ChangesHandler(mockValidator);
+        handler = new ChangesHelper(mockValidator);
     });
 
     afterEach(() => {

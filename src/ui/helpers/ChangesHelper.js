@@ -3,10 +3,10 @@
  *
  */
 
-import { ChangeCalculator } from '../../utils/';
-import ValidationHelper from './../helpers/ValidationHelper.js';
+import { ChangeCalculator } from '../../utils/index.js';
+import ValidationHelper from './ValidationHelper.js';
 
-class ChangesHandler {
+class ChangesHelper {
     /**
      * @param {ValidationHelper} validator - Validation helper instance for validating operations
      */
@@ -63,7 +63,13 @@ class ChangesHandler {
             const message = `❌ Cannot add: all categorie(s) are circular references to the current page. Cannot add "${circularCategories.join(', ')}" to itself.`;
             return { valid: false, error: 'Circular categories detected.', message: message };
         }
+
         // Check if there are any valid operations remaining
+        if (!filteredToAdd) {
+            console.error('[CBM-V] Error filtering circular categories');
+            return { valid: false, error: 'An error occurred while processing categories to add.' };
+        }
+
         // `filteredToAdd.length` TypeError: Cannot read properties of undefined (reading 'length')
         if (filteredToAdd.length === 0 && removeCategorySelected.length === 0) {
             return { valid: false, error: 'No valid categories to add or remove.' };
@@ -126,4 +132,4 @@ class ChangesHandler {
     }
 }
 
-export default ChangesHandler;
+export default ChangesHelper;

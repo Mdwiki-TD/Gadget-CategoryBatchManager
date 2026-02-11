@@ -36,8 +36,8 @@ const SOURCE_FILES = [
     'src/ui/handlers/PreviewHandler.js',
     'src/ui/handlers/ProgressHandler.js',
     'src/ui/handlers/SearchHandler.js',
-    'src/ui/handlers/ChangesHandler.js',
 
+    'src/ui/helpers/ChangesHelper.js',
     'src/ui/helpers/ValidationHelper.js',
 
     'src/BatchManager.js',
