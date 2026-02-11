@@ -1,4 +1,5 @@
-const ExecuteHandler = require('../../../../src/ui/handlers/ExecuteHandler');
+
+const { default: ExecuteHandler } = require('../../../../src/ui/handlers/ExecuteHandler');
 
 describe('ExecuteHandler', () => {
   let handler;
