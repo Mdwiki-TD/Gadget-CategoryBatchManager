@@ -64,12 +64,6 @@ class ChangesHelper {
             return { valid: false, error: 'Circular categories detected.', message: message };
         }
 
-        // Check if there are any valid operations remaining
-        if (!filteredToAdd) {
-            console.error('[CBM-V] Error filtering circular categories');
-            return { valid: false, error: 'An error occurred while processing categories to add.' };
-        }
-
         // `filteredToAdd.length` TypeError: Cannot read properties of undefined (reading 'length')
         if (filteredToAdd.length === 0 && removeCategorySelected.length === 0) {
             return { valid: false, error: 'No valid categories to add or remove.' };
