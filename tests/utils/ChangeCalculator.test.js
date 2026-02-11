@@ -277,8 +277,13 @@ describe('ChangeCalculator', () => {
       const result = ChangeCalculator.filterFilesThatWillChange(files, ['Category:B'], []);
 
       expect(result).toHaveLength(2);
-      expect(result[0].title).toBe('File:Change1.svg');
-      expect(result[1].title).toBe('File:Change2.svg');
+      // filterFilesThatWillChange now returns preview objects with 'file' property
+      expect(result[0].file).toBe('File:Change1.svg');
+      expect(result[1].file).toBe('File:Change2.svg');
+      // Verify preview objects have the expected structure
+      expect(result[0]).toHaveProperty('currentCategories');
+      expect(result[0]).toHaveProperty('newCategories');
+      expect(result[0]).toHaveProperty('willChange');
     });
 
     test('should return empty array when no files will change', () => {

@@ -25,6 +25,7 @@ function CategoryInputsPanel(category_inputs_handler) {
                         show: false,
                         type: "",
                         text: "",
+                        key: 0
                     },
                 },
                 removeCategory: {
@@ -40,6 +41,7 @@ function CategoryInputsPanel(category_inputs_handler) {
                         show: false,
                         type: "",
                         text: "",
+                        key: 0
                     },
                 }
             };
@@ -66,15 +68,18 @@ function CategoryInputsPanel(category_inputs_handler) {
         methods: {
             displayCategoryMessage(text, type = 'error', msg_type = 'add') {
                 console.log(`[CBM] Displaying ${msg_type} category message: ${text} (type: ${type})`);
-                if (msg_type === 'add') {
-                    this.addCategory.message.show = true;
-                    this.addCategory.message.type = type;
-                    this.addCategory.message.text = text;
-                } else if (msg_type === 'remove') {
-                    this.removeCategory.message.show = true;
-                    this.removeCategory.message.type = type;
-                    this.removeCategory.message.text = text;
-                }
+                const target = msg_type === 'add' ? this.addCategory : this.removeCategory;
+
+                // Hide first to trigger reactivity if it was already showing
+                target.message.show = false;
+
+                // Use nextTick to ensure the change is processed before showing again
+                this.$nextTick(() => {
+                    target.message.type = type;
+                    target.message.text = text;
+                    target.message.show = true;
+                    target.message.key++; // Increment key to force component re-render
+                });
             },
 
             hideAddCategoryMessage() {

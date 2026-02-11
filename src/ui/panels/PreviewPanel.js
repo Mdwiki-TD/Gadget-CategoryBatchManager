@@ -75,22 +75,6 @@ function PreviewPanel(changes_helpers) {
             </cdx-dialog>
         `,
         methods: {
-            filterFilesToProcess(filesToProcess) {
-                return filesToProcess.map(row => {
-                    // newCategories: undefined false
-                    if (!Array.isArray(row.newCategories)) {
-                        console.log('newCategories:', row.newCategories);
-                        console.log('row:', row); // row: Proxy(FileModel) {…}
-                        // TODO: find why FileModel is used here and causes newCategories to be undefined
-                    }
-                    return {
-                        file: row.file,
-                        currentCategories: [...row.currentCategories],
-                        newCategories: [...row.newCategories], // TypeError: row.newCategories is not iterable
-                        diff: row.newCategories.length - row.currentCategories.length
-                    };
-                });
-            },
             handlePreview: function () {
                 console.log('[CBM-P] Preview button clicked');
                 const callbacks = {
@@ -114,7 +98,12 @@ function PreviewPanel(changes_helpers) {
                 }
                 console.log('[CBM-P] Preview result:', preparation.filesToProcess.length, 'items');
 
-                this.previewRows = this.filterFilesToProcess(preparation.filesToProcess);
+                // filesToProcess now contains preview objects with: file, currentCategories, newCategories, willChange
+                // Add diff calculation for display
+                this.previewRows = preparation.filesToProcess.map(row => ({
+                    ...row,
+                    diff: row.newCategories.length - row.currentCategories.length
+                }));
 
                 this.changesCount = preparation.filesToProcess.length;
 

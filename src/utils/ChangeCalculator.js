@@ -87,16 +87,12 @@ class ChangeCalculator {
      * @param {Array} files - Files to filter
      * @param {Array<string>} categoriesToAdd - Categories to add
      * @param {Array<string>} categoriesToRemove - Categories to remove
-     * @returns {Array<Object>} Files that will actually be modified
+     * @returns {Array<Object>} Preview objects for files that will be modified
      */
     static filterFilesThatWillChange(files, categoriesToAdd, categoriesToRemove) {
         const previews = this.previewChanges(files, categoriesToAdd, categoriesToRemove);
-        const fileTitlesThatWillChange = new Set(
-            previews
-                .filter(p => p.willChange)
-                .map(p => p.file)
-        );
-        return files.filter(f => fileTitlesThatWillChange.has(f.title));
+        // Return preview objects (with newCategories) for files that will change
+        return previews.filter(p => p.willChange);
     }
 
     /**
