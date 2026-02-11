@@ -225,7 +225,7 @@ class APIService {
 
                 // Call progress callback with the number of results found so far
                 if (callbacks.onProgress) {
-                    callbacks.onProgress(searchResults.length);
+                    callbacks.onProgress(results.length);
                 }
 
                 results.push(...searchResults);
