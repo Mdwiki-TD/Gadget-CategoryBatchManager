@@ -1,9 +1,33 @@
+// Mock the mw module before importing APIService
+jest.mock('../../src/services/mw.js', () => {
+  // Create plain functions that will be replaced with jest mocks in beforeEach
+  const mockApi = {
+    get: () => {},
+    edit: () => {},
+    getCategories: () => {},
+  };
+
+  function MockApi() {
+    return mockApi;
+  }
+
+  const mockModule = {
+    Api: MockApi,
+    __mockApi: mockApi
+  };
+
+  return {
+    default: mockModule
+  };
+});
+
 const { default: APIService } = require('../../src/services/APIService');
 const { default: Validator } = require('../../src/utils/Validator');
+const mwMock = require('../../src/services/mw.js').default;
 
 describe('APIService', () => {
   let service;
-  let mockMwApi;
+  let mockApi;
   let mockConsoleError;
   let sanitizeSpy;
 
@@ -14,30 +38,25 @@ describe('APIService', () => {
     // Spy on Validator.sanitizeTitlePattern
     sanitizeSpy = jest.spyOn(Validator, 'sanitizeTitlePattern');
 
-    // Mock mw.Api
-    mockMwApi = {
-      get: jest.fn(),
-      edit: jest.fn(),
-      getCategories: jest.fn(),
-    };
+    // Get the mock api from the mw module
+    mockApi = mwMock.__mockApi;
 
-    // Mock global mw object
-    global.mw = {
-      Api: jest.fn(() => mockMwApi)
-    };
+    // Replace with jest mocks
+    mockApi.get = jest.fn();
+    mockApi.edit = jest.fn();
+    mockApi.getCategories = jest.fn();
 
     service = new APIService();
   });
 
   afterEach(() => {
-    delete global.mw;
     sanitizeSpy.mockRestore();
     mockConsoleError.mockRestore();
   });
 
   describe('getCategoryMembers', () => {
     test('should fetch category members without pagination', async () => {
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: {
           categorymembers: [
             { title: 'File:Test1.svg', pageid: 1 },
@@ -50,7 +69,7 @@ describe('APIService', () => {
 
       expect(result).toHaveLength(2);
       expect(result[0].title).toBe('File:Test1.svg');
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           action: 'query',
           list: 'categorymembers',
@@ -61,7 +80,7 @@ describe('APIService', () => {
     });
 
     test('should handle pagination with continue', async () => {
-      mockMwApi.get
+      mockApi.get
         .mockResolvedValueOnce({
           query: {
             categorymembers: [
@@ -81,17 +100,17 @@ describe('APIService', () => {
       const result = await service.getCategoryMembers('Category:Test');
 
       expect(result).toHaveLength(2);
-      expect(mockMwApi.get).toHaveBeenCalledTimes(2);
+      expect(mockApi.get).toHaveBeenCalledTimes(2);
     });
 
     test('should use custom limit option', async () => {
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: { categorymembers: [] }
       });
 
       await service.getCategoryMembers('Category:Test', { limit: 100 });
 
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           cmlimit: 100
         })
@@ -115,12 +134,12 @@ describe('APIService', () => {
         }
       };
 
-      mockMwApi.get.mockResolvedValue(mockResponse);
+      mockApi.get.mockResolvedValue(mockResponse);
 
       const result = await service.getFileInfo(['File:Test.svg']);
 
       expect(result).toEqual(mockResponse);
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           action: 'query',
           titles: 'File:Test.svg',
@@ -130,13 +149,13 @@ describe('APIService', () => {
     });
 
     test('should handle multiple titles', async () => {
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: { pages: {} }
       });
 
       await service.getFileInfo(['File:Test1.svg', 'File:Test2.svg']);
 
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           titles: 'File:Test1.svg|File:Test2.svg'
         })
@@ -146,7 +165,7 @@ describe('APIService', () => {
 
   describe('getPageContent', () => {
     test('should fetch page wikitext content', async () => {
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: {
           pages: {
             '123': {
@@ -165,7 +184,7 @@ describe('APIService', () => {
       const content = await service.getPageContent('File:Test.svg');
 
       expect(content).toBe('Test wikitext content\n[[Category:Test]]');
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           action: 'query',
           titles: 'File:Test.svg',
@@ -185,16 +204,16 @@ describe('APIService', () => {
         { toString: () => 'Category:Maps' }
       ];
 
-      mockMwApi.getCategories.mockResolvedValue(mockTitles);
+      mockApi.getCategories.mockResolvedValue(mockTitles);
 
       const result = await service.getCategories('File:Test.svg');
 
       expect(result).toEqual(['Belarus', 'Europe', 'Maps']);
-      expect(mockMwApi.getCategories).toHaveBeenCalledWith('File:Test.svg');
+      expect(mockApi.getCategories).toHaveBeenCalledWith('File:Test.svg');
     });
 
     test('should return false if page not found', async () => {
-      mockMwApi.getCategories.mockResolvedValue(false);
+      mockApi.getCategories.mockResolvedValue(false);
 
       const result = await service.getCategories('File:NotFound.svg');
 
@@ -206,7 +225,7 @@ describe('APIService', () => {
         { toString: () => 'Category:Test Category' }
       ];
 
-      mockMwApi.getCategories.mockResolvedValue(mockTitles);
+      mockApi.getCategories.mockResolvedValue(mockTitles);
 
       const result = await service.getCategories('File:Test.svg');
 
@@ -214,7 +233,7 @@ describe('APIService', () => {
     });
 
     test('should handle errors gracefully', async () => {
-      mockMwApi.getCategories.mockRejectedValue(new Error('API error'));
+      mockApi.getCategories.mockRejectedValue(new Error('API error'));
 
       await expect(service.getCategories('File:Test.svg'))
         .rejects.toThrow('API error');
@@ -223,19 +242,19 @@ describe('APIService', () => {
 
   describe('editPage', () => {
     test('should edit page using mw.Api.edit() with transform function', async () => {
-      mockMwApi.edit.mockResolvedValue({
+      mockApi.edit.mockResolvedValue({
         edit: { result: 'Success' }
       });
 
       await service.editPage('File:Test.svg', 'New content', 'Test edit');
 
-      expect(mockMwApi.edit).toHaveBeenCalledWith(
+      expect(mockApi.edit).toHaveBeenCalledWith(
         'File:Test.svg',
         expect.any(Function)
       );
 
       // Test the transform function
-      const transformFn = mockMwApi.edit.mock.calls[0][1];
+      const transformFn = mockApi.edit.mock.calls[0][1];
       const result = transformFn();
 
       expect(result).toEqual({
@@ -245,7 +264,7 @@ describe('APIService', () => {
     });
 
     test('should pass additional options to edit', async () => {
-      mockMwApi.edit.mockResolvedValue({
+      mockApi.edit.mockResolvedValue({
         edit: { result: 'Success' }
       });
 
@@ -256,7 +275,7 @@ describe('APIService', () => {
         { minor: true, bot: true }
       );
 
-      const transformFn = mockMwApi.edit.mock.calls[0][1];
+      const transformFn = mockApi.edit.mock.calls[0][1];
       const result = transformFn();
 
       expect(result).toEqual({
@@ -268,7 +287,7 @@ describe('APIService', () => {
     });
 
     test('should handle edit conflicts', async () => {
-      mockMwApi.edit.mockRejectedValue(new Error('editconflict'));
+      mockApi.edit.mockRejectedValue(new Error('editconflict'));
 
       await expect(
         service.editPage('File:Test.svg', 'Content', 'Summary')
@@ -279,7 +298,7 @@ describe('APIService', () => {
   describe('makeRequest', () => {
     test('should make GET request using mw.Api.get()', async () => {
       const mockResponse = { query: { pages: {} } };
-      mockMwApi.get.mockResolvedValue(mockResponse);
+      mockApi.get.mockResolvedValue(mockResponse);
 
       const result = await service.makeRequest({
         action: 'query',
@@ -287,14 +306,14 @@ describe('APIService', () => {
       });
 
       expect(result).toEqual(mockResponse);
-      expect(mockMwApi.get).toHaveBeenCalledWith({
+      expect(mockApi.get).toHaveBeenCalledWith({
         action: 'query',
         titles: 'Test'
       });
     });
 
     test('should handle API errors', async () => {
-      mockMwApi.get.mockRejectedValue(new Error('API error'));
+      mockApi.get.mockRejectedValue(new Error('API error'));
 
       await expect(
         service.makeRequest({ action: 'query' })
@@ -308,7 +327,7 @@ describe('APIService', () => {
         { toString: () => 'Category:Life expectancy maps of South America (no data)' }
       ];
 
-      mockMwApi.getCategories.mockResolvedValue(mockTitles);
+      mockApi.getCategories.mockResolvedValue(mockTitles);
 
       const result = await service.getCategories('File:Test.svg');
 
@@ -316,7 +335,7 @@ describe('APIService', () => {
     });
 
     test('should handle concurrent API calls', async () => {
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: { categorymembers: [] }
       });
 
@@ -328,24 +347,24 @@ describe('APIService', () => {
 
       await Promise.all(promises);
 
-      expect(mockMwApi.get).toHaveBeenCalledTimes(3);
+      expect(mockApi.get).toHaveBeenCalledTimes(3);
     });
 
     test('should properly chain edit operations', async () => {
-      mockMwApi.edit.mockResolvedValue({
+      mockApi.edit.mockResolvedValue({
         edit: { result: 'Success' }
       });
 
       await service.editPage('File:Test1.svg', 'Content1', 'Summary1');
       await service.editPage('File:Test2.svg', 'Content2', 'Summary2');
 
-      expect(mockMwApi.edit).toHaveBeenCalledTimes(2);
+      expect(mockApi.edit).toHaveBeenCalledTimes(2);
     });
   });
 
   describe('Error handling', () => {
     test('should handle network errors', async () => {
-      mockMwApi.get.mockRejectedValue(new Error('Network error'));
+      mockApi.get.mockRejectedValue(new Error('Network error'));
 
       await expect(
         service.getCategoryMembers('Category:Test')
@@ -353,7 +372,7 @@ describe('APIService', () => {
     });
 
     test('should handle malformed API responses', async () => {
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         // Missing query.categorymembers
         query: {}
       });
@@ -364,7 +383,7 @@ describe('APIService', () => {
     });
 
     test('should handle empty category', async () => {
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: {
           categorymembers: []
         }
@@ -378,7 +397,7 @@ describe('APIService', () => {
 
   describe('searchCategories', () => {
     test('should search categories by prefix', async () => {
-      mockMwApi.get.mockResolvedValue([
+      mockApi.get.mockResolvedValue([
         'Category:Belarus',
         ['Category:Belarus', 'Category:Belarusian maps', 'Category:Belarus charts'],
         [],
@@ -388,7 +407,7 @@ describe('APIService', () => {
       const result = await service.searchCategories('Bel');
 
       expect(result).toEqual(['Category:Belarus', 'Category:Belarusian maps', 'Category:Belarus charts']);
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           action: 'opensearch',
           search: 'Category:Bel',
@@ -398,7 +417,7 @@ describe('APIService', () => {
     });
 
     test('should handle prefix with Category: prefix', async () => {
-      mockMwApi.get.mockResolvedValue([
+      mockApi.get.mockResolvedValue([
         'Category:Europe',
         ['Category:Europe', 'Category:European maps'],
         [],
@@ -408,7 +427,7 @@ describe('APIService', () => {
       const result = await service.searchCategories('Category:Eur');
 
       expect(result).toEqual(['Category:Europe', 'Category:European maps']);
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           search: 'Category:Eur'
         })
@@ -416,7 +435,7 @@ describe('APIService', () => {
     });
 
     test('should filter non-category results', async () => {
-      mockMwApi.get.mockResolvedValue([
+      mockApi.get.mockResolvedValue([
         'Category:Test',
         ['Category:Test', 'File:Test.jpg', 'Category:Test maps'],
         [],
@@ -429,7 +448,7 @@ describe('APIService', () => {
     });
 
     test('should return empty array on error', async () => {
-      mockMwApi.get.mockRejectedValue(new Error('API error'));
+      mockApi.get.mockRejectedValue(new Error('API error'));
 
       const result = await service.searchCategories('Test');
 
@@ -437,7 +456,7 @@ describe('APIService', () => {
     });
 
     test('should handle empty results', async () => {
-      mockMwApi.get.mockResolvedValue([
+      mockApi.get.mockResolvedValue([
         'Category:Test',
         [],
         [],
@@ -450,7 +469,7 @@ describe('APIService', () => {
     });
 
     test('should use custom limit option', async () => {
-      mockMwApi.get.mockResolvedValue([
+      mockApi.get.mockResolvedValue([
         'Category:Test',
         ['Category:Test'],
         [],
@@ -459,7 +478,7 @@ describe('APIService', () => {
 
       await service.searchCategories('Test', { limit: 20 });
 
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           limit: 20
         })
@@ -467,7 +486,7 @@ describe('APIService', () => {
     });
 
     test('should use default limit of 10', async () => {
-      mockMwApi.get.mockResolvedValue([
+      mockApi.get.mockResolvedValue([
         'Category:Test',
         ['Category:Test'],
         [],
@@ -476,7 +495,7 @@ describe('APIService', () => {
 
       await service.searchCategories('Test');
 
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           limit: 10
         })
@@ -486,7 +505,7 @@ describe('APIService', () => {
 
   describe('searchInCategoryWithPattern', () => {
     test('should search files using raw srsearch pattern', async () => {
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: {
           search: [
             { title: 'File:Chart,BLR.svg', pageid: 1, size: 1000 },
@@ -499,7 +518,7 @@ describe('APIService', () => {
 
       expect(result).toHaveLength(2);
       expect(result[0].title).toBe('File:Chart,BLR.svg');
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           action: 'query',
           list: 'search',
@@ -510,7 +529,7 @@ describe('APIService', () => {
     });
 
     test('should handle pagination in search results', async () => {
-      mockMwApi.get
+      mockApi.get
         .mockResolvedValueOnce({
           query: {
             search: [
@@ -530,11 +549,11 @@ describe('APIService', () => {
       const result = await service.searchInCategoryWithPattern('incategory:Test');
 
       expect(result).toHaveLength(2);
-      expect(mockMwApi.get).toHaveBeenCalledTimes(2);
+      expect(mockApi.get).toHaveBeenCalledTimes(2);
     });
 
     test('should handle empty search results', async () => {
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: { search: [] }
       });
 
@@ -544,14 +563,14 @@ describe('APIService', () => {
     });
 
     test('should handle complex search patterns', async () => {
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: { search: [] }
       });
 
       const complexPattern = 'incategory:Belarus intitle:/^Charts/ incategory:Maps -intitle:/draft/';
       await service.searchInCategoryWithPattern(complexPattern);
 
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           srsearch: complexPattern
         })
@@ -559,13 +578,13 @@ describe('APIService', () => {
     });
 
     test('should use srlimit max for efficiency', async () => {
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: { search: [] }
       });
 
       await service.searchInCategoryWithPattern('incategory:Test');
 
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           srlimit: 'max'
         })
@@ -573,13 +592,13 @@ describe('APIService', () => {
     });
 
     test('should include file properties in search', async () => {
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: { search: [] }
       });
 
       await service.searchInCategoryWithPattern('incategory:Test');
 
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           srprop: 'size|wordcount|timestamp'
         })
@@ -587,7 +606,7 @@ describe('APIService', () => {
     });
 
     test('should handle API errors gracefully', async () => {
-      mockMwApi.get.mockRejectedValue(new Error('Network error'));
+      mockApi.get.mockRejectedValue(new Error('Network error'));
 
       await expect(
         service.searchInCategoryWithPattern('incategory:Test')
@@ -599,14 +618,14 @@ describe('APIService', () => {
     test('should sanitize pattern and delegate to searchInCategoryWithPattern', async () => {
       sanitizeSpy.mockReturnValue('Test');
 
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: { search: [] }
       });
 
       await service.searchInCategory('Test Category', 'Test');
 
       expect(sanitizeSpy).toHaveBeenCalledWith('Test');
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           srsearch: 'incategory:Test_Category intitle:/Test/'
         })
@@ -618,13 +637,13 @@ describe('APIService', () => {
         sanitizeTitlePattern: jest.fn().mockReturnValue(',BLR')
       };
 
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: { search: [] }
       });
 
       await service.searchInCategory('Life expectancy maps', ',BLR');
 
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           srsearch: 'incategory:Life_expectancy_maps intitle:/,BLR/'
         })
@@ -636,23 +655,23 @@ describe('APIService', () => {
     test('should return empty array for short search terms', async () => {
       const result = await service.fetchCategories('a');
       expect(result).toEqual([]);
-      expect(mockMwApi.get).not.toHaveBeenCalled();
+      expect(mockApi.get).not.toHaveBeenCalled();
     });
 
     test('should return empty array for empty search term', async () => {
       const result = await service.fetchCategories('');
       expect(result).toEqual([]);
-      expect(mockMwApi.get).not.toHaveBeenCalled();
+      expect(mockApi.get).not.toHaveBeenCalled();
     });
 
     test('should return empty array for null search term', async () => {
       const result = await service.fetchCategories(null);
       expect(result).toEqual([]);
-      expect(mockMwApi.get).not.toHaveBeenCalled();
+      expect(mockApi.get).not.toHaveBeenCalled();
     });
 
     test('should fetch categories with valid search term', async () => {
-      mockMwApi.get.mockResolvedValue([
+      mockApi.get.mockResolvedValue([
         'Category:Test',
         ['Category:Belarus', 'Category:Europe', 'Category:Maps'],
         [],
@@ -669,7 +688,7 @@ describe('APIService', () => {
     });
 
     test('should use default limit of 10', async () => {
-      mockMwApi.get.mockResolvedValue([
+      mockApi.get.mockResolvedValue([
         'Category:Test',
         ['Category:Test'],
         [],
@@ -678,7 +697,7 @@ describe('APIService', () => {
 
       await service.fetchCategories('Test');
 
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           limit: 10
         })
@@ -686,7 +705,7 @@ describe('APIService', () => {
     });
 
     test('should use custom limit option', async () => {
-      mockMwApi.get.mockResolvedValue([
+      mockApi.get.mockResolvedValue([
         'Category:Test',
         ['Category:Test'],
         [],
@@ -695,7 +714,7 @@ describe('APIService', () => {
 
       await service.fetchCategories('Test', { limit: 20 });
 
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           limit: 20
         })
@@ -703,7 +722,7 @@ describe('APIService', () => {
     });
 
     test('should handle offset option', async () => {
-      mockMwApi.get.mockResolvedValue([
+      mockApi.get.mockResolvedValue([
         'Category:Test',
         ['Category:Test'],
         [],
@@ -712,7 +731,7 @@ describe('APIService', () => {
 
       await service.fetchCategories('Test', { offset: 50 });
 
-      expect(mockMwApi.get).toHaveBeenCalledWith(
+      expect(mockApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           continue: '50'
         })
@@ -720,7 +739,7 @@ describe('APIService', () => {
     });
 
     test('should return empty array when API returns no data[1]', async () => {
-      mockMwApi.get.mockResolvedValue([
+      mockApi.get.mockResolvedValue([
         'Category:Test',
         null,
         [],
@@ -733,7 +752,7 @@ describe('APIService', () => {
     });
 
     test('should return empty array when API returns null', async () => {
-      mockMwApi.get.mockResolvedValue(null);
+      mockApi.get.mockResolvedValue(null);
 
       const result = await service.fetchCategories('Test');
 
@@ -752,7 +771,7 @@ describe('APIService', () => {
         size: 1000
       }));
 
-      mockMwApi.get.mockResolvedValue({
+      mockApi.get.mockResolvedValue({
         query: {
           search: bigBatch
         },
