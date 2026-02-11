@@ -86,6 +86,10 @@ class APIService {
      * @returns {Promise<string>} Page wikitext content
      */
     async getPageContent(title) {
+        if (!title) {
+            console.error('getPageContent called with empty title', title);
+            return '';
+        }
         const params = {
             action: 'query',
             titles: title,
