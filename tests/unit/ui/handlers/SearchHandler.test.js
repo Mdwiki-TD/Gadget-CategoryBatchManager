@@ -1,4 +1,4 @@
-const SearchHandler = require('../../../../src/ui/handlers/SearchHandler');
+const { default: SearchHandler } = require('../../../../src/ui/handlers/SearchHandler');
 
 // Mock Validator
 global.Validator = {
