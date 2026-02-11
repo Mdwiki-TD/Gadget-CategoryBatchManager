@@ -31,16 +31,17 @@ class CategoryService {
                 newWikitext = this.parser.addCategory(newWikitext, category);
             }
         }
-
+        let success = false;
         if (newWikitext !== wikitext) {
-            await this.api.editPage(
+            let result = await this.api.editPage(
                 fileTitle,
                 newWikitext,
                 `Adding categories: ${categoriesToAdd.join(', ')}`
             );
+            success = result && result.edit && result.edit.result === 'Success';
         }
 
-        return { success: true, modified: newWikitext !== wikitext };
+        return { success: success, modified: newWikitext !== wikitext };
     }
 
     /**
@@ -57,16 +58,17 @@ class CategoryService {
         for (const category of categoriesToRemove) {
             newWikitext = this.parser.removeCategory(newWikitext, category);
         }
-
+        let success = false;
         if (newWikitext !== wikitext) {
-            await this.api.editPage(
+            let result = await this.api.editPage(
                 fileTitle,
                 newWikitext,
                 `Removing categories: ${categoriesToRemove.join(', ')}`
             );
+            success = result && result.edit && result.edit.result === 'Success';
         }
 
-        return { success: true, modified: newWikitext !== wikitext };
+        return { success: success, modified: newWikitext !== wikitext };
     }
 
     /**
@@ -91,13 +93,14 @@ class CategoryService {
                 newWikitext = this.parser.addCategory(newWikitext, category);
             }
         }
-
+        let success = false;
         if (newWikitext !== wikitext) {
             const summary = this.buildEditSummary(toAdd, toRemove);
-            await this.api.editPage(fileTitle, newWikitext, summary);
+            const result = await this.api.editPage(fileTitle, newWikitext, summary);
+            success = result && result.edit && result.edit.result === 'Success';
         }
 
-        return { success: true, modified: newWikitext !== wikitext };
+        return { success: success, modified: newWikitext !== wikitext };
     }
 
     /**
