@@ -13,8 +13,6 @@ const SOURCE_FILES = [
     'src/utils/Validator.js',
     'src/utils/WikitextParser.js',
 
-    'src/components/CategoryLookup.js',
-
     'src/models/FileModel.js',
     'src/models/CategoryOperation.js',
 
@@ -22,6 +20,8 @@ const SOURCE_FILES = [
     'src/services/BatchProcessor.js',
     'src/services/CategoryService.js',
     'src/services/SearchService.js',
+
+    'src/ui/components/CategoryLookup.js',
 
     'src/ui/panels/CategoryInputsPanel.js',
     'src/ui/panels/ExecutePanel.js',
