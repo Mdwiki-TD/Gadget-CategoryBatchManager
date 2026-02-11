@@ -2,7 +2,7 @@
  * Change Calculator Utility
  *
  * @description
- * Calculates category changes for files. Used by both PreviewHandler and ExecuteHandler
+ * Calculates category changes for files. Used by ExecuteHandler
  * to ensure consistent behavior between preview and actual execution.
  *
  * @requires Validator - For category name normalization and comparison

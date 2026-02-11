@@ -3,7 +3,7 @@
  *
  * @description
  * Shared validation logic for BatchManager handlers.
- * Provides common validation functions used by PreviewHandler and ExecuteHandler.
+ * Provides common validation functions used by  ExecuteHandler.
  *
  * @requires Validator - For checking circular category references
  */

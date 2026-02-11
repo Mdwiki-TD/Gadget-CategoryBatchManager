@@ -33,7 +33,6 @@ const SOURCE_FILES = [
     'src/ui/handlers/CategoryInputsHandler.js',
     'src/ui/handlers/ExecuteHandler.js',
     'src/ui/handlers/FileListHandler.js',
-    'src/ui/handlers/PreviewHandler.js',
     'src/ui/handlers/ProgressHandler.js',
     'src/ui/handlers/SearchHandler.js',
 

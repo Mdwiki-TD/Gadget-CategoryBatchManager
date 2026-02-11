@@ -1,15 +1,13 @@
 
-import { PreviewHandler } from "../handlers";
 import { ChangesHelper } from "../helpers";
 
 /**
  * PreviewPanel
- * @param {PreviewHandler} preview_handler - PreviewHandler instance
  * @param {ChangesHelper} changes_helpers - ChangesHelper instance for validation and preparation
  * @returns {Object} Vue app configuration
  */
 
-function PreviewPanel(preview_handler, changes_helpers) {
+function PreviewPanel(changes_helpers) {
     const app = {
         data: function () {
             return {
@@ -72,6 +70,17 @@ function PreviewPanel(preview_handler, changes_helpers) {
             </cdx-dialog>
         `,
         methods: {
+
+            filterFilesToProcess(filesToProcess) {
+                return filesToProcess
+                    .map(item => ({
+                        file: item.file,
+                        currentCategories: [...item.currentCategories],
+                        newCategories: [...item.newCategories], // TypeError: item.newCategories is not iterable
+                        diff: item.newCategories.length - item.currentCategories.length
+                    }));
+            },
+
             handlePreview: function () {
                 console.log('[CBM-P] Preview button clicked');
                 const callbacks = {
@@ -96,7 +105,7 @@ function PreviewPanel(preview_handler, changes_helpers) {
                 // TODO: Cannot read properties of undefined (reading 'length') preparation.filesToProcess.length
                 console.log('[CBM-P] Preview result:', preparation.filesToProcess.length, 'items');
 
-                this.previewRows = preview_handler.filterFilesToProcess(preparation.filesToProcess);
+                this.previewRows = this.filterFilesToProcess(preparation.filesToProcess);
 
                 this.changesCount = preparation.filesToProcess.length;
 

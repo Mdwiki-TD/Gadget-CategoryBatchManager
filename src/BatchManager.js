@@ -5,7 +5,7 @@
 
 import { APIService, BatchProcessor, CategoryService, SearchService } from './services';
 import { CategoryInputsPanel, ExecutePanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel } from './ui/panels';
-import { CategoryInputsHandler, ExecuteHandler, FileListHandler, PreviewHandler, SearchHandler, ProgressHandler } from './ui/handlers';
+import { CategoryInputsHandler, ExecuteHandler, FileListHandler, SearchHandler, ProgressHandler } from './ui/handlers';
 import CategoryLookup from './ui/components/CategoryLookup.js';
 import { ChangesHelper, ValidationHelper } from './ui/helpers';
 
@@ -24,14 +24,13 @@ function BatchManager() {
     // handlers
     const files_list = new FileListHandler();
     const search_handler = new SearchHandler(search_service);
-    const preview_handler = new PreviewHandler(changes_helpers);
     const progress_handler = new ProgressHandler();
     const execute_handler = new ExecuteHandler(batchProcessor);
     const category_inputs_handler = new CategoryInputsHandler(api_service);
 
     // vue apps
     const execute_panel = ExecutePanel(execute_handler, progress_handler, changes_helpers);
-    const preview_panel_app = PreviewPanel(preview_handler, changes_helpers);
+    const preview_panel_app = PreviewPanel(changes_helpers);
     const category_inputs_app = CategoryInputsPanel(category_inputs_handler);
     const message_display_app = MessageDisplayPanel();
     const search_panel_app = SearchPanel(search_handler);
@@ -86,7 +85,6 @@ function BatchManager() {
                 execute_handler: execute_handler,
                 progress_handler: progress_handler,
                 changes_helpers: changes_helpers,
-                preview_handler: preview_handler,
                 category_inputs_handler: category_inputs_handler,
                 search_handler: search_handler,
                 files_list: files_list,
