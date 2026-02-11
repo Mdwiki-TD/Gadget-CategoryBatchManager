@@ -153,8 +153,7 @@ class BatchProcessor {
         };
 
         // Delegate concurrent execution and inter-batch pausing to RateLimiter
-        // await this.rate_limiter.batch(files, this.rate_limiter.concurrency, processFile);
-        await this.rate_limiter.batch(files, this.rate_limiter.concurrency, processFileNotTry);
+        await this.rate_limiter.batch(files, this.rate_limiter.concurrency, processFile);
 
         if (this.shouldStop) {
             console.log('[CBM-BP] Batch processing stopped by user');

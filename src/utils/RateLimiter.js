@@ -175,6 +175,31 @@ class RateLimiter {
 
         return results;
     }
+
+    /* ------------------------------------------------------------------ */
+    /*  Static helpers                                                     */
+    /* ------------------------------------------------------------------ */
+
+    /**
+     * Static batch processor for simple use cases without rate-limiting.
+     * Processes items in concurrent batches without any delay between batches.
+     *
+     * @param {Array}    items     - Items to process
+     * @param {number}   batchSize - Number of items to process concurrently
+     * @param {Function} processor - Async function to process each item
+     * @returns {Promise<Array>} Results of processing
+     */
+    static async batch(items, batchSize, processor) {
+        const results = [];
+
+        for (let i = 0; i < items.length; i += batchSize) {
+            const itemBatch = items.slice(i, i + batchSize);
+            const batchResults = await Promise.all(itemBatch.map(processor));
+            results.push(...batchResults);
+        }
+
+        return results;
+    }
 }
 
 export default RateLimiter;
