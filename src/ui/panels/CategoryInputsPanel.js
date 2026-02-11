@@ -190,5 +190,4 @@ function CategoryInputsPanel(category_inputs_handler) {
     return app;
 
 }
-
 export default CategoryInputsPanel;
