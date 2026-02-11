@@ -26,11 +26,11 @@ function BatchManager() {
     const search_handler = new SearchHandler(search_service);
     const preview_handler = new PreviewHandler(changes_helpers);
     const progress_handler = new ProgressHandler();
-    const execute_operation_handler = new ExecuteHandler(batchProcessor);
+    const execute_handler = new ExecuteHandler(batchProcessor);
     const category_inputs_handler = new CategoryInputsHandler(api_service);
 
     // vue apps
-    const execute_panel = ExecutePanel(execute_operation_handler, progress_handler, changes_helpers);
+    const execute_panel = ExecutePanel(execute_handler, progress_handler, changes_helpers);
     const preview_panel_app = PreviewPanel(preview_handler);
     const category_inputs_app = CategoryInputsPanel(category_inputs_handler);
     const message_display_app = MessageDisplayPanel();
@@ -83,7 +83,7 @@ function BatchManager() {
         data: function () {
             return {
                 // vue apps handlers
-                execute_operation_handler: execute_operation_handler,
+                execute_handler: execute_handler,
                 progress_handler: progress_handler,
                 changes_helpers: changes_helpers,
                 preview_handler: preview_handler,

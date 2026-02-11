@@ -46,6 +46,9 @@ class ExecuteHandler {
         );
     }
 
+    shouldStop() {
+        return this.batch_processor.shouldStop;
+    }
     /**
      * Stop batch processing
      */

@@ -87,7 +87,7 @@ class ChangesHelper {
     }
 
     validateAndPrepare(sourceCategory, selectedFiles, addCategorySelected, removeCategorySelected, callbacks = {}) {
-        console.log('[CBM-P] Preview button clicked');
+        console.log('validateAndPrepare ');
 
         const {
             showWarningMessage = () => { },
@@ -103,6 +103,7 @@ class ChangesHelper {
         );
 
         if (!validation.valid) {
+            console.log('[CBM] Validation failed:', validation.error);
             showWarningMessage(validation.error);
             return;
         }
