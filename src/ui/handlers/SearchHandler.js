@@ -82,9 +82,11 @@ class SearchHandler {
         try {
             // const results = await this.search_service.searchWithPattern(pattern);
             const results = await this.search_service.searchWithPatternCallback(pattern, {
-                onProgress: (countSearchResults) => {
-                    const text = `Searching for files… (${countSearchResults} found so far)`;
+                onProgress: (text) => {
                     this._fireProgress(text, 0);
+                },
+                onProgressFileDetails: (text, percent) => {
+                    this._fireProgress(text, percent);
                 }
             });
 

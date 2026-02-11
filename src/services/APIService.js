@@ -231,7 +231,8 @@ class APIService {
 
                 // Call progress callback with the number of results found so far
                 if (callbacks.onProgress) {
-                    callbacks.onProgress(results.length);
+                    const text = `Searching for files… (${results.length} found so far)`;
+                    callbacks.onProgress(text);
                 }
 
                 results.push(...searchResults);
