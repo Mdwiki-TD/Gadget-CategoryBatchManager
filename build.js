@@ -14,7 +14,6 @@ const SOURCE_FILES = [
     'src/utils/WikitextParser.js',
 
     'src/models/FileModel.js',
-    'src/models/CategoryOperation.js',
 
     'src/services/APIService.js',
     'src/services/BatchProcessor.js',
