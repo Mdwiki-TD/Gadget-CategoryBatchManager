@@ -205,4 +205,67 @@ describe('BatchProcessor', () => {
       expect(processor.shouldStop).toBe(false);
     });
   });
+
+  describe('stop', () => {
+    test('should set shouldStop flag to true', () => {
+      processor.stop();
+      expect(processor.shouldStop).toBe(true);
+    });
+
+    test('should stop batch processing when called', async () => {
+      const files = [
+        { title: 'File:A.svg' },
+        { title: 'File:B.svg' },
+        { title: 'File:C.svg' }
+      ];
+
+      // Make the first call trigger stop
+      mockCategoryService.updateCategories.mockImplementation(() => {
+        processor.stop();
+        return Promise.resolve({ success: true, modified: true });
+      });
+
+      const results = await processor.processBatch(
+        files,
+        ['Category:Test'],
+        []
+      );
+
+      expect(results.processed).toBe(1);
+      expect(results.total).toBe(3);
+    });
+
+    test('should log message when stopping batch', async () => {
+      const files = [
+        { title: 'File:A.svg' },
+        { title: 'File:B.svg' }
+      ];
+
+      mockCategoryService.updateCategories.mockImplementation(() => {
+        processor.stop();
+        return Promise.resolve({ success: true, modified: true });
+      });
+
+      await processor.processBatch(files, ['Category:Test'], []);
+
+      expect(mockConsoleLog).toHaveBeenCalledWith('[CBM-BP] Batch processing stopped by user');
+    });
+  });
+
+  describe('reset', () => {
+    test('should set shouldStop flag to false', () => {
+      processor.shouldStop = true;
+      processor.reset();
+      expect(processor.shouldStop).toBe(false);
+    });
+
+    test('should be called automatically at start of processBatch', async () => {
+      processor.shouldStop = true;
+      const files = [{ title: 'File:A.svg' }];
+
+      await processor.processBatch(files, ['Category:Test'], []);
+
+      expect(processor.shouldStop).toBe(false);
+    });
+  });
 });
