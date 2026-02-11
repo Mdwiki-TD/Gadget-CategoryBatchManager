@@ -70,11 +70,15 @@ function BatchManager() {
 
     const app = {
         data: function () {
-            const app_data = {
-                validator: validator,
+            return {
+                // vue apps handlers
+                execute_operation_handler: execute_operation_handler,
+                progress_handler: progress_handler,
+                changes_handler: changes_handler,
                 preview_handler: preview_handler,
+                category_inputs_handler: category_inputs_handler,
+                search_handler: search_handler,
                 files_list: files_list,
-                mwApi: mwApi, // Reference to API service instance
 
                 editSummary: 'Batch category update via Category Batch Manager',
 
@@ -96,7 +100,6 @@ function BatchManager() {
                 // FilesListPanel state
                 ...files_list_app.data(),
             };
-            return app_data;
         },
         computed: {
             ...files_list_app.computed,
@@ -121,7 +124,10 @@ function BatchManager() {
             // FilesListPanel methods
             ...files_list_app.methods,
         },
-        template: template
+        template: template,
+        components: {
+            CategoryLookup: CategoryLookup(),
+        }
     };
     return app;
 }

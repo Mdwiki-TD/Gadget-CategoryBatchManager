@@ -1,5 +1,6 @@
 function CategoryLookup() {
     return {
+        name: "CategoryLookup",
         props: {
             model: Object,
             label: String,

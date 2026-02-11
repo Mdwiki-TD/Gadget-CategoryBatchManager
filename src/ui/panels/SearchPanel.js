@@ -19,7 +19,7 @@ function SearchPanel(search_handler) {
     const app = {
         data() {
             return {
-                search_handler,
+                search_handler: search_handler,
 
                 // ── User inputs ──────────────────────────────────────────
                 sourceCategory: 'Category:Our World in Data graphs of Austria',
