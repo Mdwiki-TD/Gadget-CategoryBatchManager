@@ -12,6 +12,11 @@
  *
  * @class SearchHandler
  */
+
+import { FileModel } from '../../models';
+import { SearchService } from '../../services';
+import { Validator } from '../../utils';
+
 class SearchHandler {
     /**
      * @param {SearchService} search_service
@@ -116,6 +121,4 @@ class SearchHandler {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = SearchHandler;
-}
+export default SearchHandler;

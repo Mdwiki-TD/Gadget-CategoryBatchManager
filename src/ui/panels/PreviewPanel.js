@@ -106,6 +106,4 @@ function PreviewPanel(preview_handler) {
     return app;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = PreviewPanel;
-}
+export default PreviewPanel;

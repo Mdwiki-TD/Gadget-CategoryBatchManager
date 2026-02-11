@@ -5,7 +5,8 @@
  * @class SearchService
  */
 
-/* global FileModel */
+import FileModel from './../models/FileModel.js';
+import APIService from './APIService.js';
 
 class SearchService {
     /**
@@ -150,6 +151,4 @@ class SearchService {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = SearchService;
-}
+export default SearchService;

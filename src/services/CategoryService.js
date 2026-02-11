@@ -3,14 +3,15 @@
  * @class CategoryService
  */
 
-/* global WikitextParser */
+import WikitextParser from './../utils/WikitextParser.js';
+import APIService from './APIService.js';
 
 class CategoryService {
     /**
-     * @param {APIService} apiService - API service instance
+     * @param {APIService} api_service - API service instance
      */
-    constructor(apiService) {
-        this.api = apiService;
+    constructor(api_service) {
+        this.api = api_service;
         this.parser = new WikitextParser();
     }
 
@@ -181,6 +182,4 @@ class CategoryService {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CategoryService;
-}
+export default CategoryService;

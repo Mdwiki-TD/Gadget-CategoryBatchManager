@@ -190,6 +190,4 @@ function CategoryInputsPanel(category_inputs_handler) {
     return app;
 
 }
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CategoryInputsPanel
-}
+export default CategoryInputsPanel;

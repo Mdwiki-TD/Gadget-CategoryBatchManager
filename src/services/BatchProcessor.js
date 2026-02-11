@@ -3,7 +3,8 @@
  * @class BatchProcessor
  */
 
-/* global RateLimiter, Validator */
+import RateLimiter from './../utils/RateLimiter.js';
+import CategoryService from './../services/CategoryService.js';
 
 class BatchProcessor {
     /**
@@ -110,6 +111,4 @@ class BatchProcessor {
 
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = BatchProcessor;
-}
+export default BatchProcessor;

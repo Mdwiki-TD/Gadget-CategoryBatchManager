@@ -125,6 +125,4 @@ class ChangesHandler {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ChangesHandler;
-}
+export default ChangesHandler;

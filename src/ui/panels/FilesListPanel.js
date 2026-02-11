@@ -78,6 +78,4 @@ function FilesListPanel(file_list_handler) {
     return app;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = FilesListPanel;
-}
+export default FilesListPanel;

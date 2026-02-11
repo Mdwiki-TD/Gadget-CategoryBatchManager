@@ -93,6 +93,4 @@ class Validator {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Validator;
-}
+export default Validator;

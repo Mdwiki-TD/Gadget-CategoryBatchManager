@@ -15,6 +15,9 @@
  * @param {SearchHandler} search_handler
  * @returns {Object} Vue app configuration
  */
+
+import SearchHandler from './../handlers/SearchHandler.js';
+
 function SearchPanel(search_handler) {
     const app = {
         data() {
@@ -167,6 +170,4 @@ function SearchPanel(search_handler) {
     return app;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = SearchPanel;
-}
+export default SearchPanel;

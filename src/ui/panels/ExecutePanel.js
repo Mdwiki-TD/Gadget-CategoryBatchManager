@@ -196,6 +196,4 @@ function ExecutePanel(execute_operation_handler, progress_handler, changes_handl
     return app;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ExecutePanel;
-}
+export default ExecutePanel;

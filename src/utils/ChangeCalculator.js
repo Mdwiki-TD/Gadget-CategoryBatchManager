@@ -8,7 +8,7 @@
  * @requires Validator - For category name normalization and comparison
  */
 
-/* global Validator */
+import Validator from './Validator.js';
 
 class ChangeCalculator {
     /**
@@ -112,6 +112,4 @@ class ChangeCalculator {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ChangeCalculator;
-}
+export default ChangeCalculator;

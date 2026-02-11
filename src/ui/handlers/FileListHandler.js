@@ -32,6 +32,4 @@ class FileListHandler {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = FileListHandler;
-}
+export default FileListHandler;

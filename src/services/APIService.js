@@ -10,7 +10,7 @@
  * @class APIService
  */
 
-/* global mw */
+import { Validator } from './../utils';
 
 class APIService {
     constructor() {
@@ -297,6 +297,4 @@ class APIService {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = APIService;
-}
+export default APIService;
