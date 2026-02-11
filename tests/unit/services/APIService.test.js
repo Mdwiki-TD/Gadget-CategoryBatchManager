@@ -629,4 +629,139 @@ describe('APIService', () => {
       );
     });
   });
+
+  describe('fetchCategories', () => {
+    test('should return empty array for short search terms', async () => {
+      const result = await service.fetchCategories('a');
+      expect(result).toEqual([]);
+      expect(mockMwApi.get).not.toHaveBeenCalled();
+    });
+
+    test('should return empty array for empty search term', async () => {
+      const result = await service.fetchCategories('');
+      expect(result).toEqual([]);
+      expect(mockMwApi.get).not.toHaveBeenCalled();
+    });
+
+    test('should return empty array for null search term', async () => {
+      const result = await service.fetchCategories(null);
+      expect(result).toEqual([]);
+      expect(mockMwApi.get).not.toHaveBeenCalled();
+    });
+
+    test('should fetch categories with valid search term', async () => {
+      mockMwApi.get.mockResolvedValue([
+        'Category:Test',
+        ['Category:Belarus', 'Category:Europe', 'Category:Maps'],
+        [],
+        []
+      ]);
+
+      const result = await service.fetchCategories('Bel');
+
+      expect(result).toEqual([
+        { value: 'Category:Belarus', label: 'Category:Belarus' },
+        { value: 'Category:Europe', label: 'Category:Europe' },
+        { value: 'Category:Maps', label: 'Category:Maps' }
+      ]);
+    });
+
+    test('should use default limit of 10', async () => {
+      mockMwApi.get.mockResolvedValue([
+        'Category:Test',
+        ['Category:Test'],
+        [],
+        []
+      ]);
+
+      await service.fetchCategories('Test');
+
+      expect(mockMwApi.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          limit: 10
+        })
+      );
+    });
+
+    test('should use custom limit option', async () => {
+      mockMwApi.get.mockResolvedValue([
+        'Category:Test',
+        ['Category:Test'],
+        [],
+        []
+      ]);
+
+      await service.fetchCategories('Test', { limit: 20 });
+
+      expect(mockMwApi.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          limit: 20
+        })
+      );
+    });
+
+    test('should handle offset option', async () => {
+      mockMwApi.get.mockResolvedValue([
+        'Category:Test',
+        ['Category:Test'],
+        [],
+        []
+      ]);
+
+      await service.fetchCategories('Test', { offset: 50 });
+
+      expect(mockMwApi.get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          continue: '50'
+        })
+      );
+    });
+
+    test('should return empty array when API returns no data[1]', async () => {
+      mockMwApi.get.mockResolvedValue([
+        'Category:Test',
+        null,
+        [],
+        []
+      ]);
+
+      const result = await service.fetchCategories('Test');
+
+      expect(result).toEqual([]);
+    });
+
+    test('should return empty array when API returns null', async () => {
+      mockMwApi.get.mockResolvedValue(null);
+
+      const result = await service.fetchCategories('Test');
+
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('searchInCategoryWithPattern - safety limit', () => {
+    test('should stop at 5000 results and log warning', async () => {
+      const mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      // Create enough results to hit the limit
+      const bigBatch = Array.from({ length: 100 }, (_, i) => ({
+        title: `File:Test${i}.svg`,
+        pageid: i,
+        size: 1000
+      }));
+
+      mockMwApi.get.mockResolvedValue({
+        query: {
+          search: bigBatch
+        },
+        continue: { sroffset: 100 }
+      });
+
+      await service.searchInCategoryWithPattern('incategory:Test');
+
+      expect(mockConsoleWarn).toHaveBeenCalledWith('Search result limit reached (5000 files)');
+
+      mockConsoleWarn.mockRestore();
+    });
+  });
 });

@@ -165,5 +165,146 @@ describe('CategoryService', () => {
       expect(result.success).toBe(true);
       expect(result.modified).toBe(false);
     });
+
+    test('should remove categories first then add new ones', async () => {
+      let capturedTransformFn;
+      mockMwApiEdit.mockImplementation((title, fn) => {
+        capturedTransformFn = fn;
+        return Promise.resolve({ edit: { result: 'Success' } });
+      });
+
+      await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        ['Category:Add1'],
+        ['Category:Remove1']
+      );
+
+      // Simulate the transform function
+      const mockRevision = { content: '[[Category:Remove1]]\n[[Category:Keep]]' };
+      const result = capturedTransformFn(mockRevision);
+
+      expect(result.text).toContain('[[Category:Keep]]');
+      expect(result.text).toContain('[[Category:Add1]]');
+      expect(result.text).not.toContain('[[Category:Remove1]]');
+    });
+
+    test('should not add duplicate categories', async () => {
+      let capturedTransformFn;
+      mockMwApiEdit.mockImplementation((title, fn) => {
+        capturedTransformFn = fn;
+        return Promise.resolve({ edit: { result: 'Success' } });
+      });
+
+      await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        ['Category:Existing'],
+        []
+      );
+
+      const mockRevision = { content: '[[Category:Existing]]' };
+      const result = capturedTransformFn(mockRevision);
+
+      // Should return false since no changes needed
+      expect(result).toBe(false);
+    });
+
+    test('should return false when no changes needed', async () => {
+      let capturedTransformFn;
+      mockMwApiEdit.mockImplementation((title, fn) => {
+        capturedTransformFn = fn;
+        return Promise.resolve({ edit: { result: 'Success' } });
+      });
+
+      await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        ['Category:Existing'],
+        []
+      );
+
+      const mockRevision = { content: '[[Category:Existing]]' };
+      const result = capturedTransformFn(mockRevision);
+
+      expect(result).toBe(false);
+    });
+
+    test('should build correct edit summary', async () => {
+      let capturedTransformFn;
+      mockMwApiEdit.mockImplementation((title, fn) => {
+        capturedTransformFn = fn;
+        return Promise.resolve({ edit: { result: 'Success' } });
+      });
+
+      await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        ['Category:Add1', 'Category:Add2'],
+        ['Category:Remove1']
+      );
+
+      const mockRevision = { content: 'Some content' };
+      const result = capturedTransformFn(mockRevision);
+
+      expect(result.summary).toContain('+Category:Add1, Category:Add2');
+      expect(result.summary).toContain('-Category:Remove1');
+      expect(result.summary).toContain('Batch category update');
+      expect(result.minor).toBe(false);
+    });
+
+    test('should build edit summary with only additions', async () => {
+      let capturedTransformFn;
+      mockMwApiEdit.mockImplementation((title, fn) => {
+        capturedTransformFn = fn;
+        return Promise.resolve({ edit: { result: 'Success' } });
+      });
+
+      await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        ['Category:Add1'],
+        []
+      );
+
+      const mockRevision = { content: 'Some content' };
+      const result = capturedTransformFn(mockRevision);
+
+      expect(result.summary).toContain('+Category:Add1');
+      expect(result.summary).not.toContain('-');
+    });
+
+    test('should build edit summary with only removals', async () => {
+      let capturedTransformFn;
+      mockMwApiEdit.mockImplementation((title, fn) => {
+        capturedTransformFn = fn;
+        return Promise.resolve({ edit: { result: 'Success' } });
+      });
+
+      await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        [],
+        ['Category:Remove1']
+      );
+
+      const mockRevision = { content: '[[Category:Remove1]]' };
+      const result = capturedTransformFn(mockRevision);
+
+      expect(result.summary).toContain('-Category:Remove1');
+      expect(result.summary).not.toContain('+');
+    });
+
+    test('should throw error for non-no-changes errors', async () => {
+      const error = new Error('Edit conflict');
+      mockMwApiEdit.mockRejectedValue(error);
+
+      await expect(
+        service.updateCategoriesOptimized('File:Test.svg', ['Cat'], [])
+      ).rejects.toThrow('Edit conflict');
+    });
+
+    test('should handle error without message property', async () => {
+      const error = { someProperty: 'value' };
+      mockMwApiEdit.mockRejectedValue(error);
+
+      await expect(
+        service.updateCategoriesOptimized('File:Test.svg', ['Cat'], [])
+      ).rejects.toEqual(error);
+    });
   });
 });
