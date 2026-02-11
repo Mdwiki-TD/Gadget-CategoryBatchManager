@@ -64,6 +64,4 @@ function MessageDisplayPanel() {
     return app;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = MessageDisplayPanel
-}
+export default MessageDisplayPanel;

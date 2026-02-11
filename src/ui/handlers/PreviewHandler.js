@@ -9,8 +9,6 @@
  * @requires ChangeCalculator - For calculating category changes
  */
 
-/* global ValidationHelper, ChangeCalculator, Validator */
-
 class PreviewHandler {
     /**
      */
@@ -53,6 +51,4 @@ class PreviewHandler {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = PreviewHandler;
-}
+export default PreviewHandler;

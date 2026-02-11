@@ -66,6 +66,4 @@ class ProgressHandler {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ProgressHandler;
-}
+export default ProgressHandler;

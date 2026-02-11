@@ -8,6 +8,8 @@
     "build": "node build.js"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.0",
     "jest": "^29.7.0"
   },
   "license": "MIT"

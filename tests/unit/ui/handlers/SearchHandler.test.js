@@ -1,47 +1,38 @@
-const SearchHandler = require('../../../../src/ui/handlers/SearchHandler');
-
-// Mock Validator
-global.Validator = {
-  sanitizeTitlePattern: jest.fn((pattern) => {
-    if (!pattern || typeof pattern !== 'string') return '';
-    return pattern.trim().slice(0, 200)
-      .replace(/\\/g, '\\\\')
-      .replace(/"/g, '\\"')
-      .replace(/'/g, "\\'");
-  })
-};
+const { default: SearchHandler } = require('../../../../src/ui/handlers/SearchHandler');
+const { default: Validator } = require('../../../../src/utils/Validator');
 
 describe('SearchHandler', () => {
   let handler;
   let mockSearchService;
   let mockConsoleError;
+  let mockConsoleWarn;
+  let mockConsoleLog;
+  let sanitizeSpy;
 
   beforeEach(() => {
     // Mock console.error to suppress error messages during tests
     mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    // Mock console.warn to suppress warning messages during tests
+    mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    // Mock console.log to suppress log messages during tests
+    mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
 
-    // Reset Validator mock
-    global.Validator.sanitizeTitlePattern.mockImplementation((pattern) => {
-      if (!pattern || typeof pattern !== 'string') return '';
-      const trimmed = pattern.trim();
-      if (trimmed === '') return '';
-      return trimmed.slice(0, 200)
-        .replace(/\\/g, '\\\\')
-        .replace(/"/g, '\\"')
-        .replace(/'/g, "\\'");
-    });
+    // Spy on Validator.sanitizeTitlePattern
+    sanitizeSpy = jest.spyOn(Validator, 'sanitizeTitlePattern');
 
     mockSearchService = {
-      searchWithPattern: jest.fn(),
+      searchWithPatternCallback: jest.fn(),
       stopSearch: jest.fn()
     };
 
     handler = new SearchHandler(mockSearchService);
-    jest.clearAllMocks();
   });
 
   afterEach(() => {
     mockConsoleError.mockRestore();
+    mockConsoleWarn.mockRestore();
+    mockConsoleLog.mockRestore();
+    sanitizeSpy.mockRestore();
   });
 
   describe('createPattern', () => {
@@ -51,10 +42,10 @@ describe('SearchHandler', () => {
     });
 
     test('should create pattern with category and title pattern', () => {
-      global.Validator.sanitizeTitlePattern.mockReturnValue('BLR');
+      sanitizeSpy.mockReturnValue('BLR');
       const pattern = handler.createPattern('Test Category', 'BLR');
       expect(pattern).toBe('incategory:Test_Category intitle:/BLR/');
-      expect(global.Validator.sanitizeTitlePattern).toHaveBeenCalledWith('BLR');
+      expect(sanitizeSpy).toHaveBeenCalledWith('BLR');
     });
 
     test('should remove Category: prefix from category name', () => {
@@ -90,7 +81,7 @@ describe('SearchHandler', () => {
     });
 
     test('should handle title pattern with special characters', () => {
-      global.Validator.sanitizeTitlePattern.mockReturnValue('Test\\Pattern');
+      sanitizeSpy.mockReturnValue('Test\\Pattern');
       const pattern = handler.createPattern('Test', 'Test"Pattern');
       expect(pattern).toBe('incategory:Test intitle:/Test\\Pattern/');
     });
@@ -101,7 +92,7 @@ describe('SearchHandler', () => {
     });
 
     test('should not add intitle when title pattern is empty after sanitization', () => {
-      global.Validator.sanitizeTitlePattern.mockReturnValue('');
+      sanitizeSpy.mockReturnValue('');
       const pattern = handler.createPattern('Test Category', '   ');
       expect(pattern).toBe('incategory:Test_Category');
     });
@@ -116,43 +107,56 @@ describe('SearchHandler', () => {
     });
 
     test('should start search with created pattern', async () => {
-      global.Validator.sanitizeTitlePattern.mockReturnValue('BLR');
-      mockSearchService.searchWithPattern.mockResolvedValue([
+      sanitizeSpy.mockReturnValue('BLR');
+      mockSearchService.searchWithPatternCallback.mockResolvedValue([
         { title: 'File:Test.svg', pageid: 1 }
       ]);
 
       await handler.startSearch('Test Category', 'BLR', null);
 
       expect(handler.isSearching).toBe(false);
-      expect(mockSearchService.searchWithPattern).toHaveBeenCalledWith('incategory:Test_Category intitle:/BLR/');
+      expect(mockSearchService.searchWithPatternCallback).toHaveBeenCalledWith(
+        'incategory:Test_Category intitle:/BLR/',
+        expect.objectContaining({ onProgress: expect.any(Function) })
+      );
       expect(handler.onComplete).toHaveBeenCalledWith([{ title: 'File:Test.svg', pageid: 1 }]);
     });
 
     test('should use raw search pattern when provided', async () => {
-      mockSearchService.searchWithPattern.mockResolvedValue([]);
+      mockSearchService.searchWithPatternCallback.mockResolvedValue([]);
 
       const rawPattern = 'incategory:Custom_Category intitle:/^Test/';
-      await handler.startSearch('', '', rawPattern);
+      // Pass empty category to force use of rawPattern
+      await handler.startSearch('', null, rawPattern);
 
-      expect(mockSearchService.searchWithPattern).toHaveBeenCalledWith(rawPattern);
+      expect(mockSearchService.searchWithPatternCallback).toHaveBeenCalledWith(
+        rawPattern,
+        expect.objectContaining({ onProgress: expect.any(Function) })
+      );
     });
 
     test('should prefer created pattern over raw pattern', async () => {
-      global.Validator.sanitizeTitlePattern.mockReturnValue('BLR');
-      mockSearchService.searchWithPattern.mockResolvedValue([]);
+      sanitizeSpy.mockReturnValue('BLR');
+      mockSearchService.searchWithPatternCallback.mockResolvedValue([]);
 
       const rawPattern = 'incategory:Other_Category';
       await handler.startSearch('Test Category', 'BLR', rawPattern);
 
       // Should use created pattern, not raw pattern
-      expect(mockSearchService.searchWithPattern).toHaveBeenCalledWith('incategory:Test_Category intitle:/BLR/');
-      expect(mockSearchService.searchWithPattern).not.toHaveBeenCalledWith(rawPattern);
+      expect(mockSearchService.searchWithPatternCallback).toHaveBeenCalledWith(
+        'incategory:Test_Category intitle:/BLR/',
+        expect.objectContaining({ onProgress: expect.any(Function) })
+      );
+      expect(mockSearchService.searchWithPatternCallback).not.toHaveBeenCalledWith(
+        rawPattern,
+        expect.objectContaining({ onProgress: expect.any(Function) })
+      );
     });
 
     test('should return error for empty pattern', async () => {
       await handler.startSearch('', '', '');
 
-      expect(mockSearchService.searchWithPattern).not.toHaveBeenCalled();
+      expect(mockSearchService.searchWithPatternCallback).not.toHaveBeenCalled();
       expect(handler.onError).toHaveBeenCalledWith(expect.any(Error));
       expect(handler.onError).toHaveBeenCalledWith(expect.objectContaining({
         message: 'Please provide a valid category name or search pattern.'
@@ -160,8 +164,8 @@ describe('SearchHandler', () => {
     });
 
     test('should fire onProgress callback during search', async () => {
-      global.Validator.sanitizeTitlePattern.mockReturnValue('Test');
-      mockSearchService.searchWithPattern.mockResolvedValue([]);
+      sanitizeSpy.mockReturnValue('Test');
+      mockSearchService.searchWithPatternCallback.mockResolvedValue([]);
 
       await handler.startSearch('Test Category', 'Test', null);
 
@@ -170,8 +174,8 @@ describe('SearchHandler', () => {
     });
 
     test('should call onError when search fails', async () => {
-      global.Validator.sanitizeTitlePattern.mockReturnValue('Test');
-      mockSearchService.searchWithPattern.mockRejectedValue(new Error('API Error'));
+      sanitizeSpy.mockReturnValue('Test');
+      mockSearchService.searchWithPatternCallback.mockRejectedValue(new Error('API Error'));
 
       await handler.startSearch('Test Category', 'Test', null);
 
@@ -180,8 +184,8 @@ describe('SearchHandler', () => {
     });
 
     test('should set isSearching to false after error', async () => {
-      global.Validator.sanitizeTitlePattern.mockReturnValue('Test');
-      mockSearchService.searchWithPattern.mockRejectedValue(new Error('API Error'));
+      sanitizeSpy.mockReturnValue('Test');
+      mockSearchService.searchWithPatternCallback.mockRejectedValue(new Error('API Error'));
 
       await handler.startSearch('Test Category', 'Test', null);
 
@@ -189,8 +193,8 @@ describe('SearchHandler', () => {
     });
 
     test('should ignore duplicate search calls', async () => {
-      global.Validator.sanitizeTitlePattern.mockReturnValue('Test');
-      mockSearchService.searchWithPattern.mockImplementation(() =>
+      sanitizeSpy.mockReturnValue('Test');
+      mockSearchService.searchWithPatternCallback.mockImplementation(() =>
         new Promise(resolve => setTimeout(() => resolve([]), 100))
       );
 
@@ -202,13 +206,13 @@ describe('SearchHandler', () => {
 
       await firstSearch;
 
-      // Should only call searchWithPattern once
-      expect(mockSearchService.searchWithPattern).toHaveBeenCalledTimes(1);
+      // Should only call searchWithPatternCallback once
+      expect(mockSearchService.searchWithPatternCallback).toHaveBeenCalledTimes(1);
     });
 
     test('should handle empty search results', async () => {
-      global.Validator.sanitizeTitlePattern.mockReturnValue('Test');
-      mockSearchService.searchWithPattern.mockResolvedValue([]);
+      sanitizeSpy.mockReturnValue('Test');
+      mockSearchService.searchWithPatternCallback.mockResolvedValue([]);
 
       await handler.startSearch('Test Category', 'Test', null);
 
@@ -216,12 +220,12 @@ describe('SearchHandler', () => {
     });
 
     test('should work without callbacks registered', async () => {
-      global.Validator.sanitizeTitlePattern.mockReturnValue('Test');
+      sanitizeSpy.mockReturnValue('Test');
       handler.onProgress = null;
       handler.onComplete = null;
       handler.onError = null;
 
-      mockSearchService.searchWithPattern.mockResolvedValue([]);
+      mockSearchService.searchWithPatternCallback.mockResolvedValue([]);
 
       await expect(handler.startSearch('Test Category', 'Test', null)).resolves.not.toThrow();
     });

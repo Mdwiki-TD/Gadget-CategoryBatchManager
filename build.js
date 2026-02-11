@@ -21,6 +21,8 @@ const SOURCE_FILES = [
     'src/services/CategoryService.js',
     'src/services/SearchService.js',
 
+    'src/ui/components/CategoryLookup.js',
+
     'src/ui/panels/CategoryInputsPanel.js',
     'src/ui/panels/ExecutePanel.js',
     'src/ui/panels/FilesListPanel.js',
@@ -55,19 +57,16 @@ const OUTPUT_CSS = 'dist/test2.css';
  */
 function stripModuleExports(code) {
     // Remove blocks like:
-    // if (typeof module !== 'undefined' && module.exports) {
-    //   module.exports = ClassName;
-    // }
-    // Use [\s\S] instead of . to match across newlines
-    code = code.replace(
-        /if \(typeof module !== 'undefined' && module\.exports\) \{[\s\S]*?module\.exports = [^;]+;[\s\S]*?\}\n?/g,
-        ''
-    );
+    // (// @ts-ignore)
+    code = code.replace(/\/\/\s*@ts-ignore/g, '');
+
     // Remove blocks like:
-    // module.exports = {
-    //     BatchManager
-    // };
-    code = code.replace(/module\.exports = \{[\s\S]*?\};\n?/g, '');
+    // export default BatchManager;
+    code = code.replace(/export default [^;\n]+;\n?/g, '');
+
+    // Remove blocks like:
+    // import { CategoryInputsPanel, ExecutePanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel } from './ui/panels';
+    code = code.replace(/import [^;]+ from ['"][^'"]+['"];\n?/g, '');
     return code;
 }
 

@@ -24,6 +24,4 @@ class CategoryOperation {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CategoryOperation;
-}
+export default CategoryOperation;

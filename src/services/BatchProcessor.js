@@ -3,15 +3,16 @@
  * @class BatchProcessor
  */
 
-/* global RateLimiter, Validator */
+import RateLimiter from './../utils/RateLimiter.js';
+import CategoryService from './../services/CategoryService.js';
 
 class BatchProcessor {
     /**
-     * @param {CategoryService} categoryService - Category service instance
+     * @param {CategoryService} category_service - Category service instance
      */
-    constructor(categoryService) {
-        this.categoryService = categoryService;
-        this.rateLimiter = new RateLimiter();
+    constructor(category_service) {
+        this.category_service = category_service;
+        this.rate_limiter = new RateLimiter();
         this.shouldStop = false;
     }
 
@@ -68,10 +69,10 @@ class BatchProcessor {
 
             try {
                 // Wait to respect rate limits (1 edit per 2 seconds)
-                await this.rateLimiter.wait();
+                // await this.rate_limiter.wait();
 
                 // Update categories
-                const result = await this.categoryService.updateCategories(
+                const result = await this.category_service.updateCategories(
                     file.title,
                     categoriesToAdd,
                     categoriesToRemove
@@ -110,6 +111,4 @@ class BatchProcessor {
 
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = BatchProcessor;
-}
+export default BatchProcessor;

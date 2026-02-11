@@ -10,7 +10,7 @@
  * @class APIService
  */
 
-/* global mw */
+import { Validator } from './../utils';
 
 class APIService {
     constructor() {
@@ -191,9 +191,10 @@ class APIService {
      * Search for files in a category using MediaWiki search API
      * Much more efficient than loading all category members
      * @param {string} srsearch - Search pattern
+     * @param {Object} [callbacks={}] - Callback functions
      * @returns {Promise<Array>} Array of file objects
      */
-    async searchInCategoryWithPattern(srsearch) {
+    async searchInCategoryWithPattern(srsearch, callbacks = {}) {
         const results = [];
         let continueToken = null;
 
@@ -221,6 +222,11 @@ class APIService {
                     size: file.size,
                     timestamp: file.timestamp
                 }));
+
+                // Call progress callback with the number of results found so far
+                if (callbacks.onProgress) {
+                    callbacks.onProgress(results.length);
+                }
 
                 results.push(...searchResults);
             }
@@ -297,6 +303,4 @@ class APIService {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = APIService;
-}
+export default APIService;

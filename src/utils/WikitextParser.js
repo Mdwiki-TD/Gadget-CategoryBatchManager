@@ -118,6 +118,4 @@ class WikitextParser {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = WikitextParser;
-}
+export default WikitextParser;

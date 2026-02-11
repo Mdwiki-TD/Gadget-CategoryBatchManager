@@ -15,11 +15,14 @@
  * @param {SearchHandler} search_handler
  * @returns {Object} Vue app configuration
  */
+
+import SearchHandler from './../handlers/SearchHandler.js';
+
 function SearchPanel(search_handler) {
     const app = {
         data() {
             return {
-                search_handler,
+                search_handler: search_handler,
 
                 // ── User inputs ──────────────────────────────────────────
                 sourceCategory: 'Category:Our World in Data graphs of Austria',
@@ -167,6 +170,4 @@ function SearchPanel(search_handler) {
     return app;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = SearchPanel;
-}
+export default SearchPanel;

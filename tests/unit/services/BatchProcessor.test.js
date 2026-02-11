@@ -1,4 +1,4 @@
-const BatchProcessor = require('../../../src/services/BatchProcessor');
+const { default: BatchProcessor } = require('../../../src/services/BatchProcessor');
 
 // Mock RateLimiter
 global.RateLimiter = class {
@@ -28,6 +28,9 @@ describe('BatchProcessor', () => {
       updateCategories: jest.fn().mockResolvedValue({ success: true, modified: true })
     };
     processor = new BatchProcessor(mockCategoryService);
+
+    // Mock rate_limiter.wait() to avoid 2 second delays in tests
+    processor.rate_limiter.wait = jest.fn().mockResolvedValue(undefined);
   });
 
   afterEach(() => {

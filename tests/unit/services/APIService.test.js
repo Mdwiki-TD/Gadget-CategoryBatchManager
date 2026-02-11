@@ -1,13 +1,18 @@
-const APIService = require('../../../src/services/APIService');
+const { default: APIService } = require('../../../src/services/APIService');
+const { default: Validator } = require('../../../src/utils/Validator');
 
 describe('APIService', () => {
   let service;
   let mockMwApi;
   let mockConsoleError;
+  let sanitizeSpy;
 
   beforeEach(() => {
     // Mock console.error to suppress error messages during tests
     mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Spy on Validator.sanitizeTitlePattern
+    sanitizeSpy = jest.spyOn(Validator, 'sanitizeTitlePattern');
 
     // Mock mw.Api
     mockMwApi = {
@@ -27,7 +32,7 @@ describe('APIService', () => {
 
   afterEach(() => {
     delete global.mw;
-    jest.clearAllMocks();
+    sanitizeSpy.mockRestore();
     mockConsoleError.mockRestore();
   });
 
@@ -593,9 +598,7 @@ describe('APIService', () => {
 
   describe('searchInCategory', () => {
     test('should sanitize pattern and delegate to searchInCategoryWithPattern', async () => {
-      global.Validator = {
-        sanitizeTitlePattern: jest.fn().mockReturnValue('Test')
-      };
+      sanitizeSpy.mockReturnValue('Test');
 
       mockMwApi.get.mockResolvedValue({
         query: { search: [] }
@@ -603,7 +606,7 @@ describe('APIService', () => {
 
       await service.searchInCategory('Test Category', 'Test');
 
-      expect(global.Validator.sanitizeTitlePattern).toHaveBeenCalledWith('Test');
+      expect(sanitizeSpy).toHaveBeenCalledWith('Test');
       expect(mockMwApi.get).toHaveBeenCalledWith(
         expect.objectContaining({
           srsearch: 'incategory:Test_Category intitle:/Test/'

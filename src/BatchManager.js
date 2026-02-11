@@ -3,6 +3,12 @@
  * @returns {Object} Vue app definition object.
  */
 
+import { APIService, BatchProcessor, CategoryService, SearchService } from './services';
+import { CategoryInputsPanel, ExecutePanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel } from './ui/panels';
+import { CategoryInputsHandler, ExecuteHandler, FileListHandler, PreviewHandler, SearchHandler, ProgressHandler, ChangesHandler } from './ui/handlers';
+import CategoryLookup from './ui/components/CategoryLookup.js';
+import ValidationHelper from './ui/helpers/ValidationHelper.js';
+
 function BatchManager() {
     const mwApi = new APIService();
     const search_service = new SearchService(mwApi);
@@ -70,11 +76,15 @@ function BatchManager() {
 
     const app = {
         data: function () {
-            const app_data = {
-                validator: validator,
+            return {
+                // vue apps handlers
+                execute_operation_handler: execute_operation_handler,
+                progress_handler: progress_handler,
+                changes_handler: changes_handler,
                 preview_handler: preview_handler,
+                category_inputs_handler: category_inputs_handler,
+                search_handler: search_handler,
                 files_list: files_list,
-                mwApi: mwApi, // Reference to API service instance
 
                 editSummary: 'Batch category update via Category Batch Manager',
 
@@ -96,7 +106,6 @@ function BatchManager() {
                 // FilesListPanel state
                 ...files_list_app.data(),
             };
-            return app_data;
         },
         computed: {
             ...files_list_app.computed,
@@ -121,11 +130,12 @@ function BatchManager() {
             // FilesListPanel methods
             ...files_list_app.methods,
         },
-        template: template
+        template: template,
+        components: {
+            CategoryLookup: CategoryLookup(),
+        }
     };
     return app;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = BatchManager;
-}
+export default BatchManager;

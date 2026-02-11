@@ -5,6 +5,30 @@
  */
 
 function CategoryInputsPanel(category_inputs_handler) {
+    const addElement = `
+        <!-- Category Add Message -->
+        <div v-if="addCategory.message.show" class="margin-bottom-20">
+            <cdx-message
+            allow-user-dismiss
+            :type="addCategory.message.type"
+            :inline="false"
+            >
+                {{ addCategory.message.text }}
+            </cdx-message>
+        </div>
+    `;
+    const removeElement = `
+        <!-- Category Remove Message -->
+        <div v-if="removeCategory.message.show" class="margin-bottom-20">
+            <cdx-message
+            allow-user-dismiss
+            :type="removeCategory.message.type"
+            :inline="false">
+                {{ removeCategory.message.text }}
+            </cdx-message>
+        </div>
+    `;
+
     const app = {
         data: function () {
             return {
@@ -43,23 +67,58 @@ function CategoryInputsPanel(category_inputs_handler) {
             };
         },
         template: `
-            <CategoryLookup
-                :model="addCategory"
-                label="Add Categories"
-                aria-label="Add categories"
-                placeholder="Type to search categories"
-                type="add"
-                :handler="category_inputs_handler"
-            />
+            <div class="cbm-category-input-group">
+                <cdx-label input-id="cbm-add-cats" class="cbm-label">
+                    Add Categories
+                </cdx-label>
+                <span class="cbm-help-text">
+                    e.g., Category:Belarus, Category:Europe
+                </span>
+                <cdx-multiselect-lookup
+                    id="cdx-category-add"
+                    v-model:input-chips="addCategory.chips"
+                    v-model:selected="addCategory.selected"
+		            v-model:input-value="addCategory.input"
+                    :menu-items="addCategory.menuItems"
+                    :menu-config="addCategory.menuConfig"
+                    aria-label="Add categories"
+                    placeholder="Type to search categories"
+                    @update:input-value="onAddCategoryInput"
+		            @load-more="addOnLoadMore"
+                >
+                    <template #no-results>
+                        Type at least 2 characters to search
+                    </template>
+                </cdx-multiselect-lookup>
+            </div>
 
-            <CategoryLookup
-                :model="removeCategory"
-                label="Remove Categories"
-                aria-label="Remove categories"
-                placeholder="Type to search categories"
-                type="remove"
-                :handler="category_inputs_handler"
-            />
+            <!-- Category Add Message -->
+            ${addElement}
+
+            <div class="cbm-category-input-group">
+                <cdx-label input-id="cbm-remove-cats" class="cbm-label">
+                    Remove Categories
+                </cdx-label>
+                <cdx-multiselect-lookup
+                    id="cdx-category-remove"
+                    v-model:input-chips="removeCategory.chips"
+                    v-model:selected="removeCategory.selected"
+		            v-model:input-value="removeCategory.input"
+                    :menu-items="removeCategory.menuItems"
+                    :menu-config="removeCategory.menuConfig"
+                    aria-label="Remove categories"
+                    placeholder="Type to search categories"
+                    @update:input-value="onRemoveCategoryInput"
+		            @load-more="removeOnLoadMore"
+                    >
+                    <template #no-results>
+                        Type at least 2 characters to search
+                    </template>
+                </cdx-multiselect-lookup>
+            </div>
+
+            <!-- Category Remove Message -->
+            ${removeElement}
         `,
         methods: {
             displayCategoryMessage(text, type = 'error', msg_type = 'add') {
@@ -125,15 +184,10 @@ function CategoryInputsPanel(category_inputs_handler) {
                     this.removeCategory.menuItems.push(...results);
                 }
             },
-        },
-        components: {
-            CategoryLookup: CategoryLookup()
         }
-
     }
     //
     return app;
 
 }
-
 export default CategoryInputsPanel;

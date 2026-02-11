@@ -5,7 +5,6 @@
  * @requires ChangeCalculator - For calculating which files will actually change
  */
 
-/* global ChangeCalculator */
 class ExecuteHandler {
     /**
      * @param {Object} validator - ValidationHelper instance
@@ -55,6 +54,4 @@ class ExecuteHandler {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ExecuteHandler;
-}
+export default ExecuteHandler;

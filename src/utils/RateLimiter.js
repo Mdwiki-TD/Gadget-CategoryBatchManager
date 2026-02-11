@@ -37,6 +37,7 @@ class RateLimiter {
         const results = [];
         for (let i = 0; i < items.length; i += batchSize) {
             const itemBatch = items.slice(i, i + batchSize);
+            // @ts-ignore
             const batchResults = await Promise.all(itemBatch.map(processor));
             results.push(...batchResults);
         }
@@ -44,6 +45,4 @@ class RateLimiter {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = RateLimiter;
-}
+export default RateLimiter;

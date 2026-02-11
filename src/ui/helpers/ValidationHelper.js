@@ -8,7 +8,7 @@
  * @requires Validator - For checking circular category references
  */
 
-/* global Validator */
+import { Validator } from './../../utils';
 
 class ValidationHelper {
     /**
@@ -72,6 +72,4 @@ class ValidationHelper {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ValidationHelper;
-}
+export default ValidationHelper;

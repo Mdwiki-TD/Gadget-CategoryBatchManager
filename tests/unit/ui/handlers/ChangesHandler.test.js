@@ -1,4 +1,4 @@
-const ChangesHandler = require('../../../../src/ui/handlers/ChangesHandler');
+const { default: ChangesHandler } = require('../../../../src/ui/handlers/ChangesHandler');
 
 // Mock ChangeCalculator globally
 global.ChangeCalculator = {
@@ -8,13 +8,21 @@ global.ChangeCalculator = {
 describe('ChangesHandler', () => {
   let handler;
   let mockValidator;
+  let mockConsoleLog;
 
   beforeEach(() => {
+    // Suppress console.log in tests
+    mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
+
     mockValidator = {
       hasDuplicateCategories: jest.fn(),
       filterCircularCategories: jest.fn()
     };
     handler = new ChangesHandler(mockValidator);
+  });
+
+  afterEach(() => {
+    mockConsoleLog.mockRestore();
   });
 
   describe('validateOperation', () => {

@@ -5,7 +5,8 @@
  * @class SearchService
  */
 
-/* global FileModel */
+import FileModel from './../models/FileModel.js';
+import APIService from './APIService.js';
 
 class SearchService {
     /**
@@ -67,6 +68,26 @@ class SearchService {
     async searchWithPattern(srsearch) {
         this.resetSearchFlag();
         const searchResults = await this.api.searchInCategoryWithPattern(srsearch);
+
+        if (this.shouldStopSearch) {
+            console.log('[CBM-FS] Search stopped after API call');
+            return [];
+        }
+
+        return await this.getFilesDetails(searchResults);
+    }
+    /**
+     * Search files by pattern within a category.
+     * Uses the MediaWiki search API for efficiency instead of loading all
+     * category members.
+     *
+     * @param {string} srsearch   - Search query string
+     * @param {Object} [callbacks={}] - Callback functions (currently unused, reserved for future use)
+     * @returns {Promise<Array<FileModel>>} Matching file models
+     */
+    async searchWithPatternCallback(srsearch, callbacks = {}) {
+        this.resetSearchFlag();
+        const searchResults = await this.api.searchInCategoryWithPattern(srsearch, callbacks);
 
         if (this.shouldStopSearch) {
             console.log('[CBM-FS] Search stopped after API call');
@@ -150,6 +171,4 @@ class SearchService {
     }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = SearchService;
-}
+export default SearchService;

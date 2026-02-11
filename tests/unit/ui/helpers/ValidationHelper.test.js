@@ -1,22 +1,22 @@
-const ValidationHelper = require('../../../../src/ui/helpers/ValidationHelper');
-
-// Mock Validator
-global.Validator = {
-  normalizeCategoryName: (categoryName) => {
-    if (!categoryName || typeof categoryName !== 'string') return '';
-    return categoryName
-      .replace(/^Category:/i, '')
-      .replace(/_/g, ' ')
-      .trim();
-  },
-  isCircularCategory: () => false
-};
+const { default: ValidationHelper } = require('../../../../src/ui/helpers/ValidationHelper');
+const { default: Validator } = require('../../../../src/utils/Validator');
 
 describe('ValidationHelper', () => {
   let validationHelper;
+  let isCircularSpy;
+  let normalizeSpy;
 
   beforeEach(() => {
+    // Spy on Validator methods
+    isCircularSpy = jest.spyOn(Validator, 'isCircularCategory');
+    normalizeSpy = jest.spyOn(Validator, 'normalizeCategoryName');
+
     validationHelper = new ValidationHelper();
+  });
+
+  afterEach(() => {
+    isCircularSpy.mockRestore();
+    normalizeSpy.mockRestore();
   });
 
   describe('hasDuplicateCategories', () => {
@@ -153,10 +153,10 @@ describe('ValidationHelper', () => {
 
   describe('filterCircularCategories', () => {
     test('should filter out circular categories', () => {
-      // Mock isCircularCategory to return true for some categories
-      global.Validator.isCircularCategory = (current, toAdd) => {
+      // Mock isCircularCategory to return true for specific category
+      isCircularSpy.mockImplementation((current, toAdd) => {
         return toAdd === 'Category:Circular';
-      };
+      });
 
       const addCategories = ['Category:Valid', 'Category:Circular'];
       const sourceCategory = 'Category:Source';
@@ -168,7 +168,7 @@ describe('ValidationHelper', () => {
     });
 
     test('should return all as circular if all are circular', () => {
-      global.Validator.isCircularCategory = () => true;
+      isCircularSpy.mockReturnValue(true);
 
       const addCategories = ['Category:Circular1', 'Category:Circular2'];
       const sourceCategory = 'Category:Source';
@@ -180,7 +180,7 @@ describe('ValidationHelper', () => {
     });
 
     test('should return all categories if none are circular', () => {
-      global.Validator.isCircularCategory = () => false;
+      isCircularSpy.mockReturnValue(false);
 
       const addCategories = ['Category:A', 'Category:B'];
       const sourceCategory = 'Category:Source';
