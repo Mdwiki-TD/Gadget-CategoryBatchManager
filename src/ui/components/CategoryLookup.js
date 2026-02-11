@@ -10,7 +10,8 @@ function CategoryLookup() {
         },
 
         template: `
-            <div>
+            <div class="cbm-category-lookup">
+                <!-- Input Group -->
                 <div class="cbm-category-input-group">
                     <cdx-label class="cbm-label">
                         {{ label }}
@@ -25,20 +26,22 @@ function CategoryLookup() {
                         :aria-label="ariaLabel"
                         :placeholder="placeholder"
                         @update:input-value="onInput"
-                        @load-more="onLoadMore"
-                    >
+                        @load-more="onLoadMore">
                         <template #no-results>
                             Type at least 2 characters to search
                         </template>
                     </cdx-multiselect-lookup>
                 </div>
 
-                <div v-if="model.message.show" class="margin-bottom-20">
+                <!-- Message -->
+                <div
+                    v-if="model.message?.show"
+                    class="margin-bottom-20">
                     <cdx-message
                         allow-user-dismiss
                         :type="model.message.type"
                         :inline="false"
-                    >
+                        @dismiss="hideMessage">
                         {{ model.message.text }}
                     </cdx-message>
                 </div>
@@ -47,7 +50,7 @@ function CategoryLookup() {
 
         methods: {
             async onInput(value) {
-                this.model.message.show = false;
+                this.hideMessage();
 
                 const data = await this.handler.onCategoryInput(
                     value,
@@ -55,18 +58,28 @@ function CategoryLookup() {
                     this.type
                 );
 
-                if (data) {
+                if (data !== null) {
                     this.model.menuItems = data;
                 }
             },
 
             async onLoadMore() {
-                const results = await this.handler.onLoadMore(this.model, this.type);
+                const results = await this.handler.onLoadMore(
+                    this.model,
+                    this.type
+                );
 
-                if (results?.length) {
+                if (results && results.length > 0) {
                     this.model.menuItems.push(...results);
                 }
-            }
-        }
+            },
+
+            hideMessage() {
+                if (this.model.message) {
+                    this.model.message.show = false;
+                    this.model.message.text = "";
+                }
+            },
+        },
     }
 }
