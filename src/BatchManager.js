@@ -37,9 +37,14 @@ function BatchManager() {
     const files_list_app = FilesListPanel(files_list);
 
     const template = `
-        <div class="cbm-container">
-            <h2 class="cbm-title">Category Batch Manager!</h2>
-
+        <cdx-dialog
+            v-model:open="showDialog"
+            class="cbm-container"
+            title="Category Batch Manager"
+            :use-close-button="true"
+            close-button-label="Close"
+            @default="showDialog = true"
+        >
             <div class="cbm-main-layout">
                 <!-- Left Panel: Search and Actions -->
                 <div class="cbm-left-panel">
@@ -75,7 +80,7 @@ function BatchManager() {
             </div>
             <!-- Message Display -->
             ${message_display_app.template}
-        </div>
+        </cdx-dialog>
     `;
 
     const app = {
