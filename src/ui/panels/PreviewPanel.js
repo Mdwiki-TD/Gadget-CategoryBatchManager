@@ -72,15 +72,17 @@ function PreviewPanel(changes_helpers) {
         methods: {
 
             filterFilesToProcess(filesToProcess) {
-                return filesToProcess
-                    .map(item => ({
-                        file: item.file,
-                        currentCategories: [...item.currentCategories],
-                        newCategories: [...item.newCategories], // TypeError: item.newCategories is not iterable
-                        diff: item.newCategories.length - item.currentCategories.length
-                    }));
-            },
+                return filesToProcess.map(row => {
+                    console.log('newCategories:', row.newCategories, Array.isArray(row.newCategories));
 
+                    return {
+                        file: row.file,
+                        currentCategories: [...row.currentCategories],
+                        newCategories: [...row.newCategories],
+                        diff: row.newCategories.length - row.currentCategories.length
+                    };
+                });
+            },
             handlePreview: function () {
                 console.log('[CBM-P] Preview button clicked');
                 const callbacks = {
