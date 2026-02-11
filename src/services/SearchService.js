@@ -54,7 +54,7 @@ class SearchService {
             return [];
         }
 
-        return await this.getFilesDetails(searchResults);
+        return await this._getFilesDetails(searchResults);
     }
 
     /**
@@ -74,7 +74,7 @@ class SearchService {
             return [];
         }
 
-        return await this.getFilesDetails(searchResults);
+        return await this._getFilesDetails(searchResults);
     }
     /**
      * Search files by pattern within a category.
@@ -95,7 +95,7 @@ class SearchService {
         }
         const totalResults = searchResults.length;
 
-        return await this.getFilesDetails(searchResults, {
+        return await this._getFilesDetails(searchResults, {
             onProgress: (totalFetched) => {
                 const percent = totalResults > 0 ? Math.round((totalFetched / totalResults) * 100) : 100;
                 callbacks?.onProgressFileDetails?.(`Fetching details for ${totalFetched} of ${totalResults} files…`, percent);
@@ -110,7 +110,7 @@ class SearchService {
      * @param {Array<{title: string}>} files - Files to enrich
      * @returns {Promise<Array<FileModel>>} Enriched file models (may be partial if stopped)
      */
-    async getFilesDetails(files, callbacks = {}) {
+    async _getFilesDetails(files, callbacks = {}) {
         if (files.length === 0) return [];
 
         const batches = this.createBatches(files, 50); // 50 = API limit
@@ -125,7 +125,7 @@ class SearchService {
 
             const titles = batch.map(f => f.title);
             const info = await this.api.getFileInfo(titles);
-            results.push(...this.parseFileInfo(info));
+            results.push(...this._parseFileInfo(info));
 
             callbacks?.onProgress?.(results.length);
         }
@@ -154,7 +154,7 @@ class SearchService {
      * @param {Object} apiResponse - Raw response from getFileInfo
      * @returns {Array<FileModel>}
      */
-    parseFileInfo(apiResponse) {
+    _parseFileInfo(apiResponse) {
         const pages = apiResponse.query.pages;
         const fileModels = [];
 

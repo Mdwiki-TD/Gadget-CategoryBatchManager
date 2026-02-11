@@ -144,7 +144,7 @@ describe('SearchService', () => {
     });
   });
 
-  describe('parseFileInfo', () => {
+  describe('_parseFileInfo', () => {
     test('should parse API response into file models', () => {
       const apiResponse = {
         query: {
@@ -161,7 +161,7 @@ describe('SearchService', () => {
         }
       };
 
-      const result = service.parseFileInfo(apiResponse);
+      const result = service._parseFileInfo(apiResponse);
       expect(result).toHaveLength(1);
       expect(result[0].title).toBe('File:Test.svg');
       expect(result[0].pageid).toBe(123);
@@ -177,7 +177,7 @@ describe('SearchService', () => {
         }
       };
 
-      const result = service.parseFileInfo(apiResponse);
+      const result = service._parseFileInfo(apiResponse);
       expect(result).toHaveLength(0);
     });
   });
@@ -328,9 +328,9 @@ describe('SearchService', () => {
     });
   });
 
-  describe('getFilesDetails', () => {
+  describe('_getFilesDetails', () => {
     test('should return empty array when no files provided', async () => {
-      const result = await service.getFilesDetails([]);
+      const result = await service._getFilesDetails([]);
       expect(result).toEqual([]);
       expect(mockApi.getFileInfo).not.toHaveBeenCalled();
     });
@@ -347,7 +347,7 @@ describe('SearchService', () => {
         }
       });
 
-      await service.getFilesDetails(files);
+      await service._getFilesDetails(files);
 
       expect(mockApi.getFileInfo).toHaveBeenCalledTimes(3);
     });
@@ -360,7 +360,7 @@ describe('SearchService', () => {
 
       mockApi.getFileInfo.mockResolvedValue({ query: { pages: {} } });
 
-      await service.getFilesDetails(files);
+      await service._getFilesDetails(files);
 
       expect(mockApi.getFileInfo).toHaveBeenCalledTimes(3);
     });
@@ -376,7 +376,7 @@ describe('SearchService', () => {
         }
       });
 
-      const result = await service.getFilesDetails(files);
+      const result = await service._getFilesDetails(files);
 
       expect(mockApi.getFileInfo).toHaveBeenCalledTimes(1);
       expect(result).toHaveLength(1);
@@ -398,7 +398,7 @@ describe('SearchService', () => {
         }
       });
 
-      const result = await service.getFilesDetails(files);
+      const result = await service._getFilesDetails(files);
 
       expect(result[0].title).toBe('File:Test.svg');
       expect(result[0].thumbnail).toBe('http://example.com/thumb.png');
@@ -434,7 +434,7 @@ describe('SearchService', () => {
         };
       });
 
-      const result = await service.getFilesDetails(files);
+      const result = await service._getFilesDetails(files);
 
       expect(mockConsoleLog).toHaveBeenCalledWith('[CBM-FS] Search stopped during file details fetch');
     });
