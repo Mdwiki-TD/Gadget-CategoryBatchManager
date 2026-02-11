@@ -31,7 +31,7 @@ function BatchManager() {
 
     // vue apps
     const execute_panel = ExecutePanel(execute_handler, progress_handler, changes_helpers);
-    const preview_panel_app = PreviewPanel(preview_handler);
+    const preview_panel_app = PreviewPanel(preview_handler, changes_helpers);
     const category_inputs_app = CategoryInputsPanel(category_inputs_handler);
     const message_display_app = MessageDisplayPanel();
     const search_panel_app = SearchPanel(search_handler);

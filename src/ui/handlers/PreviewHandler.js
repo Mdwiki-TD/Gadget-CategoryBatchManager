@@ -18,38 +18,13 @@ class PreviewHandler {
     constructor(changes_helpers) {
         this.changes_helpers = changes_helpers;
     }
-    /**
-     * Handle preview button click
-     * Generates and displays a preview of category changes
-     */
-
-    getPreparation(
-        sourceCategory,
-        selectedFiles,
-        addCategorySelected,
-        removeCategorySelected,
-        callbacks = {}
-    ) {
-        const preparation = this.changes_helpers.validateAndPrepare(
-            sourceCategory,
-            selectedFiles,
-            addCategorySelected,
-            removeCategorySelected,
-            callbacks
-        );
-        if (!preparation) {
-            console.error('[CBM-P] Preview preparation failed');
-            return;
-        }
-        return preparation;
-    }
 
     filterFilesToProcess(filesToProcess) {
         return filesToProcess
             .map(item => ({
                 file: item.file,
                 currentCategories: [...item.currentCategories],
-                newCategories: [...item.newCategories],
+                newCategories: [...item.newCategories], // TypeError: item.newCategories is not iterable
                 diff: item.newCategories.length - item.currentCategories.length
             }));
     }

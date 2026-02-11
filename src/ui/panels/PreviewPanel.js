@@ -1,13 +1,15 @@
 
 import { PreviewHandler } from "../handlers";
+import { ChangesHelper } from "../helpers";
 
 /**
  * PreviewPanel
  * @param {PreviewHandler} preview_handler - PreviewHandler instance
+ * @param {ChangesHelper} changes_helpers - ChangesHelper instance for validation and preparation
  * @returns {Object} Vue app configuration
  */
 
-function PreviewPanel(preview_handler) {
+function PreviewPanel(preview_handler, changes_helpers) {
     const app = {
         data: function () {
             return {
@@ -72,19 +74,20 @@ function PreviewPanel(preview_handler) {
         methods: {
             handlePreview: function () {
                 console.log('[CBM-P] Preview button clicked');
-                const preparation = preview_handler.getPreparation(
+                const callbacks = {
+                    showWarningMessage: (msg) => {
+                        this.showWarningMessage(msg);
+                    },
+                    displayCategoryMessage: (msg, notice_type, msg_type) => {
+                        this.displayCategoryMessage(msg, notice_type, msg_type);
+                    }
+                };
+                const preparation = changes_helpers.validateAndPrepare(
                     this.sourceCategory,
                     this.selectedFiles,
                     this.addCategory.selected,
                     this.removeCategory.selected,
-                    {
-                        showWarningMessage: (msg) => {
-                            this.showWarningMessage(msg);
-                        },
-                        displayCategoryMessage: (msg, notice_type, msg_type) => {
-                            this.displayCategoryMessage(msg, notice_type, msg_type);
-                        }
-                    }
+                    callbacks
                 );
                 if (!preparation) {
                     console.error('[CBM-P] Preview preparation failed');
