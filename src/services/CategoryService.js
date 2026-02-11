@@ -93,7 +93,7 @@ class CategoryService {
                 newWikitext = this.parser.addCategory(newWikitext, category);
             }
         }
-        let success = false;
+        let success = true;
         if (newWikitext !== wikitext) {
             const summary = this.buildEditSummary(toAdd, toRemove);
             const result = await this.api.editPage(fileTitle, newWikitext, summary);
