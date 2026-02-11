@@ -1,5 +1,5 @@
-const { default: SearchHandler } = require('../../../../src/ui/handlers/SearchHandler');
-const { default: Validator } = require('../../../../src/utils/Validator');
+const { default: SearchHandler } = require('../../../src/ui/handlers/SearchHandler');
+const { default: Validator } = require('../../../src/utils/Validator');
 
 describe('SearchHandler', () => {
   let handler;

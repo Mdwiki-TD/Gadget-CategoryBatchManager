@@ -1,4 +1,4 @@
-const { default: ChangesHandler } = require('../../../../src/ui/handlers/ChangesHandler');
+const { default: ChangesHandler } = require('../../../src/ui/handlers/ChangesHandler');
 
 // Mock ChangeCalculator globally
 global.ChangeCalculator = {

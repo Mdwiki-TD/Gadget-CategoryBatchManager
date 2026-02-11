@@ -1,5 +1,5 @@
-const { default: ValidationHelper } = require('../../../../src/ui/helpers/ValidationHelper');
-const { default: Validator } = require('../../../../src/utils/Validator');
+const { default: ValidationHelper } = require('../../../src/ui/helpers/ValidationHelper');
+const { default: Validator } = require('../../../src/utils/Validator');
 
 describe('ValidationHelper', () => {
   let validationHelper;

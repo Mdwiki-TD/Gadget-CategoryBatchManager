@@ -1,4 +1,4 @@
-const { default: FileListHandler } = require('../../../../src/ui/handlers/FileListHandler');
+const { default: FileListHandler } = require('../../../src/ui/handlers/FileListHandler');
 
 describe('FileListHandler', () => {
   let handler;

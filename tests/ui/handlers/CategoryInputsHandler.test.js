@@ -1,4 +1,4 @@
-const { default: CategoryInputsHandler } = require('../../src/ui/handlers/CategoryInputsHandler');
+const { default: CategoryInputsHandler } = require('../../../src/ui/handlers/CategoryInputsHandler');
 
 describe('CategoryInputsHandler', () => {
   let handler;
