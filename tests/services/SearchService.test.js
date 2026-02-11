@@ -1,5 +1,5 @@
-const { default: SearchService } = require('../../../src/services/SearchService');
-const { default: FileModel } = require('../../../src/models/FileModel');
+const { default: SearchService } = require('../../src/services/SearchService');
+const { default: FileModel } = require('../../src/models/FileModel');
 
 // Mock global FileModel for SearchService
 global.FileModel = FileModel;
