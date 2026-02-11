@@ -116,7 +116,7 @@ function generateHeader() {
  * @description A tool for batch categorization of files in Wikimedia Commons.
  *              Built with Vue.js and Wikimedia Codex.
  *
- * Built from: https://github.com/MrIbrahem/owid-cats
+ * Built from: https://github.com/Mdwiki-TD/Gadget-CategoryBatchManager
  */
 // <nowiki>
 
