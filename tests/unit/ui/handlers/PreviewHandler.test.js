@@ -1,4 +1,4 @@
-const PreviewHandler = require('../../../../src/ui/handlers/PreviewHandler');
+const { default: PreviewHandler } = require('../../../../src/ui/handlers/PreviewHandler');
 
 describe('PreviewHandler', () => {
     let previewHandler;
