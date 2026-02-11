@@ -30,6 +30,7 @@ function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
 
                 // Confirmation dialog
                 openConfirmDialog: false,
+                preparation: [],
                 confirmMessage: '',
                 confirmPrimaryAction: {
                     label: 'Confirm',
@@ -88,27 +89,31 @@ function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
              * Validates and shows confirmation dialog
              */
             executeOperation() {
-                // Validate
+                console.log('[CBM-E] Starting batch operation');
+                const callbacks = {
+                    showWarningMessage: (msg) => {
+                        this.showWarningMessage(msg);
+                    },
+                    onError: (msg) => {
+                        this.displayCategoryMessage(msg, 'error', 'add');
+                    },
+                    onWarning: (msg) => {
+                        this.displayCategoryMessage(msg, 'warning', 'add');
+                    }
+                };
                 const preparation = changes_helpers.validateAndPrepare(
                     this.sourceCategory,
                     this.selectedFiles,
                     this.addCategory.selected,
                     this.removeCategory.selected,
-                    {
-                        showWarningMessage: (msg) => {
-                            this.showWarningMessage(msg);
-                        },
-                        onError: (msg) => {
-                            this.displayCategoryMessage(msg, 'error', 'add');
-                        },
-                        onWarning: (msg) => {
-                            this.displayCategoryMessage(msg, 'warning', 'add');
-                        }
-                    }
+                    callbacks
                 );
                 if (!preparation) {
+                    console.error('[CBM-E] Execution preparation failed');
                     return;
                 }
+
+                console.log('[CBM-E] Execution result:', preparation.filesToProcess.length, 'items');
 
                 // Generate confirmation message
                 this.confirmMessage = execute_handler.generateConfirmMessage(
@@ -116,6 +121,7 @@ function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
                     preparation.validAddCategories,
                     preparation.removeCategories
                 );
+                this.preparation = preparation;
 
                 // Show dialog
                 this.openConfirmDialog = true;
@@ -124,7 +130,7 @@ function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
             /**
              * Handle confirmation dialog primary action
              */
-            async confirmOnPrimaryAction() {
+            async confirmOnPrimaryActionOld() {
                 this.openConfirmDialog = false;
                 console.log('[CBM-E] User confirmed operation');
 
@@ -151,6 +157,17 @@ function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
                 }
 
                 await this.processBatch(preparation);
+            },
+            /**
+             * Handle confirmation dialog primary action
+             */
+            async confirmOnPrimaryAction() {
+                this.openConfirmDialog = false;
+                console.log('[CBM-E] User confirmed operation');
+
+                this.isProcessing = true;
+
+                await this.processBatch(this.preparation);
             },
 
             /**

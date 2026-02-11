@@ -73,12 +73,16 @@ function PreviewPanel(changes_helpers) {
 
             filterFilesToProcess(filesToProcess) {
                 return filesToProcess.map(row => {
-                    console.log('newCategories:', row.newCategories, Array.isArray(row.newCategories));
-
+                    // newCategories: undefined false
+                    if (!Array.isArray(row.newCategories)) {
+                        console.log('newCategories:', row.newCategories);
+                        console.log('row:', row); // row: Proxy(FileModel) {…}
+                        // TODO: find why FileModel is used here and causes newCategories to be undefined
+                    }
                     return {
                         file: row.file,
                         currentCategories: [...row.currentCategories],
-                        newCategories: [...row.newCategories],
+                        newCategories: [...row.newCategories], // TypeError: row.newCategories is not iterable
                         diff: row.newCategories.length - row.currentCategories.length
                     };
                 });
@@ -89,8 +93,11 @@ function PreviewPanel(changes_helpers) {
                     showWarningMessage: (msg) => {
                         this.showWarningMessage(msg);
                     },
-                    displayCategoryMessage: (msg, notice_type, msg_type) => {
-                        this.displayCategoryMessage(msg, notice_type, msg_type);
+                    onError: (msg) => {
+                        this.displayCategoryMessage(msg, 'error', 'add');
+                    },
+                    onWarning: (msg) => {
+                        this.displayCategoryMessage(msg, 'warning', 'add');
                     }
                 };
                 const preparation = changes_helpers.validateAndPrepare(
@@ -104,7 +111,6 @@ function PreviewPanel(changes_helpers) {
                     console.error('[CBM-P] Preview preparation failed');
                     return;
                 }
-                // TODO: Cannot read properties of undefined (reading 'length') preparation.filesToProcess.length
                 console.log('[CBM-P] Preview result:', preparation.filesToProcess.length, 'items');
 
                 this.previewRows = this.filterFilesToProcess(preparation.filesToProcess);
