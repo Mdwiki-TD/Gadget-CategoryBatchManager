@@ -9,7 +9,7 @@ describe('APIService', () => {
 
   beforeEach(() => {
     // Mock console.error to suppress error messages during tests
-    mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => { });
 
     // Spy on Validator.sanitizeTitlePattern
     sanitizeSpy = jest.spyOn(Validator, 'sanitizeTitlePattern');
@@ -19,7 +19,6 @@ describe('APIService', () => {
       get: jest.fn(),
       edit: jest.fn(),
       getCategories: jest.fn(),
-      postWithToken: jest.fn()
     };
 
     // Mock global mw object
@@ -744,7 +743,7 @@ describe('APIService', () => {
 
   describe('searchInCategoryWithPattern - safety limit', () => {
     test('should stop at 5000 results and log warning', async () => {
-      const mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => { });
 
       // Create enough results to hit the limit
       const bigBatch = Array.from({ length: 100 }, (_, i) => ({

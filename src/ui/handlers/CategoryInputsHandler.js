@@ -2,12 +2,15 @@
  *
  * @see https://doc.wikimedia.org/codex/latest/
  */
+
+import { APIService } from "../../services";
+
 class CategoryInputsHandler {
     /**
-     * @param {Object} apiService - API service instance
+     * @param {APIService} api_service - API service instance
      */
-    constructor(apiService) {
-        this.apiService = apiService;
+    constructor(api_service) {
+        this.api_service = api_service;
     }
 
     deduplicateResults(items1, results) {
@@ -28,7 +31,7 @@ class CategoryInputsHandler {
             return [];
         }
 
-        const data = await this.apiService.fetchCategories(value);
+        const data = await this.api_service.fetchCategories(value);
 
         // Make sure this data is still relevant first.
         if (CategoryInput !== value) {
@@ -50,7 +53,7 @@ class CategoryInputsHandler {
             return [];
         }
 
-        const data = await this.apiService.fetchCategories(Category.input, { offset: Category.menuItems.length });
+        const data = await this.api_service.fetchCategories(Category.input, { offset: Category.menuItems.length });
 
         if (!data || data.length === 0) {
             console.warn(`No more results to load for ${input_type} categories.`);

@@ -12,9 +12,9 @@ import { ChangesHelper, ValidationHelper } from './ui/helpers';
 function BatchManager() {
 
     // services
-    const mwApi = new APIService();
-    const search_service = new SearchService(mwApi);
-    const categoryService = new CategoryService(mwApi);
+    const api_service = new APIService();
+    const search_service = new SearchService(api_service);
+    const categoryService = new CategoryService(api_service);
     const batchProcessor = new BatchProcessor(categoryService);
 
     // helpers
@@ -22,12 +22,12 @@ function BatchManager() {
     const changes_helpers = new ChangesHelper(validation_helper);
 
     // handlers
-    const files_list = new FileListHandler(mwApi);
+    const files_list = new FileListHandler();
     const search_handler = new SearchHandler(search_service);
     const preview_handler = new PreviewHandler(changes_helpers);
     const progress_handler = new ProgressHandler();
     const execute_operation_handler = new ExecuteHandler(batchProcessor);
-    const category_inputs_handler = new CategoryInputsHandler(mwApi);
+    const category_inputs_handler = new CategoryInputsHandler(api_service);
 
     // vue apps
     const execute_panel = ExecutePanel(execute_operation_handler, progress_handler, changes_helpers);
