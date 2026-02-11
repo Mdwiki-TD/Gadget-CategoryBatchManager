@@ -18,8 +18,8 @@ function CategoryInputsPanel(category_inputs_handler) {
         message: { show: false, type: '', text: '', key: 0 },
     });
 
-    const app = {
-        data: function () {
+    return {
+        data() {
             return {
                 category_inputs_handler: category_inputs_handler,
 
@@ -69,68 +69,12 @@ function CategoryInputsPanel(category_inputs_handler) {
                 });
             },
 
-            hideAddCategoryMessage() {
-                console.log(`[CBM] Hiding add category message`);
-                this.addCategory.message.show = false;
-                this.addCategory.message.text = '';
-            },
-
-            hideRemoveCategoryMessage() {
-                console.log(`[CBM] Hiding remove category message`);
-                this.removeCategory.message.show = false;
-                this.removeCategory.message.text = '';
-            },
-
-            async onAddCategoryInput(value) {
-                this.hideAddCategoryMessage();
-                const data = await this.category_inputs_handler.onCategoryInput(
-                    value,
-                    this.addCategory.input,
-                    'add'
-                );
-                // if (data !== null) {
-                if (data) {
-                    // this.addCategory.menuItems = data;
-                    this.addCategory.menuItems.push(...data);
-                }
-            },
-
-            async onRemoveCategoryInput(value) {
-                this.hideRemoveCategoryMessage();
-                const data = await this.category_inputs_handler.onCategoryInput(
-                    value,
-                    this.removeCategory.input,
-                    'remove'
-                );
-                // if (data !== null) {
-                if (data) {
-                    // this.removeCategory.menuItems = data;
-                    this.removeCategory.menuItems.push(...data);
-                }
-            },
-
-            async addOnLoadMore() {
-                const results = await this.category_inputs_handler.onLoadMore(this.addCategory, 'add');
-                if (results && results.length > 0) {
-                    this.addCategory.menuItems.push(...results);
-                }
-            },
-
-            async removeOnLoadMore() {
-                const results = await this.category_inputs_handler.onLoadMore(this.removeCategory, 'remove');
-
-                if (results && results.length > 0) {
-                    this.removeCategory.menuItems.push(...results);
-                }
-            },
         },
         components: {
             CategoryLookup: CategoryLookup()
         }
 
     }
-    //
-    return app;
 
 }
 
