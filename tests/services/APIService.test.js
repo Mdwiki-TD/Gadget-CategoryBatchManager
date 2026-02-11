@@ -1,35 +1,30 @@
 // Mock the mw module before importing APIService
-jest.mock('../../src/services/mw.js', () => {
-  // This mock will be configured in beforeEach
-  const mockModule = {
-    Api: class MockApi {
-      constructor() {
-        return mockModule._instance;
-      }
-    },
-    _instance: {
-      get: () => {},
-      edit: () => {},
-      getCategories: () => {},
-    }
-  };
+const mockApiInstance = {
+  get: jest.fn(),
+  edit: jest.fn(),
+  getCategories: jest.fn(),
+};
 
-  return {
-    default: {
-      Api: mockModule.Api,
-      __mockApi: mockModule._instance,
-      setMockInstance: (instance) => { mockModule._instance = instance; }
-    }
-  };
-});
+class MockApi {
+  constructor() {
+    return mockApiInstance;
+  }
+}
+
+jest.mock('../../src/services/mw.js', () => ({
+  default: {
+    Api: MockApi,
+  }
+}));
+
+// Export the mock for use in tests
+const __mockApi = mockApiInstance;
 
 const { default: APIService } = require('../../src/services/APIService');
 const { default: Validator } = require('../../src/utils/Validator');
-const mwMock = require('../../src/services/mw.js').default;
 
 describe('APIService', () => {
   let service;
-  let mockApi;
   let mockConsoleError;
   let sanitizeSpy;
 
@@ -40,13 +35,10 @@ describe('APIService', () => {
     // Spy on Validator.sanitizeTitlePattern
     sanitizeSpy = jest.spyOn(Validator, 'sanitizeTitlePattern');
 
-    // Get the mock api from the mw module
-    mockApi = mwMock.__mockApi;
-
-    // Replace with jest mocks
-    mockApi.get = jest.fn();
-    mockApi.edit = jest.fn();
-    mockApi.getCategories = jest.fn();
+    // Clear mock calls before each test
+    __mockApi.get.mockClear();
+    __mockApi.edit.mockClear();
+    __mockApi.getCategories.mockClear();
 
     service = new APIService();
   });
