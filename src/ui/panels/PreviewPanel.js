@@ -71,6 +71,7 @@ function PreviewPanel(preview_handler) {
         `,
         methods: {
             handlePreview: function () {
+                console.log('[CBM-P] Preview button clicked');
                 const preparation = preview_handler.getPreparation(
                     this.sourceCategory,
                     this.selectedFiles,
@@ -86,7 +87,8 @@ function PreviewPanel(preview_handler) {
                     }
                 );
                 if (!preparation) {
-                    return
+                    console.error('[CBM-P] Preview preparation failed');
+                    return;
                 }
                 // TODO: Cannot read properties of undefined (reading 'length') preparation.filesToProcess.length
                 console.log('[CBM-P] Preview result:', preparation.filesToProcess.length, 'items');
@@ -99,7 +101,7 @@ function PreviewPanel(preview_handler) {
                     console.log('[CBM] No changes detected');
                     this.displayCategoryMessage('ℹ️ No changes detected.', 'notice', 'add');
                 }
-
+                console.log('[CBM-P] Opening preview dialog');
                 this.openPreviewHandler = true;
             }
         }
