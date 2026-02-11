@@ -96,7 +96,11 @@ class APIService {
         };
 
         const data = await this.makeRequest(params);
-        const pages = data.query.pages;
+        const pages = data?.query?.pages;
+        if (!pages) {
+            console.error('No pages found in API response for title:', title);
+            return '';
+        }
         const pageId = Object.keys(pages)[0];
         return pages[pageId].revisions[0].slots.main['*'];
     }
