@@ -95,12 +95,10 @@ class SearchService {
         }
         const totalResults = searchResults.length;
 
-        return await this.getFilesDetails(searchResults, callbacks = {
-            onProgress(totalFetched) {
-                if (callbacks.onProgressFileDetails) {
-                    const percent = totalResults > 0 ? Math.round((totalFetched / totalResults) * 100) : 100;
-                    callbacks.onProgressFileDetails(`Fetching details for ${totalFetched} of ${totalResults} files…`, percent);
-                }
+        return await this.getFilesDetails(searchResults, {
+            onProgress: (totalFetched) => {
+                const percent = totalResults > 0 ? Math.round((totalFetched / totalResults) * 100) : 100;
+                callbacks?.onProgressFileDetails?.(`Fetching details for ${totalFetched} of ${totalResults} files…`, percent);
             }
         });
     }
