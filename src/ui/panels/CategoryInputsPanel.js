@@ -1,55 +1,36 @@
 /**
- * Category inputs UI component using Codex CSS-only classes.
- * Manages the add categories, remove categories inputs with autocomplete.
- * @see https://doc.wikimedia.org/codex/latest/
+ * Category add/remove multiselect inputs panel.
+ * @param {CategoryInputsHandler} handler
+ * @returns {Object} Partial Vue app configuration
  */
 
 import { CategoryLookup } from "../components";
+import { CategoryInputsHandler } from './../handlers';
 
 function CategoryInputsPanel(category_inputs_handler) {
+    /** Default shape for a lookup model object */
+    const newLookupModel = () => ({
+        menuItems: [],
+        menuConfig: { boldLabel: true, visibleItemLimit: 10 },
+        chips: [],
+        selected: [],
+        input: '',
+        message: { show: false, type: '', text: '', key: 0 },
+    });
+
     const app = {
         data: function () {
             return {
                 category_inputs_handler: category_inputs_handler,
 
-                addCategory: {
-                    menuItems: [],
-                    menuConfig: {
-                        boldLabel: true,
-                        visibleItemLimit: 10
-                    },
-                    chips: [],
-                    selected: [],
-                    input: "",
-                    message: {
-                        show: false,
-                        type: "",
-                        text: "",
-                        key: 0
-                    },
-                },
-                removeCategory: {
-                    menuItems: [],
-                    menuConfig: {
-                        boldLabel: true,
-                        visibleItemLimit: 10
-                    },
-                    chips: [],
-                    selected: [],
-                    input: "",
-                    message: {
-                        show: false,
-                        type: "",
-                        text: "",
-                        key: 0
-                    },
-                }
+                addCategory: newLookupModel(),
+                removeCategory: newLookupModel(),
             };
         },
         template: `
             <CategoryLookup
                 :model="addCategory"
-                label="Add Categories"
+                label="Add categories"
                 aria-label="Add categories"
                 placeholder="Type to search categories"
                 type="add"
@@ -58,7 +39,7 @@ function CategoryInputsPanel(category_inputs_handler) {
 
             <CategoryLookup
                 :model="removeCategory"
-                label="Remove Categories"
+                label="Remove categories"
                 aria-label="Remove categories"
                 placeholder="Type to search categories"
                 type="remove"
@@ -66,19 +47,25 @@ function CategoryInputsPanel(category_inputs_handler) {
             />
         `,
         methods: {
-            displayCategoryMessage(text, type = 'error', msg_type = 'add') {
-                console.log(`[CBM] Displaying ${msg_type} category message: ${text} (type: ${type})`);
-                const target = msg_type === 'add' ? this.addCategory : this.removeCategory;
+            /**
+             * Display a message beneath one of the lookup inputs.
+             * @param {string}  text
+             * @param {'error'|'warning'|'success'|'notice'} type
+             * @param {'add'|'remove'} target
+             */
+            displayCategoryMessage(text, type = 'error', target = 'add') {
+                console.log(`[CBM] Displaying ${target} category message: ${text} (type: ${type})`);
+                const model = target === 'add' ? this.addCategory : this.removeCategory;
 
                 // Hide first to trigger reactivity if it was already showing
-                target.message.show = false;
+                model.message.show = false;
 
                 // Use nextTick to ensure the change is processed before showing again
                 this.$nextTick(() => {
-                    target.message.type = type;
-                    target.message.text = text;
-                    target.message.show = true;
-                    target.message.key++; // Increment key to force component re-render
+                    model.message.type = type;
+                    model.message.text = text;
+                    model.message.show = true;
+                    model.message.key++; // Increment key to force component re-render
                 });
             },
 
