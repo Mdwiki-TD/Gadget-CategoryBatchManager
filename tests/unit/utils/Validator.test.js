@@ -1,4 +1,4 @@
-const Validator = require('../../../src/utils/Validator');
+const { default: Validator } = require('../../../src/utils/Validator');
 
 describe('Validator', () => {
   describe('isValidCategoryName', () => {
