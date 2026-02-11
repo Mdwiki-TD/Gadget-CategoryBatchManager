@@ -128,6 +128,20 @@ describe('SearchService', () => {
 
       expect(mockApi.searchInCategory).toHaveBeenCalledWith('Life expectancy maps', '177');
     });
+
+    test('should log and return empty array when stopped after API call', async () => {
+      mockApi.searchInCategory.mockImplementation(() => {
+        service.shouldStopSearch = true;
+        return Promise.resolve([
+          { title: 'File:Test.svg', pageid: 1, size: 1000 }
+        ]);
+      });
+
+      const result = await service.search('Category:Test', 'pattern');
+
+      expect(mockConsoleLog).toHaveBeenCalledWith('[CBM-FS] Search stopped after API call');
+      expect(result).toEqual([]);
+    });
   });
 
   describe('parseFileInfo', () => {
@@ -389,6 +403,40 @@ describe('SearchService', () => {
       expect(result[0].title).toBe('File:Test.svg');
       expect(result[0].thumbnail).toBe('http://example.com/thumb.png');
       expect(result[0].size).toBe(5000);
+    });
+
+    test('should stop during file details fetch and log message', async () => {
+      // Use 60 files to create multiple batches (50 per batch)
+      const files = Array.from({ length: 60 }, (_, i) => ({
+        title: `File:Test${i}.svg`,
+        pageid: i
+      }));
+
+      let batchNumber = 0;
+      mockApi.getFileInfo.mockImplementation(async () => {
+        batchNumber++;
+        // After first batch, set stop flag
+        if (batchNumber === 1) {
+          await Promise.resolve();
+          service.shouldStopSearch = true;
+          return {
+            query: {
+              pages: {
+                '0': { title: 'File:Test0.svg', pageid: 0, categories: [] }
+              }
+            }
+          };
+        }
+        return {
+          query: {
+            pages: {}
+          }
+        };
+      });
+
+      const result = await service.getFilesDetails(files);
+
+      expect(mockConsoleLog).toHaveBeenCalledWith('[CBM-FS] Search stopped during file details fetch');
     });
   });
 
