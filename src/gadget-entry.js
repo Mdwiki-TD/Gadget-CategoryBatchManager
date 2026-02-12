@@ -40,6 +40,8 @@ async function initApp(require) {
         .component('cdx-label', Codex.CdxLabel)
         .component('cdx-multiselect-lookup', Codex.CdxMultiselectLookup)
         .component('cdx-table', Codex.CdxTable)
+        .component('cdx-tab', Codex.CdxTab)
+        .component('cdx-tabs', Codex.CdxTabs)
         .mount('#category-batch-manager2');
 }
 
