@@ -15,7 +15,7 @@ class APIService {
     constructor() {
         this.debug = false;
         // if user pass ?debug= in URL, enable debug mode // https://commons.wikimedia.org?debug=1
-        if (new URLSearchParams(window.location.search).has('debug')) {
+        if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug')) {
             this.debug = true;
         }
         /**
