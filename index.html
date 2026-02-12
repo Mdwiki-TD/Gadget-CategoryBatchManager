@@ -9,9 +9,9 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- The default light values will always be loaded -->
   <link rel="stylesheet" href="./node_modules/@wikimedia/codex-design-tokens/theme-wikimedia-ui-root.css">
-  <!-- The dark values will only be loaded when needed -->
+  <!-- The dark values will be loaded via CSS when data-theme="dark" is set -->
   <link rel="stylesheet" href="./node_modules/@wikimedia/codex-design-tokens/theme-wikimedia-ui-mode-dark.css"
-    media="( prefers-color-scheme: dark )">
+    id="darkThemeCss">
   <title>Vite + Vue</title>
   <style>
     :root {
@@ -171,30 +171,37 @@
     const themeToggle = document.getElementById('themeToggle');
     const sunIcon = document.getElementById('sunIcon');
     const moonIcon = document.getElementById('moonIcon');
+    const darkThemeCss = document.getElementById('darkThemeCss');
     const html = document.documentElement;
 
     const savedTheme = localStorage.getItem('theme');
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+    function setDarkMode(enabled) {
+      if (enabled) {
+        html.setAttribute('data-theme', 'dark');
+        darkThemeCss.media = 'all';
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      } else {
+        html.removeAttribute('data-theme');
+        darkThemeCss.media = 'not all';
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+      }
+    }
+
+    // Initialize theme
     if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
-      html.setAttribute('data-theme', 'dark');
-      sunIcon.style.display = 'none';
-      moonIcon.style.display = 'block';
+      setDarkMode(true);
+    } else {
+      setDarkMode(false);
     }
 
     themeToggle.addEventListener('click', () => {
       const isDark = html.getAttribute('data-theme') === 'dark';
-      if (isDark) {
-        html.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'light');
-        sunIcon.style.display = 'block';
-        moonIcon.style.display = 'none';
-      } else {
-        html.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-        sunIcon.style.display = 'none';
-        moonIcon.style.display = 'block';
-      }
+      setDarkMode(!isDark);
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
     });
   </script>
 </body>
