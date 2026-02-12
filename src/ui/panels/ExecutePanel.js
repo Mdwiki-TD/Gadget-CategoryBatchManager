@@ -144,13 +144,12 @@ function ExecutePanel() {
             async processBatch(preparation) {
                 try {
                     const callbacks = {
-                        onProgress: (current, total, fileName) => {
-                            const percent = Math.round((current / total) * 100);
-                            this.$emit('update:progress-percent', percent);
-                            this.$emit('update:progress-text', `Processing ${current}/${total}: ${fileName}`);
-                        },
-                        onComplete: () => {
-                            this.$emit('update:progress-text', 'Complete!');
+                        onProgress: (percent, results) => {
+                            this.$emit('update:progress-percent', Math.round(percent));
+                            this.$emit('update:progress-text',
+                                `Processing ${results.processed} of ${results.total}... ` +
+                                `(${results.successful} successful, ${results.skipped} skipped, ${results.failed} failed)`
+                            );
                         }
                     };
 
