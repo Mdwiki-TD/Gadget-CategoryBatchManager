@@ -73,9 +73,9 @@ class APIService {
         });
     }
     /**
-     * Get page content (wikitext).
-     * @param {string} title - Page title
-     * @returns {Promise<string>} Page wikitext content
+     * Fetch the raw wikitext of a page.
+     * @param {string} title
+     * @returns {Promise<string>} Empty string when the page is missing.
      */
     async getPageContent(title) {
         if (!title) {
@@ -96,51 +96,113 @@ class APIService {
             console.error('No pages found in API response for title:', title);
             return '';
         }
-        const pageId = Object.keys(pages)[0];
-        return pages[pageId].revisions[0].slots.main['*'];
+        const page = Object.values(pages)[0];
+        return page?.revisions?.[0]?.slots?.main?.['*'] ?? '';
     }
 
     /**
-     * Search for categories by prefix.
-     * Uses MediaWiki's opensearch API for category suggestions.
-     * @param {string} prefix - Search prefix (can include or exclude "Category:" prefix)
-     * @param {Object} [options={}] - Search options
-     * @param {number} [options.limit=10] - Maximum results to return
-     * @returns {Promise<Array<string>>} Array of category names with "Category:" prefix
+     * Return the category names a page belongs to via `mw.Api.getCategories()`.
+     * @param {string} title
+     * @returns {Promise<string[]|false>}
      */
-    async searchCategories(prefix, options = {}) {
-        const limit = options.limit || 10;
-
-        // Remove "Category:" prefix if present for the search
-        const searchPrefix = prefix.replace(/^Category:/, '');
-
-        const params = {
-            action: 'opensearch',
-            search: `Category:${searchPrefix}`,
-            namespace: 14, // Category namespace
-            limit: limit,
-            format: 'json'
-        };
-
+    async getCategories(title) {
         try {
-            const data = await this._get(params);
-            // opensearch returns: [query, [titles], [descriptions], [urls]]
-            // We only need the titles
-            const titles = data[1] || [];
-
-            // Ensure all results have "Category:" prefix and filter to only categories
-            return titles
-                .filter(title => title.startsWith('Category:'))
-                .map(title => {
-                    // Preserve the exact format from API (already has Category: prefix)
-                    return title;
-                });
-        } catch (error) {
-            console.error('Failed to search categories', error);
-            return [];
+            const cats = await this.mwApi.getCategories(title);
+            if (cats === false) return false;
+            return cats.map(c => c.toString().replace(/^Category:/, ''));
+        } catch (err) {
+            console.error('[CBM-API] getCategories failed', err);
+            throw err;
         }
     }
 
+    // ── Search ─────────────────────────────────────────────────────────────
+
+    /**
+     * Run a MediaWiki `list=search` query until exhausted (or 5 000 results).
+     * @param {string}   srsearch
+     * @param {Object}   [callbacks={}]
+     * @param {Function} [callbacks.onProgress]
+     * @returns {Promise<Array<{ title: string, pageid: number, size: number, timestamp: string }>>}
+     */
+    async searchInCategoryWithPattern(srsearch, callbacks = {}) {
+        const results = [];
+        let sroffset = null;
+
+        do {
+            const params = {
+                action: 'query',
+                list: 'search',
+                srsearch: srsearch,
+                srnamespace: 6,
+                srlimit: 'max',
+                srprop: 'size|wordcount|timestamp',
+            };
+
+            if (sroffset) {
+                params.sroffset = sroffset;
+            }
+
+            const res = await this._get(params);
+
+            if (res.query && res.query.search) {
+                const searchResults = res.query.search.map(file => ({
+                    title: file.title,
+                    pageid: file.pageid,
+                    size: file.size,
+                    timestamp: file.timestamp
+                }));
+
+                results.push(...searchResults);
+
+                // Call progress callback with the number of results found so far
+                callbacks.onProgress?.(`Searching for files… (${results.length} found so far)`);
+            }
+
+            // Check if there are more results
+            sroffset = res?.continue?.sroffset ?? null;
+
+            // Safety limit to prevent too many requests
+            if (results.length >= 5000) {
+                console.warn('[CBM-API] Search result limit reached (5 000 files).');
+                break;
+            }
+        } while (sroffset);
+        // Call progress callback with the number of results found so far
+        callbacks.onProgress?.(`Searching for files… (${results.length} found)`);
+        return results;
+    }
+
+    /**
+     * Convenience method: build a `incategory + intitle` search query
+     * and delegate to `searchInCategoryWithPattern`.
+     * @param {string} categoryName  - Without the "Category:" prefix
+     * @param {string} titlePattern
+     * @returns {Promise<Array>}
+     */
+    async searchInCategory(categoryName, titlePattern) {
+
+        // Sanitize the pattern to prevent search syntax injection
+        // MediaWiki search uses special characters like /, ", ", etc.
+        const sanitizedPattern = Validator.sanitizeTitlePattern(titlePattern);
+        // Replace spaces with underscores in category name for search API
+        const searchCategoryName = categoryName.replace(/\s+/g, '_');
+        const srsearch = sanitizedPattern.trim()
+            ? `incategory:${searchCategoryName} intitle:/${sanitizedPattern}/`
+            : `incategory:${searchCategoryName}`;
+        return await this.searchInCategoryWithPattern(srsearch);
+    }
+
+    // ── Category autocomplete ──────────────────────────────────────────────
+
+    /**
+     * Fetch category suggestions via `action=opensearch`.
+     * @param {string}  searchTerm
+     * @param {Object}  [options={}]
+     * @param {number}  [options.limit=10]
+     * @param {number}  [options.offset]
+     * @returns {Promise<Array<{ value: string, label: string }>>}
+     */
     async fetchCategories(searchTerm, options = {}) {
         const limit = options.limit || 10;
         if (!searchTerm || searchTerm.length < 2) {
@@ -149,7 +211,7 @@ class APIService {
         const params = {
             action: 'opensearch',
             search: searchTerm,
-            namespace: 14, // Category namespace
+            namespace: 14,
             limit: limit
         };
         if (options.offset) {
@@ -169,117 +231,15 @@ class APIService {
         }
     }
 
-    /**
-     * Get categories that a page belongs to.
-     * @param {string} title - Page title
-     * @returns {Promise<Array<string>|false>} Array of category names (without "Category:" prefix), or false if page not found
-     */
-    async getCategories(title) {
-        try {
-            const categories = await this.mwApi.getCategories(title);
-            if (categories === false) {
-                return false;
-            }
-            // Convert mw.Title objects to strings and remove "Category:" prefix
-            return categories.map(cat => {
-                const catStr = cat.toString();
-                return catStr.replace(/^Category:/, '');
-            });
-        } catch (error) {
-            console.error('Failed to get categories', error);
-            throw error;
-        }
-    }
+    // ── Edit ───────────────────────────────────────────────────────────────
 
     /**
-     * Search for files in a category using MediaWiki search API
-     * Much more efficient than loading all category members
-     * @param {string} srsearch - Search pattern
-     * @param {Object} [callbacks={}] - Callback functions
-     * @returns {Promise<Array>} Array of file objects
-     */
-    async searchInCategoryWithPattern(srsearch, callbacks = {}) {
-        const results = [];
-        let continueToken = null;
-
-        do {
-            const params = {
-                action: 'query',
-                list: 'search',
-                srsearch: srsearch,
-                srnamespace: 6, // File namespace
-                srlimit: 'max',
-                srprop: 'size|wordcount|timestamp',
-                format: 'json'
-            };
-
-            if (continueToken) {
-                params.sroffset = continueToken;
-            }
-
-            const response = await this._get(params);
-
-            if (response.query && response.query.search) {
-                const searchResults = response.query.search.map(file => ({
-                    title: file.title,
-                    pageid: file.pageid,
-                    size: file.size,
-                    timestamp: file.timestamp
-                }));
-
-                results.push(...searchResults);
-
-                // Call progress callback with the number of results found so far
-                if (callbacks.onProgress) {
-                    const text = `Searching for files… (${results.length} found so far)`;
-                    callbacks.onProgress(text);
-                }
-            }
-
-            // Check if there are more results
-            continueToken = response.continue ? response.continue.sroffset : null;
-
-            // Safety limit to prevent too many requests
-            if (results.length >= 5000) {
-                console.warn('Search result limit reached (5000 files)');
-                break;
-            }
-
-        } while (continueToken);
-        // Call progress callback with the number of results found so far
-        if (callbacks.onProgress) {
-            const text = `Searching for files… (${results.length} found)`;
-            callbacks.onProgress(text);
-        }
-        return results;
-    }
-
-    /**
-     * Search for files in a category using MediaWiki search API
-     * Much more efficient than loading all category members
-     * @param {string} categoryName - Category name (without "Category:" prefix)
-     * @param {string} titlePattern - Title pattern
-     * @returns {Promise<Array>} Array of file objects
-     */
-    async searchInCategory(categoryName, titlePattern) {
-
-        // Sanitize the pattern to prevent search syntax injection
-        // MediaWiki search uses special characters like /, ", ", etc.
-        const sanitizedPattern = Validator.sanitizeTitlePattern(titlePattern);
-        // Replace spaces with underscores in category name for search API
-        const searchCategoryName = categoryName.replace(/\s+/g, '_');
-        const srsearch = `incategory:${searchCategoryName} intitle:/${sanitizedPattern}/`;
-
-        return await this.searchInCategoryWithPattern(srsearch);
-    }
-    /**
-     * Edit a page using mw.Api.edit() which handles revision fetching and conflicts.
-     *
-     * @param {string} title   - Page title
-     * @param {string} content - New page content (wikitext)
-     * @param {string} summary - Edit summary
-     * @param {Object} [options={}] - Additional edit options (minor, bot, etc.)
-     * @returns {Promise<Object>} API response
+     * Edit a page through `mw.Api.edit()` (handles CSRF + conflict retry).
+     * @param {string}   title
+     * @param {string}   content  - New wikitext
+     * @param {string}   summary
+     * @param {Object}   [options={}]
+     * @returns {Promise<Object>}
      */
     async editPage(title, content, summary, options = {}) {
 
@@ -293,67 +253,52 @@ class APIService {
         });
     }
 
-    /* ------------------------------------------------------------------ */
-    /*  Rate-limit helpers                                                 */
-    /* ------------------------------------------------------------------ */
+    // ── Rate-limit discovery ───────────────────────────────────────────────
 
     /**
-     * Fetch the current user's edit rate limits from the MediaWiki API.
-     * Endpoint: action=query&meta=userinfo&uiprop=ratelimits
-     *
-     * Returns the `edit.user` bucket when available, falling back to
-     * `edit.ip` for anonymous users, or a safe default when the API
-     * does not expose limit data (e.g. sysops with no enforced limit).
-     *
-     * @returns {Promise<{hits: number, seconds: number}>}
-     *   e.g. { hits: 900, seconds: 180 }  →  5 edits per second
+     * Fetch the current user's edit rate limits.
+     * Falls back to `{ hits: 5, seconds: 1 }` when no data is available.
+     * @returns {Promise<{ hits: number, seconds: number }>}
      */
     async fetchUserRateLimits() {
-        const DEFAULT_LIMIT = { hits: 5, seconds: 1 };
+        const DEFAULT = { hits: 5, seconds: 1 };
         try {
             const data = await this._get({
                 action: 'query',
                 meta: 'userinfo',
                 uiprop: 'ratelimits',
-                format: 'json'
             });
-
             const editBuckets = data?.query?.userinfo?.ratelimits?.edit;
-
-            // Prefer the named-user bucket; fall back to ip bucket
-            const bucket = editBuckets?.user ?? editBuckets?.ip ?? null;
-
-            if (bucket && bucket.hits && bucket.seconds) {
-                console.log(`[CBM-API] Rate limit fetched: ${bucket.hits} edits / ${bucket.seconds}s`);
+            const bucket = editBuckets?.user ?? null;
+            if (bucket?.hits && bucket?.seconds) {
+                console.log(`[CBM-API] Rate limit: ${bucket.hits}/${bucket.seconds}s`);
                 return { hits: bucket.hits, seconds: bucket.seconds };
             }
 
             // Sysops / bots may have no enforced limit — treat as unlimited,
             // but cap at a safe high value to avoid hammering the server.
-            console.warn('[CBM-API] No edit rate limit found in API response, using default.');
-            return DEFAULT_LIMIT;
-
-        } catch (error) {
-            console.error('[CBM-API] fetchUserRateLimits failed, using default.', error);
-            return DEFAULT_LIMIT;
+            console.warn('[CBM-API] No edit rate limit found — using default.');
+            return DEFAULT;
+        } catch (err) {
+            console.error('[CBM-API] fetchUserRateLimits failed — using default.', err);
+            return DEFAULT;
         }
     }
 
-    /* ------------------------------------------------------------------ */
-    /*  Low-level request method                                           */
-    /* ------------------------------------------------------------------ */
+    // ── Private ────────────────────────────────────────────────────────────
 
     /**
-     * Make a GET request to the MediaWiki API via mw.Api.get().
-     * @param {Object} params - Query parameters
-     * @returns {Promise<Object>} Parsed JSON response
+     * Perform a GET request via `mw.Api.get()`.
+     * Always injects `format: 'json'`.
+     * @param {Object} params
+     * @returns {Promise<Object>}
      */
     async _get(params) {
         try {
-            return await this.mwApi.get(params);
-        } catch (error) {
-            console.error('API request failed', error);
-            throw error;
+            return await this.mwApi.get({ ...params, format: 'json' });
+        } catch (err) {
+            console.error('[CBM-API] Request failed', params, err);
+            throw err;
         }
     }
 }
