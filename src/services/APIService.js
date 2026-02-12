@@ -13,6 +13,11 @@ import Api from './mw.js';
 
 class APIService {
     constructor() {
+        this.debug = false;
+        // if user pass ?debug= in URL, enable debug mode // https://commons.wikimedia.org?debug=1
+        if (new URLSearchParams(window.location.search).has('debug')) {
+            this.debug = true;
+        }
         /**
          * Native MediaWiki API helper
          */
@@ -232,6 +237,33 @@ class APIService {
     }
 
     // ── Edit ───────────────────────────────────────────────────────────────
+    /**
+     * Debug the edit process by logging the parameters and simulating a response.
+     * This allows testing the UI and workflow without making real API calls.
+     * @param {string}   title
+     * @param {string}   content
+     * @param {string}   summary
+     * @param {Object}   options
+     * @returns {Promise<Object>}
+     */
+    async debugEditProcess(title, content, summary, options) {
+        console.log(`[APIService] Editing page: ${title}`);
+        console.log(`[APIService] New content: ${content}`);
+        console.log(`[APIService] Summary: ${summary}`);
+        console.log(`[APIService] Options:`, options);
+        // Simulate network delay in debug mode
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Simulate a successful edit response in debug mode
+        return Promise.resolve({
+            edit: {
+                title: title,
+                content: content,
+                summary: summary,
+                result: 'Success',
+            }
+        });
+    }
 
     /**
      * Edit a page through `mw.Api.edit()` (handles CSRF + conflict retry).
@@ -242,7 +274,9 @@ class APIService {
      * @returns {Promise<Object>}
      */
     async editPage(title, content, summary, options = {}) {
-
+        if (this.debug) {
+            return await this.debugEditProcess(title, content, summary, options);
+        }
         // Use mw.Api.edit() with a transform function
         return this.mwApi.edit(title, function () {
             return {
