@@ -69,6 +69,7 @@ function stripModuleExports(code) {
 
     // Remove blocks like:
     // export default BatchManager;
+    code = code.replace(/export [^;\n]+;\n?/g, '');
     code = code.replace(/export default [^;\n]+;\n?/g, '');
 
     // Remove blocks like:

@@ -7,9 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- import jquery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- The default light values will always be loaded -->
+  <link rel="stylesheet" href="./node_modules/@wikimedia/codex-design-tokens/theme-wikimedia-ui-root.css">
+  <!-- The dark values will only be loaded when needed -->
+  <link rel="stylesheet" href="./node_modules/@wikimedia/codex-design-tokens/theme-wikimedia-ui-mode-dark.css"
+    media="( prefers-color-scheme: dark )">
   <title>Vite + Vue</title>
   <style>
     :root {
+      --bg-color: #ffffff;
+      --text-color: #212529;
       --navbar-bg: #f8f9fa;
       --navbar-border: #e9ecef;
       --nav-link-bg: #ffffff;
@@ -19,8 +26,23 @@
       --shadow: rgba(0, 0, 0, 0.05);
     }
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
     @media (prefers-color-scheme: dark) {
       :root {
+        --bg-color: #0d1117;
+        --text-color: #c9d1d9;
         --navbar-bg: #212529;
         --navbar-border: #343a40;
         --nav-link-bg: #2d333b;
@@ -67,6 +89,42 @@
       height: 16px;
       opacity: 0.8;
     }
+
+    .theme-toggle {
+      background: var(--nav-link-bg);
+      border: 1px solid var(--nav-link-border);
+      color: var(--nav-link-color);
+      padding: 0.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .theme-toggle:hover {
+      background: var(--nav-link-hover-bg);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+
+    .theme-toggle svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #0d1117;
+      --text-color: #c9d1d9;
+      --navbar-bg: #212529;
+      --navbar-border: #343a40;
+      --nav-link-bg: #2d333b;
+      --nav-link-color: #c9d1d9;
+      --nav-link-border: #444c56;
+      --nav-link-hover-bg: #373e47;
+      --shadow: rgba(0, 0, 0, 0.3);
+    }
   </style>
 </head>
 
@@ -89,10 +147,56 @@
       </svg>
       Normal
     </a>
+    <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
+      <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
   </nav>
   <div id="app">app</div>
 
   <script type="module" src="/src/main.js"></script>
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    const sunIcon = document.getElementById('sunIcon');
+    const moonIcon = document.getElementById('moonIcon');
+    const html = document.documentElement;
+
+    const savedTheme = localStorage.getItem('theme');
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+      html.setAttribute('data-theme', 'dark');
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        html.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      }
+    });
+  </script>
 </body>
 
 </html>
