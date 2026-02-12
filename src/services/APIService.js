@@ -253,7 +253,7 @@ class APIService {
         console.log(`[APIService] Summary: ${summary}`);
         console.log(`[APIService] Options:`, options);
         // Simulate network delay in debug mode
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 200));
 
         let result = 'Success';
         // Simulate a random failure 10% of the time in debug mode
