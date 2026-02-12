@@ -63,12 +63,15 @@ function BatchManager() {
                             :changes-helpers="changes_helpers"
                             :source-category="sourceCategory"
                             :selected-files="selectedFiles"
-                            :add-category-selected="addCategory.selected"
-                            :remove-category-selected="removeCategory.selected"
+                            :add-category="addCategory"
+                            :remove-category="removeCategory"
                             @display-message="displayCategoryMessage"
                             @show-warning-message="showWarningMessage"
                             @show-success-message="showSuccessMessage"
                             @show-error-message="showErrorMessage"
+                            @update:is-processing="isProcessing = $event"
+                            @update:progress-percent="executionProgressPercent = $event"
+                            @update:progress-text="executionProgressText = $event"
                         />
                     </div>
                 </div>
