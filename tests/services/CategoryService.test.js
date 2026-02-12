@@ -104,18 +104,18 @@ describe('CategoryService', () => {
   describe('buildEditSummary', () => {
     test('should build summary with additions', () => {
       const summary = service.buildEditSummary(['Category:A'], []);
-      expect(summary).toContain('+Category:A');
+      expect(summary).toContain('Adding [[Category:A]]');
     });
 
     test('should build summary with removals', () => {
       const summary = service.buildEditSummary([], ['Category:B']);
-      expect(summary).toContain('-Category:B');
+      expect(summary).toContain('Removing [[Category:B]]');
     });
 
     test('should build summary with both', () => {
       const summary = service.buildEditSummary(['Category:A'], ['Category:B']);
-      expect(summary).toContain('+Category:A');
-      expect(summary).toContain('-Category:B');
+      expect(summary).toContain('Adding [[Category:A]]');
+      expect(summary).toContain('Removing [[Category:B]]');
     });
   });
 
@@ -243,9 +243,9 @@ describe('CategoryService', () => {
       const mockRevision = { content: 'Some content' };
       const result = capturedTransformFn(mockRevision);
 
-      expect(result.summary).toContain('+Category:Add1, Category:Add2');
-      expect(result.summary).toContain('-Category:Remove1');
-      expect(result.summary).toContain('Batch category update');
+      expect(result.summary).toContain('Adding [[Category:Add1]], [[Category:Add2]]');
+      expect(result.summary).toContain('Removing [[Category:Remove1]]');
+      expect(result.summary).toContain('(via Category Batch Manager)');
       expect(result.minor).toBe(false);
     });
 
@@ -265,7 +265,7 @@ describe('CategoryService', () => {
       const mockRevision = { content: 'Some content' };
       const result = capturedTransformFn(mockRevision);
 
-      expect(result.summary).toContain('+Category:Add1');
+      expect(result.summary).toContain('Adding [[Category:Add1]]');
       expect(result.summary).not.toContain('-');
     });
 
@@ -285,7 +285,7 @@ describe('CategoryService', () => {
       const mockRevision = { content: '[[Category:Remove1]]' };
       const result = capturedTransformFn(mockRevision);
 
-      expect(result.summary).toContain('-Category:Remove1');
+      expect(result.summary).toContain('Removing [[Category:Remove1]]');
       expect(result.summary).not.toContain('+');
     });
 
