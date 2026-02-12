@@ -1,3 +1,6 @@
+/**
+ * ONLY FOR DEVELOPMENT PURPOSES. NOT FOR PRODUCTION USE.
+ */
 
 import { ref, createApp } from "vue";
 import './ui/styles/main.css'
@@ -25,17 +28,6 @@ const App = {
     name: "App",
     components: {
         BatchManager,
-        CdxButton,
-        CdxDialog,
-        CdxTextInput,
-        CdxTextArea,
-        CdxSelect,
-        CdxCheckbox,
-        CdxProgressBar,
-        CdxMessage,
-        CdxLabel,
-        CdxMultiselectLookup,
-        CdxTable,
     },
     template: `
         <BatchManager />
