@@ -147,6 +147,7 @@ function BatchManager() {
                 // Category state (owned by parent)
                 addCategory: createLookupModel(),
                 removeCategory: createLookupModel(),
+                workFiles: [],
 
                 // Execution progress state (for ProgressBar)
                 isProcessing: false,
