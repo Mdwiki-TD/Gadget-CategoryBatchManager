@@ -122,6 +122,7 @@ class CategoryService {
     async updateCategoriesOptimized(fileTitle, toAdd, toRemove) {
         const api = new mw.Api();
         const parser = this.parser;
+        const buildEditSummary = this.buildEditSummary.bind(this);
 
         try {
             await api.edit(fileTitle, function (revision) {
@@ -147,7 +148,7 @@ class CategoryService {
                 const parts = [];
                 if (toAdd.length) parts.push(`+${toAdd.join(', ')}`);
                 if (toRemove.length) parts.push(`-${toRemove.join(', ')}`);
-                const summary = this.buildEditSummary(toAdd, toRemove);
+                const summary = buildEditSummary(toAdd, toRemove);
                 return {
                     text: newWikitext,
                     summary: summary,
@@ -178,7 +179,8 @@ class CategoryService {
         return categories;
     }
     categoryLink(category) {
-        return `[[Category:${category}]]`;
+        const catName = category.startsWith('Category:') ? category.slice(9) : category;
+        return `[[Category:${catName}]]`;
     }
     /**
      * TODO: use it in the workflow or move it to a utility module
