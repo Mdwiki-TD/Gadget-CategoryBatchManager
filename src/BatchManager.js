@@ -142,7 +142,7 @@ function BatchManager() {
                 // Merge other panel states
                 ...search_panel.data(),
 
-                // Execution progress state (for ExecuteProgressPanel)
+                // Execution progress state (for ProgressBar)
                 isProcessing: false,
                 executionProgressPercent: 0,
                 executionProgressText: '',
