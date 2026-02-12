@@ -5,6 +5,7 @@
  */
 
 import { ChangesHelper } from "../helpers";
+import PreviewTable from "../components/PreviewTable.js";
 
 function PreviewPanel(changes_helpers) {
     return {
@@ -37,36 +38,15 @@ function PreviewPanel(changes_helpers) {
                 <p v-else>
                     No changes detected. Adjust categories and preview again.
                 </p>
-                <table class="cbm-preview-table">
-                    <thead>
-                        <tr>
-                            <th>File</th>
-                            <th>Current categories</th>
-                            <th>New categories</th>
-                            <th>Δ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-if="previewRows.length > 0" v-for="(row, index) in previewRows" :key="index">
-                            <td>{{ row.file }}</td>
-                            <td>
-                                <div v-for="(cat, j) in row.currentCategories" :key="j">{{ cat }}</div>
-                            </td>
-                            <td>
-                                <div v-for="(cat, j) in row.newCategories" :key="j">
-                                    {{ cat }}
-                                </div>
-                            </td>
-                            <td>
-                                {{ row.diff }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <preview-table :rows="previewRows" />
                 <template #footer-text>
                 </template>
             </cdx-dialog>
         `,
+
+        components: {
+            PreviewTable: PreviewTable(),
+        },
         methods: {
             handlePreview: function () {
                 console.log('[CBM-P] Preview button clicked');
