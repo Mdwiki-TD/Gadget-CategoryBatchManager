@@ -187,6 +187,8 @@ function BatchManager() {
             }
         },
 
+        emits: ['execution-complete'],
+
         methods: {
             ...message_display_panel.methods,
 

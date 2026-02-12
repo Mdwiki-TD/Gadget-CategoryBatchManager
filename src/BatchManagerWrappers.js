@@ -4,6 +4,7 @@
  */
 
 import BatchManager from './BatchManager.js';
+import ReportsPanel from './ui/panels/ReportsPanel.js';
 
 /**
  * Dialog wrapper for BatchManager
@@ -24,12 +25,13 @@ function BatchManagerDialog(portletLink) {
                @default="showMainDialog = false">
                <cdx-tabs v-model:active="activeTab" :framed="true">
                    <cdx-tab name="manager" label="Batch Manager">
-                       <BatchManager />
+                       <BatchManager @execution-complete="handleExecutionComplete" />
                    </cdx-tab>
                    <cdx-tab name="reports" label="Reports">
-                       <div class="cbm-reports-placeholder">
-                           <p>Reports will be available here soon.</p>
-                       </div>
+                       <ReportsPanel
+                           :file-results="fileResults"
+                           :summary="executionSummary"
+                       />
                    </cdx-tab>
                </cdx-tabs>
            </cdx-dialog>`
@@ -37,12 +39,13 @@ function BatchManagerDialog(portletLink) {
                <h2 class="cbm-title">Category Batch Manager</h2>
                <cdx-tabs v-model:active="activeTab" :framed="true">
                    <cdx-tab name="manager" label="Batch Manager">
-                       <BatchManager />
+                       <BatchManager @execution-complete="handleExecutionComplete" />
                    </cdx-tab>
                    <cdx-tab name="reports" label="Reports">
-                       <div class="cbm-reports-placeholder">
-                           <p>Reports will be available here soon.</p>
-                       </div>
+                       <ReportsPanel
+                           :file-results="fileResults"
+                           :summary="executionSummary"
+                       />
                    </cdx-tab>
                </cdx-tabs>
            </div>
@@ -53,12 +56,23 @@ function BatchManagerDialog(portletLink) {
             return {
                 showMainDialog: false,
                 activeTab: 'manager',
+                fileResults: [],
+                executionSummary: {
+                    total: 0,
+                    successful: 0,
+                    skipped: 0,
+                    failed: 0
+                }
             };
         },
         methods: {
             openMainDialog() {
                 this.showMainDialog = true;
             },
+            handleExecutionComplete(results) {
+                this.fileResults = results.fileResults;
+                this.executionSummary = results.summary;
+            }
         },
         template: template,
         mounted() {
@@ -73,6 +87,7 @@ function BatchManagerDialog(portletLink) {
         },
         components: {
             BatchManager: BatchManager(),
+            ReportsPanel: ReportsPanel()
         },
     };
 

@@ -29,15 +29,37 @@ function ReportsPanel() {
         },
 
         computed: {
-            filteredResults() {
+            filteredResults: function() {
                 if (this.filter === 'all') {
                     return this.fileResults;
                 }
-                return this.fileResults.filter(r => r.status === this.filter);
+                return this.fileResults.filter(function(r) { return r.status === this.filter; }.bind(this));
             },
 
-            hasResults() {
+            hasResults: function() {
                 return this.fileResults.length > 0;
+            },
+
+            tableData: function() {
+                const self = this;
+                return this.filteredResults.map(function(r, index) {
+                    return {
+                        index: index + 1,
+                        file: r.file,
+                        status: r.status,
+                        statusLabel: self.getStatusLabel(r.status),
+                        message: r.message
+                    };
+                });
+            },
+
+            tableColumns: function() {
+                return [
+                    { id: 'index', label: '#', width: '50px' },
+                    { id: 'file', label: 'File' },
+                    { id: 'status', label: 'Status', width: '120px' },
+                    { id: 'message', label: 'Message' }
+                ];
             }
         },
 
@@ -93,29 +115,18 @@ function ReportsPanel() {
 
                 <!-- Results Table -->
                 <div v-if="hasResults" class="cbm-reports-table-container">
-                    <table class="cbm-reports-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>File</th>
-                                <th>Status</th>
-                                <th>Message</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(result, index) in filteredResults" :key="result.file + index"
-                                :class="'cbm-status-' + result.status">
-                                <td>{{ index + 1 }}</td>
-                                <td class="cbm-file-name">{{ result.file }}</td>
-                                <td>
-                                    <span :class="['cbm-status-badge', 'cbm-badge-' + result.status]">
-                                        {{ getStatusLabel(result.status) }}
-                                    </span>
-                                </td>
-                                <td>{{ result.message }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <cdx-table
+                        :data="tableData"
+                        :columns="tableColumns"
+                        :use-row-headers="false"
+                        class="cbm-reports-table"
+                    >
+                        <template #cell-status="{ row }">
+                            <span :class="['cbm-status-badge', 'cbm-badge-' + row.status]">
+                                {{ row.statusLabel }}
+                            </span>
+                        </template>
+                    </cdx-table>
                 </div>
 
                 <!-- Empty State -->

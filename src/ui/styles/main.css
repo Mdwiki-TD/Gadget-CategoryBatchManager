@@ -260,3 +260,114 @@
         /* background-color: #212529; */
     }
 }
+
+/* ==================== Reports Panel ==================== */
+
+.cbm-reports-panel {
+    padding: 10px;
+}
+
+/* Summary Cards */
+.cbm-reports-summary {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.cbm-summary-card {
+    flex: 1;
+    min-width: 100px;
+    padding: 15px;
+    border-radius: 4px;
+    text-align: center;
+    background-color: var(--background-color-base, #f8f9fa);
+    border: 1px solid var(--border-color-base, #eaecf0);
+}
+
+.cbm-summary-number {
+    display: block;
+    font-size: 2em;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.cbm-summary-label {
+    display: block;
+    font-size: 0.875em;
+    color: var(--color-base--subtle, #72777d);
+    margin-top: 5px;
+}
+
+.cbm-summary-total .cbm-summary-number {
+    color: var(--color-base, #202122);
+}
+
+.cbm-summary-success .cbm-summary-number {
+    color: var(--color-success, #14866d);
+}
+
+.cbm-summary-skipped .cbm-summary-number {
+    color: var(--color-warning, #ff9800);
+}
+
+.cbm-summary-failed .cbm-summary-number {
+    color: var(--color-error, #d33);
+}
+
+/* Filter Buttons */
+.cbm-reports-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.cbm-filter-btn.active {
+    background-color: var(--background-color-neutral-active, #eaecf0);
+    font-weight: 600;
+}
+
+/* Table Container */
+.cbm-reports-table-container {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color-base, #eaecf0);
+    border-radius: 4px;
+}
+
+/* Status Badges */
+.cbm-status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.cbm-badge-success {
+    background-color: var(--background-color-success, #d5fdf4);
+    color: var(--color-success, #14866d);
+}
+
+.cbm-badge-skipped {
+    background-color: var(--background-color-warning, #fef6e7);
+    color: var(--color-warning, #b07000);
+}
+
+.cbm-badge-failed {
+    background-color: var(--background-color-error, #fee7e6);
+    color: var(--color-error, #d33);
+}
+
+/* Empty State */
+.cbm-reports-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--color-base--subtle, #72777d);
+}
+
+.cbm-reports-hint {
+    font-size: 0.9em;
+    margin-top: 10px;
+}
