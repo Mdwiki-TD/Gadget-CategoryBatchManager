@@ -30,22 +30,30 @@ function PreviewTable() {
                 :data="sortedData"
                 @update:sort="onSort"
             >
-                <template #item-currentCategories="{ item }">
-                    <div v-for="(cat, index) in item" :key="index" class="cbm-category-item">
-                        {{ cat }}
-                    </div>
+                <template #item-file="{ item }">
+                    <a
+                        :href="'https://commons.wikimedia.org/wiki/' + encodeURIComponent(item)"
+                        target="_blank"
+                        class="cbm-file-link"
+                    >{{ item }}</a>
                 </template>
 
-                <template #item-newCategories="{ item }">
-                    <div v-for="(cat, index) in item" :key="index" class="cbm-category-item">
-                        {{ cat }}
+                <template #item-wouldAdd="{ item }">
+                    <div v-if="item.length > 0" class="cbm-category-list cbm-add">
+                        <span v-for="(cat, index) in item" :key="index" class="cbm-category-tag cbm-tag-add">
+                            + {{ cat }}
+                        </span>
                     </div>
+                    <span v-else class="cbm-empty-cell">-</span>
                 </template>
 
-                <template #item-diff="{ item }">
-                    <span :class="getDiffClass(item)">
-                        {{ formatDiff(item) }}
-                    </span>
+                <template #item-wouldRemove="{ item }">
+                    <div v-if="item.length > 0" class="cbm-category-list cbm-remove">
+                        <span v-for="(cat, index) in item" :key="index" class="cbm-category-tag cbm-tag-remove">
+                            - {{ cat }}
+                        </span>
+                    </div>
+                    <span v-else class="cbm-empty-cell">-</span>
                 </template>
             </cdx-table>
         `,
@@ -53,17 +61,15 @@ function PreviewTable() {
             columns() {
                 return [
                     { id: 'file', label: 'File', allowSort: true },
-                    { id: 'currentCategories', label: 'Current categories' },
-                    { id: 'newCategories', label: 'New categories' },
-                    { id: 'diff', label: 'Δ', allowSort: true, textAlign: 'number' }
+                    { id: 'wouldAdd', label: 'Will Add' },
+                    { id: 'wouldRemove', label: 'Will Remove' }
                 ];
             },
             tableData() {
                 return this.rows.map(row => ({
                     file: row.file,
-                    currentCategories: row.currentCategories || [],
-                    newCategories: row.newCategories || [],
-                    diff: row.diff || 0
+                    wouldAdd: row.wouldAdd || [],
+                    wouldRemove: row.wouldRemove || []
                 }));
             },
             sortedData() {
@@ -82,8 +88,6 @@ function PreviewTable() {
 
                     if (sortKey === 'file') {
                         comparison = a.file.localeCompare(b.file);
-                    } else if (sortKey === 'diff') {
-                        comparison = a.diff - b.diff;
                     }
 
                     return sortOrder === 'asc' ? comparison : -comparison;
@@ -95,15 +99,6 @@ function PreviewTable() {
         methods: {
             onSort(newSort) {
                 this.sort = newSort;
-            },
-            getDiffClass(diff) {
-                if (diff > 0) return 'cbm-diff-positive';
-                if (diff < 0) return 'cbm-diff-negative';
-                return 'cbm-diff-zero';
-            },
-            formatDiff(diff) {
-                if (diff > 0) return `+${diff}`;
-                return (diff || 0).toString();
             }
         }
     };

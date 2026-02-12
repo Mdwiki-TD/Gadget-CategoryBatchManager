@@ -110,6 +110,11 @@
     flex: unset;
 }
 
+.cbm-limit-input {
+    max-width: 80px;
+    flex: 0 0 auto !important;
+}
+
 /* ==================== CategoryInputs ==================== */
 .cbm-category-input-group {
     margin-bottom: 15px;

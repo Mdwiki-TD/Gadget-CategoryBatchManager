@@ -127,13 +127,15 @@ class APIService {
     /**
      * Run a MediaWiki `list=search` query until exhausted (or 5 000 results).
      * @param {string}   srsearch
+     * @param {number}   [limit=5000]
      * @param {Object}   [callbacks={}]
      * @param {Function} [callbacks.onProgress]
      * @returns {Promise<Array<{ title: string, pageid: number, size: number, timestamp: string }>>}
      */
-    async searchInCategoryWithPattern(srsearch, callbacks = {}) {
+    async searchInCategoryWithPattern(srsearch, limit = null, callbacks = {}) {
         const results = [];
         let sroffset = null;
+        limit = limit ?? 5000;
 
         do {
             const params = {
@@ -169,8 +171,11 @@ class APIService {
             sroffset = res?.continue?.sroffset ?? null;
 
             // Safety limit to prevent too many requests
-            if (results.length >= 5000) {
-                console.warn('[CBM-API] Search result limit reached (5 000 files).');
+            if (results.length >= limit) {
+                // make sure to slice the results to the limit before returning
+                results.splice(limit);
+
+                console.warn(`[CBM-API] Search result limit reached (${limit} files).`);
                 break;
             }
         } while (sroffset);

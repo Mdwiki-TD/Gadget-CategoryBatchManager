@@ -672,7 +672,7 @@ describe("APIService", () => {
             await service.searchInCategoryWithPattern("incategory:Test");
 
             expect(mockConsoleWarn).toHaveBeenCalledWith(
-                "[CBM-API] Search result limit reached (5 000 files)."
+                "[CBM-API] Search result limit reached (5000 files)."
             );
 
             mockConsoleWarn.mockRestore();

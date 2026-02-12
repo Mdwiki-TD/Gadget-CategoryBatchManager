@@ -22,6 +22,7 @@ function SearchPanel(search_handler) {
                 sourceCategory: defaultCategory,
                 titlePattern: '',
                 searchPattern: '',
+                searchLimit: 5000,
 
                 workFiles: [],
                 // ── UI state (mirrors handler state via callbacks) ────────
@@ -43,6 +44,7 @@ function SearchPanel(search_handler) {
                         <cdx-text-input
                             id="cbm-source-category"
                             v-model="sourceCategory"
+                            :disabled="searchPattern.trim() !== ''"
                             placeholder="Category:Our World in Data graphs of Austria" />
                     </div>
                     <div class="cbm-input-group cbm-column-one-third">
@@ -54,6 +56,7 @@ function SearchPanel(search_handler) {
                         <cdx-text-input
                             id="cbm-title-pattern"
                             v-model="titlePattern"
+                            :disabled="searchPattern.trim() !== ''"
                             placeholder="e.g. ,BLR.svg" />
                     </div>
                 </div>
@@ -65,13 +68,21 @@ function SearchPanel(search_handler) {
                     </cdx-label>
                     <span class="cbm-help-text">
                         (e.g., <code>
-                        incategory:"CC-BY-4.0" "This chart is intentionally showing old data" Our World in Data -incategory:"Uploaded by OWID importer tool"</code>)
+                        incategory:"CC-BY-4.0" Our World in Data -incategory:"Uploaded by OWID importer tool"</code>)
                     </span>
                     <div class="cbm-input-button-group">
                         <cdx-text-input
                             id="cbm-search-pattern"
                             v-model="searchPattern"
                             placeholder="" />
+                        <cdx-text-input
+                            id="cbm-search-limit"
+                            v-model.number="searchLimit"
+                            type="number"
+                            min="1"
+                            max="10000"
+                            class="cbm-limit-input"
+                            placeholder="Limit" />
                         <cdx-button
                             v-if="!isSearching"
                             action="progressive"
@@ -142,7 +153,8 @@ function SearchPanel(search_handler) {
                 await search_handler.startSearch(
                     this.sourceCategory,
                     this.titlePattern,
-                    this.searchPattern
+                    this.searchPattern,
+                    this.searchLimit
                 );
             },
 

@@ -10,6 +10,8 @@ import BatchManagerFactory from "./BatchManager.js";
 
 import {
     CdxButton,
+    CdxTabs,
+    CdxTab,
     CdxDialog,
     CdxTextInput,
     CdxTextArea,
@@ -45,6 +47,8 @@ createApp(App)
     .component('cdx-select', CdxSelect)
     .component('cdx-checkbox', CdxCheckbox)
     .component('cdx-button', CdxButton)
+    .component('cdx-tab', CdxTab)
+    .component('cdx-tabs', CdxTabs)
     .component('cdx-progress-bar', CdxProgressBar)
     .component('cdx-message', CdxMessage)
     .component('cdx-dialog', CdxDialog)

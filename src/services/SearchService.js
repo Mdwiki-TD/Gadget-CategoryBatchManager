@@ -35,21 +35,22 @@ class SearchService {
     }
 
     async searchWithPattern(srsearch) {
-        return this.searchWithPatternCallback(srsearch, {});
+        return this.searchWithPatternCallback(srsearch, undefined, {});
     }
     /**
      * Search files matching `srsearch` and enrich each result with full
      * category + thumbnail data.
      *
      * @param {string}   srsearch
+     * @param {number}   limit - Maximum number of search results to process (passed to API)
      * @param {Object}   [callbacks={}]
      * @param {Function} [callbacks.onProgress]          - (text) => void
      * @param {Function} [callbacks.onProgressFileDetails] - (text, percent) => void
      * @returns {Promise<FileModel[]>}
      */
-    async searchWithPatternCallback(srsearch, callbacks = {}) {
+    async searchWithPatternCallback(srsearch, limit = 5000, callbacks = {}) {
         this.resetSearchFlag();
-        const searchResults = await this.api.searchInCategoryWithPattern(srsearch, {
+        const searchResults = await this.api.searchInCategoryWithPattern(srsearch, limit, {
             onProgress: text => callbacks.onProgress?.(text),
         });
 
