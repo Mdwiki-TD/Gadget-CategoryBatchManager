@@ -10,6 +10,12 @@ function PreviewPanel() {
     const validation_helper = new ValidationHelper();
     const changes_helpers = new ChangesHelper(validation_helper);
     return {
+        props: {
+            isProcessing: {
+                type: Boolean,
+                default: false
+            }
+        },
         data() {
             return {
                 previewRows: [],

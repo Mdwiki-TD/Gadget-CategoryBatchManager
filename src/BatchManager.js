@@ -30,6 +30,7 @@ function BatchManager() {
     // ── Panel configurations ──────────────────────────────────────────────
     const execute_panel = ExecutePanel(execute_handler, progress_handler, changes_helpers);
     const search_panel = SearchPanel(search_handler);
+    const category_inputs_panel = CategoryInputsPanel();
 
     // ── Template ─────────────────────────────────────────────────────────
     const template = `
@@ -44,7 +45,7 @@ function BatchManager() {
                     <CategoryInputsPanel />
 
                     <div class="cbm-button-group">
-                        <PreviewPanel />
+                        <PreviewPanel :is-processing="isProcessing" />
                         ${execute_panel.template}
                     </div>
                 </div>
@@ -75,15 +76,23 @@ function BatchManager() {
                 // Merge panel states
                 ...search_panel.data(),
                 ...execute_panel.data(),
+                ...category_inputs_panel.data(),
             };
         },
 
         computed: {
+            selectedFiles: function() {
+                return this.workFiles.filter(f => f.selected);
+            },
+            selectedCount: function() {
+                return this.workFiles.filter(f => f.selected).length;
+            }
         },
 
         methods: {
             ...search_panel.methods,
             ...execute_panel.methods,
+            ...category_inputs_panel.methods,
         },
 
         components: {
