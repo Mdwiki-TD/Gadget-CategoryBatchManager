@@ -43,10 +43,15 @@ const SOURCE_FILES = [
     'src/gadget-entry.js',
 ];
 
+const CSS_SOURCE = 'src/ui/styles/main.css';
+const CSS_SOURCES = [
+    'src/ui/styles/main.css',
+    'src/ui/styles/PreviewDialog.css'
+];
+
 const DIST_DIR = 'dist';
 const OUTPUT_JS = 'dist/test3.js';
 
-const CSS_SOURCE = 'src/ui/styles/main.css';
 const OUTPUT_CSS = 'dist/test3.css';
 
 /**
@@ -157,10 +162,13 @@ function buildJS() {
  * Copy CSS file to dist
  */
 function buildCSS() {
-    console.log('Copying CSS file...');
-
-    const cssContent = fs.readFileSync(CSS_SOURCE, 'utf8');
-    fs.writeFileSync(OUTPUT_CSS, cssContent, 'utf8');
+    console.log('Copying CSS files...');
+    let combinedCSS = '';
+    CSS_SOURCES.forEach((cssSource) => {
+        const cssContent = fs.readFileSync(cssSource, 'utf8');
+        combinedCSS += cssContent + '\n';
+    });
+    fs.writeFileSync(OUTPUT_CSS, combinedCSS, 'utf8');
     console.log(`✓ Created ${OUTPUT_CSS}`);
 }
 
