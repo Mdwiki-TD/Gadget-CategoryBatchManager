@@ -34,7 +34,11 @@ class Api {
      */
     async get(params) {
         const url = this._buildUrl(params);
-        const response = await fetch(url);
+        const headers = {
+            'Accept': 'application/json',
+            "User-Agent": "CategoryBatchManager/1.0 (https://example.com)"
+        };
+        const response = await fetch(url, { headers });
         if (!response.ok) {
             throw new Error(`API request failed: ${response.status} ${response.statusText}`);
         }
@@ -52,7 +56,8 @@ class Api {
             action: 'query',
             titles: title,
             prop: 'categories',
-            cllimit: 500
+            cllimit: 500,
+            format: 'json'
         });
         const pages = data?.query?.pages;
         if (!pages) return false;
@@ -79,7 +84,8 @@ class Api {
             srsearch: srsearch,
             srnamespace: 6,
             srlimit: 500,
-            srprop: 'size|wordcount|timestamp'
+            srprop: 'size|wordcount|timestamp',
+            format: 'json'
         });
 
         return data?.query?.search || [];
