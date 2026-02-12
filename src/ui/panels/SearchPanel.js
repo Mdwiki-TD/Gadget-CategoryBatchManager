@@ -43,6 +43,7 @@ function SearchPanel(search_handler) {
                         <cdx-text-input
                             id="cbm-source-category"
                             v-model="sourceCategory"
+                            :disabled="searchPattern.trim() !== ''"
                             placeholder="Category:Our World in Data graphs of Austria" />
                     </div>
                     <div class="cbm-input-group cbm-column-one-third">
@@ -54,6 +55,7 @@ function SearchPanel(search_handler) {
                         <cdx-text-input
                             id="cbm-title-pattern"
                             v-model="titlePattern"
+                            :disabled="searchPattern.trim() !== ''"
                             placeholder="e.g. ,BLR.svg" />
                     </div>
                 </div>
