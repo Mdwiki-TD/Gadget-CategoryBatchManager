@@ -16,21 +16,21 @@ function MessageDisplayPanel() {
         },
 
         template: `
-            <!-- Message Display -->
-            <div v-if="showMessage" class="cbm-fixed-message">
-                <cdx-message
-                :key="messageKey"
-                allow-user-dismiss
-                :type="messageType"
-                :fade-in="true"
-                :auto-dismiss="true"
-                :display-time="3000"
-                dismiss-button-label="Close"
-                @dismissed="handleMessageDismiss"
-                >
-                    {{ messageContent }}
-                </cdx-message>
-            </div>
+        <!-- Message Display -->
+        <div v-if="showMessage" class="cbm-fixed-message">
+            <cdx-message
+            :key="messageKey"
+            allow-user-dismiss
+            :type="messageType"
+            :fade-in="true"
+            :auto-dismiss="true"
+            :display-time="3000"
+            dismiss-button-label="Close"
+            @dismissed="handleMessageDismiss"
+            >
+                {{ messageContent }}
+            </cdx-message>
+        </div>
         `,
 
         methods: {
