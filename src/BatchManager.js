@@ -31,6 +31,7 @@ function BatchManager() {
     const execute_panel = ExecutePanel(execute_handler, progress_handler, changes_helpers);
     const search_panel = SearchPanel(search_handler);
     const category_inputs_panel = CategoryInputsPanel();
+    const preview_panel = PreviewPanel();
 
     // ── Template ─────────────────────────────────────────────────────────
     const template = `
@@ -42,10 +43,10 @@ function BatchManager() {
 
                 <!-- Actions Section -->
                 <div>
-                    <CategoryInputsPanel />
+                    ${category_inputs_panel.template}
 
                     <div class="cbm-button-group">
-                        <PreviewPanel :is-processing="isProcessing" />
+                        ${preview_panel.template}
                         ${execute_panel.template}
                     </div>
                 </div>
@@ -77,6 +78,7 @@ function BatchManager() {
                 ...search_panel.data(),
                 ...execute_panel.data(),
                 ...category_inputs_panel.data(),
+                ...preview_panel.data(),
             };
         },
 
@@ -93,6 +95,7 @@ function BatchManager() {
             ...search_panel.methods,
             ...execute_panel.methods,
             ...category_inputs_panel.methods,
+            ...preview_panel.methods,
         },
 
         components: {
@@ -100,8 +103,6 @@ function BatchManager() {
             PreviewTable: PreviewTable(),
             MessageDisplayPanel: MessageDisplayPanel(),
             FilesListPanel: FilesListPanel(),
-            CategoryInputsPanel: CategoryInputsPanel(),
-            PreviewPanel: PreviewPanel(),
         },
         template: template,
     };
