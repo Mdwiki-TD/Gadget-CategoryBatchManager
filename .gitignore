@@ -25,8 +25,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-/.claude
-
 /dist
 /demo
 package-lock.json
+.claude/settings.json
