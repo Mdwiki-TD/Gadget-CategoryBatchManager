@@ -48,30 +48,6 @@ function CategoryInputsPanel() {
                 :handler="category_inputs_handler"
             />
         `,
-        methods: {
-            /**
-             * Display a message beneath one of the lookup inputs.
-             * @param {string}  text
-             * @param {'error'|'warning'|'success'|'notice'} type
-             * @param {'add'|'remove'} target
-             */
-            displayCategoryMessage(text, type = 'error', target = 'add') {
-                console.log(`[CBM] Displaying ${target} category message: ${text} (type: ${type})`);
-                const model = target === 'add' ? this.addCategory : this.removeCategory;
-
-                // Hide first to trigger reactivity if it was already showing
-                model.message.show = false;
-
-                // Use nextTick to ensure the change is processed before showing again
-                this.$nextTick(() => {
-                    model.message.type = type;
-                    model.message.text = text;
-                    model.message.show = true;
-                    model.message.key++; // Increment key to force component re-render
-                });
-            },
-
-        },
         components: {
             CategoryLookup: CategoryLookup()
         }

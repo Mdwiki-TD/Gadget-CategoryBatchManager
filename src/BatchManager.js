@@ -26,11 +26,11 @@ function BatchManager() {
     const search_handler = new SearchHandler(search_service);
     const progress_handler = new ProgressHandler();
     const execute_handler = new ExecuteHandler(batchProcessor);
+    const category_inputs_handler = new CategoryInputsHandler(api);
 
     // ── Panel configurations ──────────────────────────────────────────────
     const execute_panel = ExecutePanel(execute_handler, progress_handler, changes_helpers);
     const search_panel = SearchPanel(search_handler);
-    const category_inputs_panel = CategoryInputsPanel();
     const preview_panel = PreviewPanel();
 
     // ── Template ─────────────────────────────────────────────────────────
@@ -43,7 +43,10 @@ function BatchManager() {
 
                 <!-- Actions Section -->
                 <div>
-                    ${category_inputs_panel.template}
+                    <CategoryInputsPanel
+                        :add-category="addCategory"
+                        :remove-category="removeCategory"
+                    />
 
                     <div class="cbm-button-group">
                         ${preview_panel.template}
@@ -107,8 +110,19 @@ function BatchManager() {
         methods: {
             ...search_panel.methods,
             ...execute_panel.methods,
-            ...category_inputs_panel.methods,
             ...preview_panel.methods,
+
+            // Helper for CategoryInputsPanel
+            displayCategoryMessage(text, type = 'error', target = 'add') {
+                const model = target === 'add' ? this.addCategory : this.removeCategory;
+                model.message.show = false;
+                this.$nextTick(() => {
+                    model.message.type = type;
+                    model.message.text = text;
+                    model.message.show = true;
+                    model.message.key++;
+                });
+            },
         },
 
         components: {
@@ -116,6 +130,7 @@ function BatchManager() {
             PreviewTable: PreviewTable(),
             MessageDisplayPanel: MessageDisplayPanel(),
             FilesListPanel: FilesListPanel(),
+            CategoryInputsPanel: CategoryInputsPanel(),
         },
         template: template,
     };
