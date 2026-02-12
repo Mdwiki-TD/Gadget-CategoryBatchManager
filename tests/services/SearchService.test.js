@@ -109,7 +109,7 @@ describe('SearchService', () => {
       expect(result).toHaveLength(2);
       expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith(
         'incategory:Belarus intitle:/^Chart/',
-        null,
+        5000,
         expect.objectContaining({ onProgress: expect.any(Function) })
       );
     });
@@ -205,7 +205,7 @@ describe('SearchService', () => {
 
       expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith(
         complexPattern,
-        null,
+        5000,
         expect.objectContaining({ onProgress: expect.any(Function) })
       );
     });

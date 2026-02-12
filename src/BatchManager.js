@@ -65,6 +65,16 @@ function BatchManager() {
         <MessageDisplayPanel />
     `;
 
+    // ── Helper to create lookup model ─────────────────────────────────────
+    const createLookupModel = () => ({
+        menuItems: [],
+        menuConfig: { boldLabel: true, visibleItemLimit: 10 },
+        chips: [],
+        selected: [],
+        input: '',
+        message: { show: false, type: '', text: '', key: 0 },
+    });
+
     // ── App definition ────────────────────────────────────────────────────
     const app = {
         data() {
@@ -74,10 +84,13 @@ function BatchManager() {
                 changes_helpers: changes_helpers,
                 search_handler: search_handler,
 
-                // Merge panel states
+                // Category state (owned by parent)
+                addCategory: createLookupModel(),
+                removeCategory: createLookupModel(),
+
+                // Merge other panel states
                 ...search_panel.data(),
                 ...execute_panel.data(),
-                ...category_inputs_panel.data(),
                 ...preview_panel.data(),
             };
         },
