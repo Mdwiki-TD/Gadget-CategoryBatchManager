@@ -1,20 +1,24 @@
 /**
  * Search panel — UI layer only.
  * All business logic is delegated to SearchHandler.
- * @param {SearchHandler} search_handler
  * @returns {Object} Partial Vue app configuration (data + template + methods)
  */
 
 import mw from '../../services/mw.js';
-import SearchHandler from './../handlers/SearchHandler.js';
 
-function SearchPanel(search_handler) {
+function SearchPanel() {
     const defaultCategory =
         mw.config.get('wgCanonicalNamespace') === 'Category'
             ? mw.config.get('wgPageName')
             : '';
 
     return {
+        props: {
+            searchHandler: {
+                type: Object,
+                required: true
+            }
+        },
         data() {
             return {
 
@@ -114,18 +118,18 @@ function SearchPanel(search_handler) {
                 }
 
                 // Wire up handler callbacks before starting
-                search_handler.onProgress = (text, percent) => {
+                this.searchHandler.onProgress = (text, percent) => {
                     this.searchProgressText = text;
                     this.searchProgressPercent = percent;
                 };
 
-                search_handler.onComplete = (results) => {
+                this.searchHandler.onComplete = (results) => {
                     this._clearSearchStatus();
                     this.workFiles = results ?? [];
                     // Bubble results up to the parent component
                 };
 
-                search_handler.onError = (error) => {
+                this.searchHandler.onError = (error) => {
                     this._clearSearchStatus();
                     this.showWarningMessage(`Search failed: ${error.message}`);
                 };
@@ -137,7 +141,7 @@ function SearchPanel(search_handler) {
                 // Clear all files and messages from previous search
                 this.workFiles = [];
 
-                await search_handler.startSearch(
+                await this.searchHandler.startSearch(
                     this.sourceCategory,
                     this.titlePattern,
                     this.searchPattern,
@@ -151,7 +155,7 @@ function SearchPanel(search_handler) {
              */
             stopSearch() {
                 this._clearSearchStatus();
-                search_handler.stop();
+                this.searchHandler.stop();
                 this.showWarningMessage('Search stopped by user.');
             },
 

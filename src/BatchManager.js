@@ -30,7 +30,6 @@ function BatchManager() {
     const category_inputs_handler = new CategoryInputsHandler(api);
 
     // ── Panel configurations ──────────────────────────────────────────────
-    const search_panel = SearchPanel(search_handler);
     const message_display_panel = MessageDisplayPanel();
 
     // ── Template ─────────────────────────────────────────────────────────
@@ -39,7 +38,7 @@ function BatchManager() {
             <!-- Left Panel: Search and Actions -->
             <div class="cbm-left-panel">
                 <!-- Search Section -->
-                ${search_panel.template}
+                <SearchPanel :search-handler="search_handler" />
 
                 <!-- Actions Section -->
                 <div>
@@ -139,9 +138,6 @@ function BatchManager() {
                 addCategory: createLookupModel(),
                 removeCategory: createLookupModel(),
 
-                // Merge other panel states
-                ...search_panel.data(),
-
                 // Execution progress state (for ProgressBar)
                 isProcessing: false,
                 executionProgressPercent: 0,
@@ -162,7 +158,6 @@ function BatchManager() {
         },
 
         methods: {
-            ...search_panel.methods,
             ...message_display_panel.methods,
 
             // Helper for CategoryInputsPanel
@@ -179,6 +174,7 @@ function BatchManager() {
         },
 
         components: {
+            SearchPanel: SearchPanel(),
             CategoryLookup: CategoryLookup(),
             PreviewTable: PreviewTable(),
             ProgressBar: ProgressBar(),
