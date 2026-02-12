@@ -8,11 +8,11 @@ import { FileListHandler } from "../handlers";
 function FilesListPanel() {
     const file_list_handler = new FileListHandler();
     return {
-        data() {
-            return {
-                // TODO: workFiles is defined here and in SearchPanel — who owns and controls this state?
-                workFiles: [],
-            };
+        props: {
+            workFiles: {
+                type: Array,
+                default: () => []
+            }
         },
         computed: {
             selectedCount: function () {

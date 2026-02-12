@@ -53,7 +53,7 @@ function BatchManager() {
 
             <!-- Right Panel: File List -->
             <div class="cbm-right-panel">
-                <FilesListPanel />
+                <FilesListPanel :work-files="workFiles" />
 
                 <!-- Progress Section -->
                 ${search_panel.progressTemplate}
