@@ -205,7 +205,7 @@ describe('SearchService', () => {
 
       expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith(
         complexPattern,
-        5000,
+        null,
         expect.objectContaining({ onProgress: expect.any(Function) })
       );
     });
