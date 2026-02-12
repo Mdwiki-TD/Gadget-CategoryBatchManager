@@ -79,7 +79,8 @@ class BatchProcessor {
             successful: 0,
             skipped: 0,
             failed: 0,
-            errors: []
+            errors: [],
+            fileResults: [] // Detailed per-file results
         };
 
         /**
@@ -101,9 +102,19 @@ class BatchProcessor {
                 if (result.success) {
                     if (result.modified) {
                         results.successful++;
+                        results.fileResults.push({
+                            file: file.title,
+                            status: 'success',
+                            message: 'Modified successfully'
+                        });
                         onFileComplete(file, true);
                     } else {
                         results.skipped++;
+                        results.fileResults.push({
+                            file: file.title,
+                            status: 'skipped',
+                            message: 'No changes needed'
+                        });
                         onFileComplete(file, false);
                     }
                 }
@@ -119,6 +130,11 @@ class BatchProcessor {
                 results.processed++;
                 results.failed++;
                 results.errors.push({ file: file.title, error: error.message });
+                results.fileResults.push({
+                    file: file.title,
+                    status: 'failed',
+                    message: error.message
+                });
                 onError(file, error);
             }
 

@@ -5,7 +5,7 @@
  */
 
 import { APIService, BatchProcessor, CategoryService, SearchService } from './services';
-import { CategoryInputsPanel, ExecutePanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel } from './ui/panels';
+import { CategoryInputsPanel, ExecutePanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, ReportsPanel, SearchPanel } from './ui/panels';
 import { CategoryInputsHandler, ExecuteHandler, SearchHandler, ProgressHandler } from './ui/handlers';
 import CategoryLookup from './ui/components/CategoryLookup.js';
 import PreviewTable from './ui/components/PreviewTable.js';
@@ -86,6 +86,7 @@ function BatchManager() {
                             @update:is-processing="isProcessing = $event"
                             @update:progress-percent="executionProgressPercent = $event"
                             @update:progress-text="executionProgressText = $event"
+                        @execution-complete="handleExecutionComplete"
                         />
                     </div>
                 </div>
@@ -163,6 +164,15 @@ function BatchManager() {
                 searchProgressPercent: 0,
                 searchProgressText: '',
 
+                // Reports state
+                fileResults: [],
+                executionSummary: {
+                    total: 0,
+                    successful: 0,
+                    skipped: 0,
+                    failed: 0
+                },
+
                 // Merge message display state
                 ...message_display_panel.data(),
             };
@@ -190,6 +200,14 @@ function BatchManager() {
                     model.message.show = true;
                     model.message.key++;
                 });
+            },
+
+            // Handle execution completion and store results
+            handleExecutionComplete(results) {
+                this.fileResults = results.fileResults;
+                this.executionSummary = results.summary;
+                // Emit up to parent (BatchManagerWrappers)
+                this.$emit('execution-complete', results);
             },
         },
 
