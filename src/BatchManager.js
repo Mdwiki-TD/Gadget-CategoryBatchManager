@@ -48,6 +48,9 @@ function BatchManager() {
                     :default-category="defaultCategory"
                     @show-warning-message="showWarningMessage"
                     @update:work-files="workFiles = $event"
+                    @update:source-category="sourceCategory = $event"
+                    @update:search-progress-percent="searchProgressPercent = $event"
+                    @update:search-progress-text="searchProgressText = $event"
                 />
 
                 <!-- Actions Section -->
@@ -151,9 +154,14 @@ function BatchManager() {
 
                 // Execution progress state (for ProgressBar)
                 isProcessing: false,
-                defaultCategory: defaultCategory,
                 executionProgressPercent: 0,
                 executionProgressText: '',
+
+                // Search progress state (synced from SearchPanel)
+                sourceCategory: defaultCategory,
+                defaultCategory: defaultCategory,
+                searchProgressPercent: 0,
+                searchProgressText: '',
 
                 // Merge message display state
                 ...message_display_panel.data(),

@@ -119,6 +119,8 @@ function SearchPanel() {
                 this.searchHandler.onProgress = (text, percent) => {
                     this.searchProgressText = text;
                     this.searchProgressPercent = percent;
+                    this.$emit('update:search-progress-text', text);
+                    this.$emit('update:search-progress-percent', percent);
                 };
 
                 this.searchHandler.onComplete = (results) => {
@@ -136,6 +138,9 @@ function SearchPanel() {
                 this.isSearching = true;
                 this.searchProgressText = '';
                 this.searchProgressPercent = 0;
+                this.$emit('update:source-category', this.sourceCategory);
+                this.$emit('update:search-progress-text', '');
+                this.$emit('update:search-progress-percent', 0);
 
                 // Clear all files and messages from previous search
                 this.workFiles = [];
@@ -163,6 +168,8 @@ function SearchPanel() {
                 this.isSearching = false;
                 this.searchProgressText = '';
                 this.searchProgressPercent = 0;
+                this.$emit('update:search-progress-text', '');
+                this.$emit('update:search-progress-percent', 0);
             },
         },
     };
