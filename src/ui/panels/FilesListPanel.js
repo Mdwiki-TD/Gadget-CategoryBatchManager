@@ -1,12 +1,8 @@
 /**
  * File list panel — renders matched files with select/deselect controls.
- * @param {FileListHandler} file_list_handler
  * @returns {Object} Partial Vue app configuration
  */
-import { FileListHandler } from "../handlers";
-
 function FilesListPanel() {
-    const file_list_handler = new FileListHandler();
     return {
         props: {
             workFiles: {
@@ -75,13 +71,15 @@ function FilesListPanel() {
         `,
         methods: {
             selectAll: function () {
-                return file_list_handler.selectAll(this.workFiles);
+                this.workFiles.forEach(f => f.selected = true);
             },
             deselectAll: function () {
-                return file_list_handler.deselectAll(this.workFiles);
+                this.workFiles.forEach(f => f.selected = false);
             },
             removeFile: function (index) {
-                return file_list_handler.removeFile(this.workFiles, index);
+                if (index >= 0 && index < this.workFiles.length) {
+                    this.workFiles.splice(index, 1);
+                }
             }
         }
     };
