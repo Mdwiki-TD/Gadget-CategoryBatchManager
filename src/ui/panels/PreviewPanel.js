@@ -74,11 +74,7 @@ function PreviewPanel(changes_helpers) {
                 }
                 console.log('[CBM-P] Preview result:', prep.filesToProcess.length, 'items');
 
-                // Add diff calculation for display
-                this.previewRows = prep.filesToProcess.map(row => ({
-                    ...row,
-                    diff: row.newCategories.length - row.currentCategories.length,
-                }));
+                this.previewRows = prep.filesToProcess;
 
                 this.changesCount = prep.filesToProcess.length;
 
