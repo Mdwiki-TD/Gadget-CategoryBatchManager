@@ -145,6 +145,7 @@ function BatchManager() {
 
                 // Execution progress state (for ProgressBar)
                 isProcessing: false,
+                defaultCategory: defaultCategory,
                 executionProgressPercent: 0,
                 executionProgressText: '',
 
