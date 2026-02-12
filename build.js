@@ -21,6 +21,7 @@ const SOURCE_FILES = [
     'src/services/SearchService.js',
 
     'src/ui/components/CategoryLookup.js',
+    'src/ui/components/PreviewTable.js',
 
     'src/ui/panels/CategoryInputsPanel.js',
     'src/ui/panels/ExecutePanel.js',
