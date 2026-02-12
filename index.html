@@ -8,13 +8,87 @@
   <!-- import jquery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <title>Vite + Vue</title>
+  <style>
+    :root {
+      --navbar-bg: #f8f9fa;
+      --navbar-border: #e9ecef;
+      --nav-link-bg: #ffffff;
+      --nav-link-color: #495057;
+      --nav-link-border: #dee2e6;
+      --nav-link-hover-bg: #e9ecef;
+      --shadow: rgba(0, 0, 0, 0.05);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --navbar-bg: #212529;
+        --navbar-border: #343a40;
+        --nav-link-bg: #2d333b;
+        --nav-link-color: #c9d1d9;
+        --nav-link-border: #444c56;
+        --nav-link-hover-bg: #373e47;
+        --shadow: rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    .navbar {
+      background: var(--navbar-bg);
+      border-bottom: 1px solid var(--navbar-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      box-shadow: 0 1px 3px var(--shadow);
+    }
+
+    .nav-link {
+      color: var(--nav-link-color);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      background: var(--nav-link-bg);
+      border: 1px solid var(--nav-link-border);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-link:hover {
+      background: var(--nav-link-hover-bg);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+
+    .nav-link svg {
+      width: 16px;
+      height: 16px;
+      opacity: 0.8;
+    }
+  </style>
 </head>
 
 <body>
   <!-- add navbar with 2 links one with /?icon=1 and the other standerd link to open the app in a new tab -->
-  <nav>
-    <a href="/?icon=1">Open with Icon</a>
-    <a href="/">Normal</a>
+  <nav class="navbar">
+    <a href="/?icon=1" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+      Open with Icon
+    </a>
+    <a href="/" class="nav-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <line x1="10" y1="14" x2="21" y2="3"></line>
+      </svg>
+      Normal
+    </a>
   </nav>
   <div id="app">app</div>
 
