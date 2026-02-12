@@ -32,7 +32,7 @@ function SearchPanel() {
                 searchProgressPercent: 0,
             };
         },
-        emits: ['show-warning-message', 'update:work-files'],
+        emits: ['show-warning-message', 'update:work-files', 'update:source-category', 'update:search-progress-percent', 'update:search-progress-text'],
 
         template: `
             <div class="cbm-search-panel">
