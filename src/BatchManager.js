@@ -23,18 +23,12 @@ function BatchManager() {
     const changes_helpers = new ChangesHelper(validation_helper);
 
     // ── Handlers ──────────────────────────────────────────────────────────
-    const files_list_handler = new FileListHandler();
     const search_handler = new SearchHandler(search_service);
     const progress_handler = new ProgressHandler();
     const execute_handler = new ExecuteHandler(batchProcessor);
-    const category_inputs_handler = new CategoryInputsHandler(api);
 
     // ── Panel configurations ──────────────────────────────────────────────
-    const category_inputs = CategoryInputsPanel(category_inputs_handler);
     const execute_panel = ExecutePanel(execute_handler, progress_handler, changes_helpers);
-    const files_list = FilesListPanel(files_list_handler);
-    const message_panel = MessageDisplayPanel();
-    const preview_panel = PreviewPanel(changes_helpers);
     const search_panel = SearchPanel(search_handler);
 
     // ── Template ─────────────────────────────────────────────────────────
@@ -47,10 +41,10 @@ function BatchManager() {
 
                 <!-- Actions Section -->
                 <div>
-                    ${category_inputs.template}
+                    <CategoryInputsPanel />
 
                     <div class="cbm-button-group">
-                        ${preview_panel.template}
+                        <PreviewPanel />
                         ${execute_panel.template}
                     </div>
                 </div>
@@ -59,14 +53,14 @@ function BatchManager() {
 
             <!-- Right Panel: File List -->
             <div class="cbm-right-panel">
-                ${files_list.template}
+                <FilesListPanel />
 
                 <!-- Progress Section -->
                 ${search_panel.progressTemplate}
             </div>
         </div>
         <!-- Message Display -->
-        ${message_panel.template}
+        <MessageDisplayPanel />
     `;
 
     // ── App definition ────────────────────────────────────────────────────
@@ -76,36 +70,29 @@ function BatchManager() {
                 execute_handler: execute_handler,
                 progress_handler: progress_handler,
                 changes_helpers: changes_helpers,
-                category_inputs_handler: category_inputs_handler,
                 search_handler: search_handler,
-                files_list_handler: files_list_handler,
 
                 // Merge panel states
                 ...search_panel.data(),
-                ...category_inputs.data(),
-                ...files_list.data(),
-                ...message_panel.data(),
-                ...preview_panel.data(),
                 ...execute_panel.data(),
             };
         },
 
         computed: {
-            ...files_list.computed,
         },
 
         methods: {
             ...search_panel.methods,
-            ...category_inputs.methods,
-            ...files_list.methods,
-            ...message_panel.methods,
-            ...preview_panel.methods,
             ...execute_panel.methods,
         },
 
         components: {
             CategoryLookup: CategoryLookup(),
             PreviewTable: PreviewTable(),
+            MessageDisplayPanel: MessageDisplayPanel(),
+            FilesListPanel: FilesListPanel(),
+            CategoryInputsPanel: CategoryInputsPanel(),
+            PreviewPanel: PreviewPanel(),
         },
         template: template,
     };

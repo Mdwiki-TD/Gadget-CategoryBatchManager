@@ -1,13 +1,14 @@
 /**
  * PreviewPanel
- * @param {ChangesHelper} changes_helpers - ChangesHelper instance for validation and preparation
  * @returns {Object} Vue app configuration
  */
 
-import { ChangesHelper } from "../helpers";
+import { ChangesHelper, ValidationHelper } from "../helpers";
 import PreviewTable from "../components/PreviewTable.js";
 
-function PreviewPanel(changes_helpers) {
+function PreviewPanel() {
+    const validation_helper = new ValidationHelper();
+    const changes_helpers = new ChangesHelper(validation_helper);
     return {
         data() {
             return {

@@ -4,10 +4,14 @@
  * @returns {Object} Partial Vue app configuration
  */
 
+import { APIService } from "../../services";
 import { CategoryLookup } from "../components";
 import { CategoryInputsHandler } from './../handlers';
 
-function CategoryInputsPanel(category_inputs_handler) {
+function CategoryInputsPanel() {
+    const api = new APIService();
+    const category_inputs_handler = new CategoryInputsHandler(api);
+
     /** Default shape for a lookup model object */
     const newLookupModel = () => ({
         menuItems: [],

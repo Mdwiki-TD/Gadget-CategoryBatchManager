@@ -5,7 +5,8 @@
  */
 import { FileListHandler } from "../handlers";
 
-function FilesListPanel(file_list_handler) {
+function FilesListPanel() {
+    const file_list_handler = new FileListHandler();
     return {
         data() {
             return {
