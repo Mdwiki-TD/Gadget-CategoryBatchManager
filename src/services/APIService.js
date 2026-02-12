@@ -17,6 +17,7 @@ class APIService {
         // if user pass ?debug= in URL, enable debug mode // https://commons.wikimedia.org?debug=1
         if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug')) {
             this.debug = true;
+            console.log('[APIService] Debug mode enabled');
         }
         /**
          * Native MediaWiki API helper
@@ -254,13 +255,18 @@ class APIService {
         // Simulate network delay in debug mode
         await new Promise(resolve => setTimeout(resolve, 500));
 
+        let result = 'Success';
+        // Simulate a random failure 10% of the time in debug mode
+        if (Math.random() < 0.1) {
+            result = 'Failure (simulated)';
+        }
         // Simulate a successful edit response in debug mode
         return Promise.resolve({
             edit: {
                 title: title,
                 content: content,
                 summary: summary,
-                result: 'Success',
+                result: result,
             }
         });
     }
