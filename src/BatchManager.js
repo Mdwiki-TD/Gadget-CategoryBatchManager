@@ -29,7 +29,6 @@ function BatchManager() {
     const category_inputs_handler = new CategoryInputsHandler(api);
 
     // ── Panel configurations ──────────────────────────────────────────────
-    const execute_panel = ExecutePanel(execute_handler, progress_handler, changes_helpers);
     const search_panel = SearchPanel(search_handler);
 
     // ── Template ─────────────────────────────────────────────────────────
@@ -58,10 +57,21 @@ function BatchManager() {
                             :changes-helpers="changes_helpers"
                             @display-message="displayCategoryMessage"
                         />
-                        ${execute_panel.template}
+                        <ExecutePanel
+                            :execute-handler="execute_handler"
+                            :progress-handler="progress_handler"
+                            :changes-helpers="changes_helpers"
+                            :source-category="sourceCategory"
+                            :selected-files="selectedFiles"
+                            :add-category-selected="addCategory.selected"
+                            :remove-category-selected="removeCategory.selected"
+                            @display-message="displayCategoryMessage"
+                            @show-warning-message="showWarningMessage"
+                            @show-success-message="showSuccessMessage"
+                            @show-error-message="showErrorMessage"
+                        />
                     </div>
                 </div>
-                ${execute_panel.progressTemplate}
             </div>
 
             <!-- Right Panel: File List -->
@@ -102,7 +112,6 @@ function BatchManager() {
 
                 // Merge other panel states
                 ...search_panel.data(),
-                ...execute_panel.data(),
             };
         },
 
@@ -117,7 +126,6 @@ function BatchManager() {
 
         methods: {
             ...search_panel.methods,
-            ...execute_panel.methods,
 
             // Helper for CategoryInputsPanel
             displayCategoryMessage(text, type = 'error', target = 'add') {
@@ -139,6 +147,7 @@ function BatchManager() {
             FilesListPanel: FilesListPanel(),
             CategoryInputsPanel: CategoryInputsPanel(),
             PreviewPanel: PreviewPanel(),
+            ExecutePanel: ExecutePanel(),
         },
         template: template,
     };
