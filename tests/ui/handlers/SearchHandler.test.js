@@ -117,6 +117,7 @@ describe('SearchHandler', () => {
       expect(handler.isSearching).toBe(false);
       expect(mockSearchService.searchWithPatternCallback).toHaveBeenCalledWith(
         'incategory:Test_Category intitle:/BLR/',
+        5000,
         expect.objectContaining({ onProgress: expect.any(Function) })
       );
       expect(handler.onComplete).toHaveBeenCalledWith([{ title: 'File:Test.svg', pageid: 1 }]);
@@ -131,6 +132,7 @@ describe('SearchHandler', () => {
 
       expect(mockSearchService.searchWithPatternCallback).toHaveBeenCalledWith(
         rawPattern,
+        5000,
         expect.objectContaining({ onProgress: expect.any(Function) })
       );
     });
@@ -145,10 +147,12 @@ describe('SearchHandler', () => {
       // Should use created pattern, not raw pattern
       expect(mockSearchService.searchWithPatternCallback).toHaveBeenCalledWith(
         'incategory:Test_Category intitle:/BLR/',
+        5000,
         expect.objectContaining({ onProgress: expect.any(Function) })
       );
       expect(mockSearchService.searchWithPatternCallback).not.toHaveBeenCalledWith(
         rawPattern,
+        5000,
         expect.objectContaining({ onProgress: expect.any(Function) })
       );
     });
