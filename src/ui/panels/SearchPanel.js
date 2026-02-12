@@ -1,25 +1,26 @@
 /**
  * Search panel — UI layer only.
  * All business logic is delegated to SearchHandler.
- * @param {SearchHandler} search_handler
  * @returns {Object} Partial Vue app configuration (data + template + methods)
  */
 
-import mw from '../../services/mw.js';
-import SearchHandler from './../handlers/SearchHandler.js';
-
-function SearchPanel(search_handler) {
-    const defaultCategory =
-        mw.config.get('wgCanonicalNamespace') === 'Category'
-            ? mw.config.get('wgPageName')
-            : '';
-
+function SearchPanel() {
     return {
+        props: {
+            searchHandler: {
+                type: Object,
+                required: true
+            },
+            defaultCategory: {
+                type: String,
+                default: ''
+            }
+        },
         data() {
             return {
 
                 // ── User inputs ──────────────────────────────────────────
-                sourceCategory: defaultCategory,
+                sourceCategory: this.defaultCategory,
                 titlePattern: '',
                 searchPattern: '',
                 searchLimit: 5000,
@@ -31,6 +32,7 @@ function SearchPanel(search_handler) {
                 searchProgressPercent: 0,
             };
         },
+        emits: ['show-warning-message', 'update:work-files', 'update:source-category', 'update:search-progress-percent', 'update:search-progress-text'],
 
         template: `
             <div class="cbm-search-panel">
@@ -101,19 +103,6 @@ function SearchPanel(search_handler) {
                 </div>
             </div>
         `,
-        progressTemplate: `
-            <div v-if="searchProgressPercent > 0 || searchProgressText !== ''"
-                    class="cbm-progress-section">
-                <div class="cbm-progress-bar-bg">
-                    <div class="cbm-progress-bar-fill"
-                            :style="{ width: searchProgressPercent + '%' }">
-                    </div>
-                </div>
-                <div class="cbm-progress-text">
-                    {{ searchProgressText }}
-                </div>
-            </div>
-        `,
 
         methods: {
             /**
@@ -122,35 +111,42 @@ function SearchPanel(search_handler) {
              */
             async searchFiles() {
                 if (!this.sourceCategory.trim() && !this.searchPattern.trim()) {
-                    this.showWarningMessage('Please enter a source category or search pattern.');
+                    this.$emit('show-warning-message', 'Please enter a source category or search pattern.');
                     return;
                 }
 
                 // Wire up handler callbacks before starting
-                search_handler.onProgress = (text, percent) => {
+                this.searchHandler.onProgress = (text, percent) => {
                     this.searchProgressText = text;
                     this.searchProgressPercent = percent;
+                    this.$emit('update:search-progress-text', text);
+                    this.$emit('update:search-progress-percent', percent);
                 };
 
-                search_handler.onComplete = (results) => {
+                this.searchHandler.onComplete = (results) => {
                     this._clearSearchStatus();
                     this.workFiles = results ?? [];
                     // Bubble results up to the parent component
+                    this.$emit('update:work-files', this.workFiles);
                 };
 
-                search_handler.onError = (error) => {
+                this.searchHandler.onError = (error) => {
                     this._clearSearchStatus();
-                    this.showWarningMessage(`Search failed: ${error.message}`);
+                    this.$emit('show-warning-message', `Search failed: ${error.message}`);
                 };
 
                 this.isSearching = true;
                 this.searchProgressText = '';
                 this.searchProgressPercent = 0;
+                this.$emit('update:source-category', this.sourceCategory);
+                this.$emit('update:search-progress-text', '');
+                this.$emit('update:search-progress-percent', 0);
 
                 // Clear all files and messages from previous search
                 this.workFiles = [];
+                this.$emit('update:work-files', this.workFiles);
 
-                await search_handler.startSearch(
+                await this.searchHandler.startSearch(
                     this.sourceCategory,
                     this.titlePattern,
                     this.searchPattern,
@@ -164,14 +160,16 @@ function SearchPanel(search_handler) {
              */
             stopSearch() {
                 this._clearSearchStatus();
-                search_handler.stop();
-                this.showWarningMessage('Search stopped by user.');
+                this.searchHandler.stop();
+                this.$emit('show-warning-message', 'Search stopped by user.');
             },
 
             _clearSearchStatus() {
                 this.isSearching = false;
                 this.searchProgressText = '';
                 this.searchProgressPercent = 0;
+                this.$emit('update:search-progress-text', '');
+                this.$emit('update:search-progress-percent', 0);
             },
         },
     };

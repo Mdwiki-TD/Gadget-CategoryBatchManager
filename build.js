@@ -22,6 +22,7 @@ const SOURCE_FILES = [
 
     'src/ui/components/CategoryLookup.js',
     'src/ui/components/PreviewTable.js',
+    'src/ui/components/ProgressBar.js',
     'src/ui/components/Tab.js',
     'src/ui/components/Tabs.js',
 
@@ -34,7 +35,6 @@ const SOURCE_FILES = [
 
     'src/ui/handlers/CategoryInputsHandler.js',
     'src/ui/handlers/ExecuteHandler.js',
-    'src/ui/handlers/FileListHandler.js',
     'src/ui/handlers/ProgressHandler.js',
     'src/ui/handlers/SearchHandler.js',
 

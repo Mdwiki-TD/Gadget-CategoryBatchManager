@@ -1,14 +1,38 @@
 /**
  * PreviewPanel
- * @param {ChangesHelper} changes_helpers - ChangesHelper instance for validation and preparation
  * @returns {Object} Vue app configuration
  */
 
-import { ChangesHelper } from "../helpers";
 import PreviewTable from "../components/PreviewTable.js";
 
-function PreviewPanel(changes_helpers) {
+function PreviewPanel() {
     return {
+        props: {
+            isProcessing: {
+                type: Boolean,
+                default: false
+            },
+            sourceCategory: {
+                type: String,
+                default: ''
+            },
+            selectedFiles: {
+                type: Array,
+                default: () => []
+            },
+            addCategorySelected: {
+                type: Array,
+                default: () => []
+            },
+            removeCategorySelected: {
+                type: Array,
+                default: () => []
+            },
+            changesHelpers: {
+                type: Object,
+                required: true
+            }
+        },
         data() {
             return {
                 previewRows: [],
@@ -46,6 +70,8 @@ function PreviewPanel(changes_helpers) {
             </cdx-dialog>
         `,
 
+        emits: ['display-message'],
+
         components: {
             PreviewTable: PreviewTable(),
         },
@@ -54,18 +80,18 @@ function PreviewPanel(changes_helpers) {
                 console.log('[CBM-P] Preview button clicked');
                 const callbacks = {
                     onError: (msg) => {
-                        this.displayCategoryMessage(msg, 'error', 'add');
+                        this.$emit('display-message', msg, 'error', 'add');
                     },
                     onWarning: (msg) => {
-                        this.displayCategoryMessage(msg, 'warning', 'add');
+                        this.$emit('display-message', msg, 'warning', 'add');
                     }
                 };
 
-                const prep = changes_helpers.validateAndReturnPreparation(
+                const prep = this.changesHelpers.validateAndReturnPreparation(
                     this.sourceCategory,
                     this.selectedFiles,
-                    this.addCategory.selected,
-                    this.removeCategory.selected,
+                    this.addCategorySelected,
+                    this.removeCategorySelected,
                     callbacks
                 );
                 if (!prep) {
@@ -75,12 +101,11 @@ function PreviewPanel(changes_helpers) {
                 console.log('[CBM-P] Preview result:', prep.filesToProcess.length, 'items');
 
                 this.previewRows = prep.filesToProcess;
-
                 this.changesCount = prep.filesToProcess.length;
 
                 if (!this.changesCount) {
                     console.log('[CBM] No changes detected');
-                    this.displayCategoryMessage('ℹ️ No changes detected.', 'notice', 'add');
+                    this.$emit('display-message', 'ℹ️ No changes detected.', 'notice', 'add');
                 }
                 console.log('[CBM-P] Opening preview dialog');
                 this.openPreviewDialog = true;

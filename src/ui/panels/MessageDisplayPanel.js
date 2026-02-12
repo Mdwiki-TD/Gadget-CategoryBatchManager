@@ -16,9 +16,9 @@ function MessageDisplayPanel() {
         },
 
         template: `
-            <!-- Message Display -->
-            <div v-if="showMessage" class="cbm-fixed-message">
-                <cdx-message
+        <!-- Message Display -->
+        <div v-if="showMessage" class="cbm-fixed-message">
+            <cdx-message
                 :key="messageKey"
                 allow-user-dismiss
                 :type="messageType"
@@ -27,10 +27,10 @@ function MessageDisplayPanel() {
                 :display-time="3000"
                 dismiss-button-label="Close"
                 @dismissed="handleMessageDismiss"
-                >
-                    {{ messageContent }}
-                </cdx-message>
-            </div>
+            >
+                {{ messageContent }}
+            </cdx-message>
+        </div>
         `,
 
         methods: {

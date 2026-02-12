@@ -22,11 +22,29 @@ function BatchManagerDialog(portletLink) {
                :use-close-button="true"
                close-button-label="Close"
                @default="showMainDialog = false">
-               <BatchManager />
+               <cdx-tabs v-model:active="activeTab" :framed="true">
+                   <cdx-tab name="manager" label="Batch Manager">
+                       <BatchManager />
+                   </cdx-tab>
+                   <cdx-tab name="reports" label="Reports">
+                       <div class="cbm-reports-placeholder">
+                           <p>Reports will be available here soon.</p>
+                       </div>
+                   </cdx-tab>
+               </cdx-tabs>
            </cdx-dialog>`
         : `<div class="cbm-container cbm-container2">
                <h2 class="cbm-title">Category Batch Manager</h2>
-               <BatchManager />
+               <cdx-tabs v-model:active="activeTab" :framed="true">
+                   <cdx-tab name="manager" label="Batch Manager">
+                       <BatchManager />
+                   </cdx-tab>
+                   <cdx-tab name="reports" label="Reports">
+                       <div class="cbm-reports-placeholder">
+                           <p>Reports will be available here soon.</p>
+                       </div>
+                   </cdx-tab>
+               </cdx-tabs>
            </div>
         `;
     const app = {
@@ -34,6 +52,7 @@ function BatchManagerDialog(portletLink) {
         data() {
             return {
                 showMainDialog: false,
+                activeTab: 'manager',
             };
         },
         methods: {

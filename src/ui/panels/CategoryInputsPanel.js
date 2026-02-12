@@ -1,31 +1,25 @@
 /**
  * Category add/remove multiselect inputs panel.
- * @param {CategoryInputsHandler} category_inputs_handler
  * @returns {Object} Partial Vue app configuration
  */
 
 import { CategoryLookup } from "../components";
-import { CategoryInputsHandler } from './../handlers';
 
-function CategoryInputsPanel(category_inputs_handler) {
-    /** Default shape for a lookup model object */
-    const newLookupModel = () => ({
-        menuItems: [],
-        menuConfig: { boldLabel: true, visibleItemLimit: 10 },
-        chips: [],
-        selected: [],
-        input: '',
-        message: { show: false, type: '', text: '', key: 0 },
-    });
-
+function CategoryInputsPanel() {
     return {
-        data() {
-            return {
-                category_inputs_handler: category_inputs_handler,
-
-                addCategory: newLookupModel(),
-                removeCategory: newLookupModel(),
-            };
+        props: {
+            addCategory: {
+                type: Object,
+                required: true
+            },
+            removeCategory: {
+                type: Object,
+                required: true
+            },
+            handler: {
+                type: Object,
+                required: true
+            }
         },
         template: `
             <CategoryLookup
@@ -34,7 +28,7 @@ function CategoryInputsPanel(category_inputs_handler) {
                 aria-label="Add categories"
                 placeholder="Type to search categories"
                 type="add"
-                :handler="category_inputs_handler"
+                :handler="handler"
             />
 
             <CategoryLookup
@@ -43,33 +37,9 @@ function CategoryInputsPanel(category_inputs_handler) {
                 aria-label="Remove categories"
                 placeholder="Type to search categories"
                 type="remove"
-                :handler="category_inputs_handler"
+                :handler="handler"
             />
         `,
-        methods: {
-            /**
-             * Display a message beneath one of the lookup inputs.
-             * @param {string}  text
-             * @param {'error'|'warning'|'success'|'notice'} type
-             * @param {'add'|'remove'} target
-             */
-            displayCategoryMessage(text, type = 'error', target = 'add') {
-                console.log(`[CBM] Displaying ${target} category message: ${text} (type: ${type})`);
-                const model = target === 'add' ? this.addCategory : this.removeCategory;
-
-                // Hide first to trigger reactivity if it was already showing
-                model.message.show = false;
-
-                // Use nextTick to ensure the change is processed before showing again
-                this.$nextTick(() => {
-                    model.message.type = type;
-                    model.message.text = text;
-                    model.message.show = true;
-                    model.message.key++; // Increment key to force component re-render
-                });
-            },
-
-        },
         components: {
             CategoryLookup: CategoryLookup()
         }
