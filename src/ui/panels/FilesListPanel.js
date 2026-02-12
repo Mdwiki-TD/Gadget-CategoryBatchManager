@@ -1,16 +1,27 @@
 /**
- * FilesListPanel
- * @param {Object} file_list_handler - FileListHandler instance
- * @returns {Object} Vue app configuration
+ * File list panel — renders matched files with select/deselect controls.
+ * @param {FileListHandler} file_list_handler
+ * @returns {Object} Partial Vue app configuration
  */
+import { FileListHandler } from "../handlers";
 
 function FilesListPanel(file_list_handler) {
-    const app = {
+    return {
         data() {
             return {
-                file_list_handler: file_list_handler,
                 workFiles: [],
             };
+        },
+        computed: {
+            selectedCount: function () {
+                return this.workFiles.filter(f => f.selected).length;
+            },
+            selectedFiles: function () {
+                return this.workFiles.filter(f => f.selected);
+            },
+            totalFilesCount: function () {
+                return this.workFiles.length;
+            }
         },
         template: `
             <div v-if="workFiles.length > 0" class="cbm-files-list">
@@ -31,12 +42,21 @@ function FilesListPanel(file_list_handler) {
 
                 <!-- File List -->
                 <div class="cbm-files-scrollable">
-                    <div v-for="(file, index) in workFiles" :key="index" class="cbm-file-row">
-                        <cdx-checkbox v-model="file.selected" :input-id="'file-' + index" aria-label="{{ file.title }}" />
-                        <cdx-label :for="'file-' + index">
+                    <div
+                        v-for="(file, index) in workFiles"
+                        :key="file.pageid"
+                        class="cbm-file-row">
+                        <cdx-checkbox
+                            v-model="file.selected"
+                            :input-id="'file-' + file.pageid"
+                            :aria-label="file.title" />
+                        <cdx-label :for="'file-' + file.pageid">
                             {{ file.title }}
                         </cdx-label>
-                        <button @click="removeFile(index)" class="cbm-file-remove-btn" title="Remove from list">
+                        <button
+                            class="cbm-file-remove-btn"
+                            title="Remove from list"
+                            @click="removeFile(index)">
                             ×
                         </button>
                     </div>
@@ -51,31 +71,19 @@ function FilesListPanel(file_list_handler) {
                 <p>No files found. Use the search to find files.</p>
             </div>
         `,
-        computed: {
-            selectedCount: function () {
-                return this.workFiles.filter(f => f.selected).length;
-            },
-            selectedFiles: function () {
-                return this.workFiles.filter(f => f.selected);
-            },
-            totalFilesCount: function () {
-                return this.workFiles.length;
-            }
-        },
         methods: {
             selectAll: function () {
-                return this.file_list_handler.selectAll(this.workFiles);
+                return file_list_handler.selectAll(this.workFiles);
             },
             deselectAll: function () {
-                return this.file_list_handler.deselectAll(this.workFiles);
+                return file_list_handler.deselectAll(this.workFiles);
             },
             removeFile: function (index) {
-                return this.file_list_handler.removeFile(this.workFiles, index);
+                return file_list_handler.removeFile(this.workFiles, index);
             }
         }
     };
 
-    return app;
 }
 
 export default FilesListPanel;

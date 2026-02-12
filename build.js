@@ -43,10 +43,10 @@ const SOURCE_FILES = [
 ];
 
 const DIST_DIR = 'dist';
-const OUTPUT_JS = 'dist/test2.js';
+const OUTPUT_JS = 'dist/test3.js';
 
 const CSS_SOURCE = 'src/ui/styles/main.css';
-const OUTPUT_CSS = 'dist/test2.css';
+const OUTPUT_CSS = 'dist/test3.css';
 
 /**
  * Strip module.exports blocks from JavaScript code
