@@ -31,7 +31,6 @@ function BatchManager() {
     // ── Panel configurations ──────────────────────────────────────────────
     const execute_panel = ExecutePanel(execute_handler, progress_handler, changes_helpers);
     const search_panel = SearchPanel(search_handler);
-    const preview_panel = PreviewPanel();
 
     // ── Template ─────────────────────────────────────────────────────────
     const template = `
@@ -50,7 +49,15 @@ function BatchManager() {
                     />
 
                     <div class="cbm-button-group">
-                        ${preview_panel.template}
+                        <PreviewPanel
+                            :is-processing="isProcessing"
+                            :source-category="sourceCategory"
+                            :selected-files="selectedFiles"
+                            :add-category-selected="addCategory.selected"
+                            :remove-category-selected="removeCategory.selected"
+                            :changes-helpers="changes_helpers"
+                            @display-message="displayCategoryMessage"
+                        />
                         ${execute_panel.template}
                     </div>
                 </div>
@@ -95,7 +102,6 @@ function BatchManager() {
                 // Merge other panel states
                 ...search_panel.data(),
                 ...execute_panel.data(),
-                ...preview_panel.data(),
             };
         },
 
@@ -111,7 +117,6 @@ function BatchManager() {
         methods: {
             ...search_panel.methods,
             ...execute_panel.methods,
-            ...preview_panel.methods,
 
             // Helper for CategoryInputsPanel
             displayCategoryMessage(text, type = 'error', target = 'add') {
@@ -132,6 +137,7 @@ function BatchManager() {
             MessageDisplayPanel: MessageDisplayPanel(),
             FilesListPanel: FilesListPanel(),
             CategoryInputsPanel: CategoryInputsPanel(),
+            PreviewPanel: PreviewPanel(),
         },
         template: template,
     };
