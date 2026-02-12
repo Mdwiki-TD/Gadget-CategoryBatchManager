@@ -28,20 +28,93 @@ A Vue.js-based MediaWiki gadget for batch category management on Wikimedia Commo
   - Dialog-based interface for Category pages
   - Responsive layout
 
-## Installation (Wikimedia Commons)
+## Deployment to Wikimedia Commons
 
-### As a Gadget
+### Step-by-Step Guide
 
-1. Copy the contents of `dist/Gadget-CategoryBatchManager.js` to [MediaWiki:Gadget-CategoryBatchManager.js](https://commons.wikimedia.org/wiki/MediaWiki:Gadget-CategoryBatchManager.js) on Wikimedia Commons
+#### 1. Build the Project
 
-2. Copy the contents of `dist/Gadget-CategoryBatchManager.css` to [MediaWiki:Gadget-CategoryBatchManager.css](https://commons.wikimedia.org/wiki/MediaWiki:Gadget-CategoryBatchManager.css)
+```bash
+# Run tests first
+npm test
 
-3. Add to [MediaWiki:Gadgets-definition](https://commons.wikimedia.org/wiki/MediaWiki:Gadgets-definition):
+# Build production files
+npm run build
+```
+
+This creates:
+- `dist/test3.js` - JavaScript bundle
+- `dist/test3.css` - CSS bundle
+
+#### 2. Create/Edit Gadget Pages on Wikimedia Commons
+
+Navigate to each page below, click "Edit source", and paste the contents:
+
+**JavaScript File:**
+- Go to: https://commons.wikimedia.org/wiki/MediaWiki:Gadget-CategoryBatchManager.js
+- Paste contents of `dist/test3.js`
+- Add summary: `Update Category Batch Manager to v1.1.1`
+- Click "Publish changes"
+
+**CSS File:**
+- Go to: https://commons.wikimedia.org/wiki/MediaWiki:Gadget-CategoryBatchManager.css
+- Paste contents of `dist/test3.css`
+- Add summary: `Update Category Batch Manager styles to v1.1.1`
+- Click "Publish changes"
+
+#### 3. Register the Gadget
+
+Edit the gadget definition file:
+- Go to: https://commons.wikimedia.org/wiki/MediaWiki:Gadgets-definition
+- Add the following line:
 ```
 * CategoryBatchManager[ResourceLoader|dependencies=@wikimedia/codex,mediawiki.api,vue|type=general|default]|CategoryBatchManager.js|CategoryBatchManager.css
 ```
 
-4. Enable the gadget in your preferences on Wikimedia Commons
+**Explanation of parameters:**
+- `ResourceLoader` - Uses ResourceLoader for efficient loading
+- `dependencies` - Required MediaWiki modules
+- `type=general` - Available for all users
+- `default` - Enabled by default for logged-in users
+
+#### 4. Enable and Test
+
+1. Go to your preferences: https://commons.wikimedia.org/wiki/Special:Preferences
+2. Navigate to the "Gadgets" tab
+3. Find "Category Batch Manager" in the list
+4. Check the box to enable it
+5. Click "Save"
+
+#### 5. Verify Installation
+
+1. Navigate to any Category page on Commons (e.g., `Category:Charts`)
+2. Look for "Batch Manager" link in the top menu (near "Edit", "History", etc.)
+3. Click it to open the gadget dialog
+4. Try searching for files to verify it works
+
+### Quick Deployment Script
+
+For automated deployment, you can use this sequence after building:
+
+```bash
+# Build
+npm run build
+
+# Copy dist files to clipboard or use a tool to upload
+# Files to upload:
+# - dist/test3.js   → MediaWiki:Gadget-CategoryBatchManager.js
+# - dist/test3.css  → MediaWiki:Gadget-CategoryBatchManager.css
+```
+
+### Troubleshooting Deployment
+
+| Problem | Solution |
+|----------|----------|
+| Gadget doesn't appear | Check Gadgets-definition syntax, ensure dependencies are correct |
+| Console errors | Verify all files were copied correctly, check for syntax errors |
+| Styles not applied | Ensure CSS file name matches in Gadgets-definition |
+| Vue not loading | Check that `vue` is in dependencies list |
+| Codex components broken | Verify `@wikimedia/codex` is in dependencies |
 
 ## Development
 

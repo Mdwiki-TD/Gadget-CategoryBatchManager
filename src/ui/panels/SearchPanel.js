@@ -32,6 +32,7 @@ function SearchPanel() {
                 searchProgressPercent: 0,
             };
         },
+        emits: ['show-warning-message', 'update:work-files'],
 
         template: `
             <div class="cbm-search-panel">
@@ -110,7 +111,7 @@ function SearchPanel() {
              */
             async searchFiles() {
                 if (!this.sourceCategory.trim() && !this.searchPattern.trim()) {
-                    this.showWarningMessage('Please enter a source category or search pattern.');
+                    this.$emit('show-warning-message', 'Please enter a source category or search pattern.');
                     return;
                 }
 
@@ -124,11 +125,12 @@ function SearchPanel() {
                     this._clearSearchStatus();
                     this.workFiles = results ?? [];
                     // Bubble results up to the parent component
+                    this.$emit('update:work-files', this.workFiles);
                 };
 
                 this.searchHandler.onError = (error) => {
                     this._clearSearchStatus();
-                    this.showWarningMessage(`Search failed: ${error.message}`);
+                    this.$emit('show-warning-message', `Search failed: ${error.message}`);
                 };
 
                 this.isSearching = true;
@@ -137,6 +139,7 @@ function SearchPanel() {
 
                 // Clear all files and messages from previous search
                 this.workFiles = [];
+                this.$emit('update:work-files', this.workFiles);
 
                 await this.searchHandler.startSearch(
                     this.sourceCategory,
@@ -153,7 +156,7 @@ function SearchPanel() {
             stopSearch() {
                 this._clearSearchStatus();
                 this.searchHandler.stop();
-                this.showWarningMessage('Search stopped by user.');
+                this.$emit('show-warning-message', 'Search stopped by user.');
             },
 
             _clearSearchStatus() {

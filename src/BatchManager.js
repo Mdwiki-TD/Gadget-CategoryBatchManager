@@ -5,7 +5,7 @@
  */
 
 import { APIService, BatchProcessor, CategoryService, SearchService } from './services';
-import { CategoryInputsPanel, ExecutePanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel } from './ui/panels';
+import { CategoryInputsPanel, ExecutePanel, FilesListPanel, PreviewPanel, SearchPanel } from './ui/panels';
 import { CategoryInputsHandler, ExecuteHandler, SearchHandler, ProgressHandler } from './ui/handlers';
 import CategoryLookup from './ui/components/CategoryLookup.js';
 import PreviewTable from './ui/components/PreviewTable.js';
@@ -43,7 +43,12 @@ function BatchManager() {
             <!-- Left Panel: Search and Actions -->
             <div class="cbm-left-panel">
                 <!-- Search Section -->
-                <SearchPanel :search-handler="search_handler" :default-category="defaultCategory" />
+                <SearchPanel
+                    :search-handler="search_handler"
+                    :default-category="defaultCategory"
+                    @show-warning-message="showWarningMessage"
+                    @update:work-files="workFiles = $event"
+                />
 
                 <!-- Actions Section -->
                 <div>
