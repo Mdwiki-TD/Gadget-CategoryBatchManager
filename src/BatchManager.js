@@ -1,7 +1,7 @@
 /**
  * Assemble the full Vue app from panels and services.
- * @param {HTMLElement|null} portletLink
- * @returns {Object} Vue app definition
+ * Returns only the inner template - use BatchManagerDialog or BatchManagerStandalone for wrappers.
+ * @returns {Object} Vue component definition
  */
 
 import { APIService, BatchProcessor, CategoryService, SearchService } from './services';
@@ -11,7 +11,7 @@ import CategoryLookup from './ui/components/CategoryLookup.js';
 import PreviewTable from './ui/components/PreviewTable.js';
 import { ChangesHelper, ValidationHelper } from './ui/helpers';
 
-function BatchManager(portletLink = null) {
+function BatchManager() {
     // ── Services ──────────────────────────────────────────────────────────
     const api = new APIService();
     const search_service = new SearchService(api);
@@ -38,7 +38,7 @@ function BatchManager(portletLink = null) {
     const search_panel = SearchPanel(search_handler);
 
     // ── Template ─────────────────────────────────────────────────────────
-    const innerTemplate = `
+    const template = `
         <div class="cbm-main-layout">
             <!-- Left Panel: Search and Actions -->
             <div class="cbm-left-panel">
@@ -69,27 +69,10 @@ function BatchManager(portletLink = null) {
         ${message_panel.template}
     `;
 
-    const template = portletLink
-        ? `<cdx-dialog
-               v-model:open="showMainDialog"
-               class="cbm-container"
-               title="Category Batch Manager"
-               :use-close-button="true"
-               close-button-label="Close"
-               @default="showMainDialog = false">
-               ${innerTemplate}
-           </cdx-dialog>`
-        : `<div class="cbm-container">
-               <h2 class="cbm-title">Category Batch Manager</h2>
-               ${innerTemplate}
-           </div>`;
-
     // ── App definition ────────────────────────────────────────────────────
     const app = {
         data() {
             return {
-                showMainDialog: !portletLink,
-
                 execute_handler: execute_handler,
                 progress_handler: progress_handler,
                 changes_helpers: changes_helpers,
@@ -112,10 +95,6 @@ function BatchManager(portletLink = null) {
         },
 
         methods: {
-            openMainDialog() {
-                this.showMainDialog = true;
-            },
-
             ...search_panel.methods,
             ...category_inputs.methods,
             ...files_list.methods,
@@ -130,15 +109,6 @@ function BatchManager(portletLink = null) {
         },
         template: template,
     };
-
-    if (portletLink) {
-        app.mounted = function () {
-            portletLink.addEventListener('click', this.openMainDialog);
-        };
-        app.unmounted = function () {
-            portletLink.removeEventListener('click', this.openMainDialog);
-        };
-    }
 
     return app;
 }

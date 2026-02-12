@@ -1,15 +1,24 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- import jquery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <title>Vite + Vue</title>
-  </head>
-  <body>
-    <div id="app">app</div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- import jquery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <title>Vite + Vue</title>
+</head>
+
+<body>
+  <!-- add navbar with 2 links one with /?icon=1 and the other standerd link to open the app in a new tab -->
+  <nav>
+    <a href="/?icon=1">Open with Icon</a>
+    <a href="/" target="_blank">Open in New Tab</a>
+  </nav>
+  <div id="app">app</div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
 </html>

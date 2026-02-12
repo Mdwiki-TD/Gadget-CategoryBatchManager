@@ -1,6 +1,6 @@
 // <nowiki>
 
-import BatchManager from './BatchManager.js';
+import { BatchManagerDialog } from './BatchManagerWrappers.js';
 import mw from './services/mw.js';
 
 async function initApp(require) {
@@ -26,7 +26,7 @@ async function initApp(require) {
         document.body.appendChild(mountPoint);
     }
 
-    const app = BatchManager(portletLink);
+    const app = BatchManagerDialog(portletLink);
 
     Vue.createMwApp(app)
         .component('cdx-text-input', Codex.CdxTextInput)

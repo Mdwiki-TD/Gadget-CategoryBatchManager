@@ -41,6 +41,7 @@ const SOURCE_FILES = [
     'src/ui/helpers/ChangesHelper.js',
     'src/ui/helpers/ValidationHelper.js',
 
+    'src/BatchManagerWrappers.js',
     'src/BatchManager.js',
     'src/gadget-entry.js',
 ];

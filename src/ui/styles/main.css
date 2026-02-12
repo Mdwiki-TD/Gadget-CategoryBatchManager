@@ -1,11 +1,15 @@
 
 /* Container styles */
+.cbm-container2 {
+    margin: 30px auto !important;
+    padding: 30px !important;
+}
 .cbm-container {
-    width: 80vw;
-    max-width: 1400px;
+    width: 80vw !important;
+    max-width: 1400px !important;
     max-height: 95vh;
-    margin: 30px auto;
-    padding: 30px;
+    margin: 10px auto;
+    padding: 10px;
     border: 1px solid var(--border-color-base, #a2a9b1);
     border-radius: 4px;
     background-color: var(--background-color-base, #f8f9fa);

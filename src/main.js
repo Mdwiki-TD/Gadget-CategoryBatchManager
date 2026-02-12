@@ -6,7 +6,7 @@ import { createApp } from "vue";
 import './ui/styles/main.css'
 import './ui/styles/PreviewDialog.css'
 import '@wikimedia/codex/dist/codex.style.css'
-import BatchManagerFactory from "./BatchManager.js";
+import { BatchManagerDialog } from './BatchManagerWrappers.js';
 
 import {
     CdxButton,
@@ -25,7 +25,24 @@ import {
 } from "@wikimedia/codex";
 
 // Instantiate BatchManager component (pass null for standalone mode)
-const BatchManager = BatchManagerFactory(null);
+// add icon to open the dialog
+let icon = null;
+// if user add ?icon to the URL, show the icon to open the dialog
+if (new URLSearchParams(window.location.search).has('icon')) {
+    icon = document.createElement('div');
+    icon.style.position = 'fixed';
+    icon.style.bottom = '20px';
+    icon.style.right = '20px';
+    icon.style.backgroundColor = '#0078d4';
+    icon.style.color = '#fff';
+    icon.style.padding = '10px 15px';
+    icon.style.borderRadius = '5px';
+    icon.style.cursor = 'pointer';
+    icon.textContent = 'Open Batch Manager';
+    document.body.appendChild(icon);
+}
+
+const BatchManager = BatchManagerDialog(icon);
 
 const App = {
     name: "App",
