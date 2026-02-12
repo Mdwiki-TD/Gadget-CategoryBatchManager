@@ -2,7 +2,7 @@
  * ONLY FOR DEVELOPMENT PURPOSES. NOT FOR PRODUCTION USE.
  */
 
-import { ref, createApp } from "vue";
+import { createApp } from "vue";
 import './ui/styles/main.css'
 import './ui/styles/PreviewDialog.css'
 import '@wikimedia/codex/dist/codex.style.css'
@@ -34,25 +34,7 @@ const App = {
         <BatchManager />
     `,
     setup() {
-        const open = ref(false);
-
-        const primaryAction = {
-            label: "Delete all changes and start over",
-            actionType: "destructive",
-        };
-        const defaultAction = {
-            label: "Cancel",
-        };
-        function onPrimaryAction() {
-            // eslint-disable-next-line no-console
-            console.log("Primary action taken");
-            open.value = false;
-        }
         return {
-            open,
-            primaryAction,
-            defaultAction,
-            onPrimaryAction,
         };
     },
 };

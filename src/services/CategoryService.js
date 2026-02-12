@@ -145,9 +145,6 @@ class CategoryService {
                     return false; // No changes needed
                 }
 
-                const parts = [];
-                if (toAdd.length) parts.push(`+${toAdd.join(', ')}`);
-                if (toRemove.length) parts.push(`-${toRemove.join(', ')}`);
                 const summary = buildEditSummary(toAdd, toRemove);
                 return {
                     text: newWikitext,

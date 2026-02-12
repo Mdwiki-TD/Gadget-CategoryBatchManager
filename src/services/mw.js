@@ -36,7 +36,7 @@ class Api {
         const url = this._buildUrl(params);
         const headers = {
             'Accept': 'application/json',
-            "User-Agent": "CategoryBatchManager/1.0 (https://example.com)"
+            "User-Agent": "CategoryBatchManager/1.0 (https://github.com/Mdwiki-TD/Gadget-CategoryBatchManager)"
         };
         const response = await fetch(url, { headers });
         if (!response.ok) {
