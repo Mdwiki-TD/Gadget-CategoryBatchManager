@@ -16,7 +16,7 @@ import { ChangesHelper } from "../helpers";
 
 function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
     const app = {
-        data: function () {
+        data() {
             return {
                 execute_handler: execute_handler,
                 progress_handler: progress_handler,
@@ -68,7 +68,7 @@ function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
                 <p>{{ confirmMessage }}</p>
             </cdx-dialog>
         `,
-        progress_template: `
+        progressTemplate: `
             <div
                 v-if="isProcessing || executionProgressText !== ''"
                 class="cbm-progress-section">

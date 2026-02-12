@@ -13,7 +13,7 @@ describe('SearchService', () => {
     mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
 
     mockApi = {
-      makeRequest: jest.fn(),
+      _get: jest.fn(),
       getFileInfo: jest.fn(),
       searchInCategory: jest.fn(),
       searchInCategoryWithPattern: jest.fn()
@@ -49,102 +49,8 @@ describe('SearchService', () => {
       expect(batches).toEqual([[1, 2, 3]]);
     });
   });
-  describe('search', () => {
-    test('should use search API to find files by pattern', async () => {
-      // Mock search API response
-      mockApi.searchInCategory.mockResolvedValue([
-        { title: 'File:Chart,BLR.svg', pageid: 1, size: 1000 },
-        { title: 'File:Chart,BLR_2.svg', pageid: 3, size: 2000 }
-      ]);
 
-      // Mock file info response
-      mockApi.getFileInfo.mockResolvedValue({
-        query: {
-          pages: {
-            '1': { title: 'File:Chart,BLR.svg', pageid: 1, categories: [] },
-            '3': { title: 'File:Chart,BLR_2.svg', pageid: 3, categories: [] }
-          }
-        }
-      });
-      const result = await service.search(
-        'Category:Test',
-        ',BLR'
-      );
-
-      expect(result).toHaveLength(2);
-      expect(mockApi.searchInCategory).toHaveBeenCalledWith('Test', ',BLR');
-    });
-
-    test('should return empty array when no matches', async () => {
-      mockApi.searchInCategory.mockResolvedValue([]);
-
-      const result = await service.search(
-        'Category:Test',
-        ',BLR'
-      );
-
-      expect(result).toEqual([]);
-    });
-
-    test('should handle pagination in search results', async () => {
-      // Mock search with multiple results
-      mockApi.searchInCategory.mockResolvedValue([
-        { title: 'File:Chart1.svg', pageid: 1, size: 1000 },
-        { title: 'File:Chart2.svg', pageid: 2, size: 2000 }
-      ]);
-
-      mockApi.getFileInfo.mockResolvedValue({
-        query: {
-          pages: {
-            '1': { title: 'File:Chart1.svg', pageid: 1, categories: [] },
-            '2': { title: 'File:Chart2.svg', pageid: 2, categories: [] }
-          }
-        }
-      });
-
-      const result = await service.search('Category:Test', 'Chart');
-
-      expect(result).toHaveLength(2);
-      expect(mockApi.searchInCategory).toHaveBeenCalledWith('Test', 'Chart');
-    });
-
-    test('should replace spaces with underscores in category name', async () => {
-      mockApi.searchInCategory.mockResolvedValue([
-        { title: 'File:Test.svg', pageid: 1, size: 1000 }
-      ]);
-
-      mockApi.getFileInfo.mockResolvedValue({
-        query: {
-          pages: {
-            '1': { title: 'File:Test.svg', pageid: 1, categories: [] }
-          }
-        }
-      });
-
-      await service.search(
-        'Category:Life expectancy maps',
-        '177'
-      );
-
-      expect(mockApi.searchInCategory).toHaveBeenCalledWith('Life expectancy maps', '177');
-    });
-
-    test('should log and return empty array when stopped after API call', async () => {
-      mockApi.searchInCategory.mockImplementation(() => {
-        service.shouldStopSearch = true;
-        return Promise.resolve([
-          { title: 'File:Test.svg', pageid: 1, size: 1000 }
-        ]);
-      });
-
-      const result = await service.search('Category:Test', 'pattern');
-
-      expect(mockConsoleLog).toHaveBeenCalledWith('[CBM-FS] Search stopped after API call');
-      expect(result).toEqual([]);
-    });
-  });
-
-  describe('parseFileInfo', () => {
+  describe('_parseFileInfo', () => {
     test('should parse API response into file models', () => {
       const apiResponse = {
         query: {
@@ -161,7 +67,7 @@ describe('SearchService', () => {
         }
       };
 
-      const result = service.parseFileInfo(apiResponse);
+      const result = service._parseFileInfo(apiResponse);
       expect(result).toHaveLength(1);
       expect(result[0].title).toBe('File:Test.svg');
       expect(result[0].pageid).toBe(123);
@@ -177,7 +83,7 @@ describe('SearchService', () => {
         }
       };
 
-      const result = service.parseFileInfo(apiResponse);
+      const result = service._parseFileInfo(apiResponse);
       expect(result).toHaveLength(0);
     });
   });
@@ -201,7 +107,10 @@ describe('SearchService', () => {
       const result = await service.searchWithPattern('incategory:Belarus intitle:/^Chart/');
 
       expect(result).toHaveLength(2);
-      expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith('incategory:Belarus intitle:/^Chart/');
+      expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith(
+        'incategory:Belarus intitle:/^Chart/',
+        expect.objectContaining({ onProgress: expect.any(Function) })
+      );
     });
 
     test('should return empty array when no matches', async () => {
@@ -293,7 +202,10 @@ describe('SearchService', () => {
 
       await service.searchWithPattern(complexPattern);
 
-      expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith(complexPattern);
+      expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith(
+        complexPattern,
+        expect.objectContaining({ onProgress: expect.any(Function) })
+      );
     });
 
     test('should create FileModel instances from search results', async () => {
@@ -322,15 +234,11 @@ describe('SearchService', () => {
       expect(service.shouldStopSearch).toBe(true);
     });
 
-    test('should log stop requested message', () => {
-      service.stopSearch();
-      expect(mockConsoleLog).toHaveBeenCalledWith('[CBM-FS] Search stop requested');
-    });
   });
 
-  describe('getFilesDetails', () => {
+  describe('_getFilesDetails', () => {
     test('should return empty array when no files provided', async () => {
-      const result = await service.getFilesDetails([]);
+      const result = await service._getFilesDetails([]);
       expect(result).toEqual([]);
       expect(mockApi.getFileInfo).not.toHaveBeenCalled();
     });
@@ -347,7 +255,7 @@ describe('SearchService', () => {
         }
       });
 
-      await service.getFilesDetails(files);
+      await service._getFilesDetails(files);
 
       expect(mockApi.getFileInfo).toHaveBeenCalledTimes(3);
     });
@@ -360,7 +268,7 @@ describe('SearchService', () => {
 
       mockApi.getFileInfo.mockResolvedValue({ query: { pages: {} } });
 
-      await service.getFilesDetails(files);
+      await service._getFilesDetails(files);
 
       expect(mockApi.getFileInfo).toHaveBeenCalledTimes(3);
     });
@@ -376,7 +284,7 @@ describe('SearchService', () => {
         }
       });
 
-      const result = await service.getFilesDetails(files);
+      const result = await service._getFilesDetails(files);
 
       expect(mockApi.getFileInfo).toHaveBeenCalledTimes(1);
       expect(result).toHaveLength(1);
@@ -398,7 +306,7 @@ describe('SearchService', () => {
         }
       });
 
-      const result = await service.getFilesDetails(files);
+      const result = await service._getFilesDetails(files);
 
       expect(result[0].title).toBe('File:Test.svg');
       expect(result[0].thumbnail).toBe('http://example.com/thumb.png');
@@ -434,7 +342,7 @@ describe('SearchService', () => {
         };
       });
 
-      const result = await service.getFilesDetails(files);
+      const result = await service._getFilesDetails(files);
 
       expect(mockConsoleLog).toHaveBeenCalledWith('[CBM-FS] Search stopped during file details fetch');
     });
@@ -447,13 +355,5 @@ describe('SearchService', () => {
       expect(service.shouldStopSearch).toBe(false);
     });
 
-    test('should be called when starting new search', async () => {
-      service.shouldStopSearch = true;
-      mockApi.searchInCategory.mockResolvedValue([]);
-
-      await service.search('Category:Test', 'pattern');
-
-      expect(service.shouldStopSearch).toBe(false);
-    });
   });
 });

@@ -140,13 +140,4 @@ describe('WikitextParser', () => {
     });
   });
 
-  describe('getCategorySyntax', () => {
-    test('should return proper syntax with prefix', () => {
-      expect(parser.getCategorySyntax('Category:Test')).toBe('[[Category:Test]]');
-    });
-
-    test('should return proper syntax without prefix', () => {
-      expect(parser.getCategorySyntax('Test')).toBe('[[Category:Test]]');
-    });
-  });
 });

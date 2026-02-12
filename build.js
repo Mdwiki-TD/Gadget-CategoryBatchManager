@@ -14,7 +14,6 @@ const SOURCE_FILES = [
     'src/utils/WikitextParser.js',
 
     'src/models/FileModel.js',
-    'src/models/CategoryOperation.js',
 
     'src/services/APIService.js',
     'src/services/BatchProcessor.js',
@@ -44,10 +43,10 @@ const SOURCE_FILES = [
 ];
 
 const DIST_DIR = 'dist';
-const OUTPUT_JS = 'dist/test2.js';
+const OUTPUT_JS = 'dist/test3.js';
 
 const CSS_SOURCE = 'src/ui/styles/main.css';
-const OUTPUT_CSS = 'dist/test2.css';
+const OUTPUT_CSS = 'dist/test3.css';
 
 /**
  * Strip module.exports blocks from JavaScript code
@@ -116,7 +115,7 @@ function generateHeader() {
  * @description A tool for batch categorization of files in Wikimedia Commons.
  *              Built with Vue.js and Wikimedia Codex.
  *
- * Built from: https://github.com/MrIbrahem/owid-cats
+ * Built from: https://github.com/Mdwiki-TD/Gadget-CategoryBatchManager
  */
 // <nowiki>
 

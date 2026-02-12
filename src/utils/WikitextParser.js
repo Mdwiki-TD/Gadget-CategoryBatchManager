@@ -1,68 +1,69 @@
 /**
- * Parse and modify wikitext for category operations
+ * Parses and transforms wikitext for category add/remove operations.
+ * Handles spaces/underscores interchangeably when matching existing categories.
  * @class WikitextParser
  */
 class WikitextParser {
     /**
-     * TODO: use it in the workflow
-     * Extract all categories from wikitext
-     * @param {string} wikitext - The wikitext content
-     * @returns {Array<string>} Array of category names with "Category:" prefix
+     * Normalise a raw category name: replace underscores with spaces and trim.
+     * @param {string} name
+     * @returns {string}
      */
-    extractCategories(wikitext) {
-        const categoryRegex = /\[\[Category:([^\]|]+)(?:\|[^\]]*)?\]\]/gi;
-        const matches = [];
-        let match;
-
-        while ((match = categoryRegex.exec(wikitext)) !== null) {
-            matches.push(`Category:${this.normalize(match[1].trim())}`);
-        }
-
-        return matches;
-    }
-    /**
-     * Normalize category name by replacing underscores with spaces and trimming
-     * @param {string} categoryName - Category name to normalize
-     * @returns {string} Normalized category name
-     */
-    normalize(categoryName) {
-        return categoryName.replace(/_/g, ' ').trim();
+    normalize(name) {
+        return name.replace(/_/g, ' ').trim();
     }
 
     /**
-     * Check if category exists in wikitext
-     * @param {string} wikitext - The wikitext content
-     * @param {string} categoryName - Category name to check (with or without "Category:" prefix)
-     * @returns {boolean} True if category exists
+     * Escape all RegExp special characters in a string.
+     * @param {string} str
+     * @returns {string}
+     */
+    escapeRegex(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    /**
+     * Build a RegExp that matches a category link regardless of whether
+     * the name uses spaces or underscores.
+     * @param {string} normalizedName - Name already normalized (spaces, no prefix)
+     * @returns {RegExp}
+     */
+    _buildCategoryRegex(normalizedName) {
+        const pattern = normalizedName
+            .split(' ')
+            .map(part => this.escapeRegex(part))
+            .join('[ _]+');
+        return new RegExp(`\\[\\[Category:${pattern}(?:\\|[^\\]]*)?\\]\\]`, 'gi');
+    }
+    /**
+     * Return true if `wikitext` already contains a link to `categoryName`.
+     * @param {string} wikitext
+     * @param {string} categoryName - With or without "Category:" prefix
+     * @returns {boolean}
      */
     hasCategory(wikitext, categoryName) {
-        const cleanName = categoryName.replace(/^Category:/i, '');
-        const normalizedName = this.normalize(cleanName);
-
-        // Create a pattern that matches both spaces and underscores
-        const pattern = normalizedName.split(' ').map(part => this.escapeRegex(part)).join('[ _]+');
-        const regex = new RegExp(
-            `\\[\\[Category:${pattern}(?:\\|[^\\]]*)?\\]\\]`,
-            'i'
-        );
-        return regex.test(wikitext);
+        const normalized = this.normalize(categoryName.replace(/^Category:/i, ''));
+        return this._buildCategoryRegex(normalized).test(wikitext);
     }
+
     /**
-     * Add a category to wikitext
-     * @param {string} wikitext - The wikitext content
-     * @param {string} categoryName - Category name to add (with or without "Category:" prefix)
-     * @returns {string} Modified wikitext
+     * Append `categoryName` to `wikitext` after the last existing category,
+     * or at the end of the file when no categories exist yet.
+     * Does nothing if the category is already present.
+     * @param {string} wikitext
+     * @param {string} categoryName
+     * @returns {string}
      */
     addCategory(wikitext, categoryName) {
-        const cleanName = categoryName.replace(/^Category:/i, '');
-        const normalizedName = this.normalize(cleanName);
+        const clean = categoryName.replace(/^Category:/i, '');
+        const normalizedName = this.normalize(clean);
 
         // Check if category already exists (with normalization)
         if (this.hasCategory(wikitext, normalizedName)) {
             return wikitext;
         }
 
-        const categorySyntax = `[[Category:${normalizedName}]]`;
+        const syntax = `[[Category:${normalizedName}]]`;
 
         // Find last category or end of file
         const lastCategoryMatch = wikitext.match(/\[\[Category:[^\]]+\]\]\s*$/);
@@ -71,25 +72,25 @@ class WikitextParser {
             // Add after last category
             return wikitext.replace(
                 /(\[\[Category:[^\]]+\]\])\s*$/,
-                `$1\n${categorySyntax}\n`
+                `$1\n${syntax}\n`
             );
         } else {
             // Add at end
-            return wikitext.trim() + `\n${categorySyntax}\n`;
+            return wikitext.trim() + `\n${syntax}\n`;
         }
     }
     /**
-     * Remove a category from wikitext
-     * @param {string} wikitext - The wikitext content
-     * @param {string} categoryName - Category name to remove (with or without "Category:" prefix)
-     * @returns {string} Modified wikitext
+     * Remove all occurrences of `categoryName` from `wikitext`.
+     * @param {string} wikitext
+     * @param {string} categoryName
+     * @returns {string}
      */
     removeCategory(wikitext, categoryName) {
-        const cleanName = categoryName.replace(/^Category:/i, '');
-        const normalizedName = this.normalize(cleanName);
+        const cleanName = this.normalize(categoryName.replace(/^Category:/i, ''));
 
         // Create a pattern that matches both spaces and underscores
-        const pattern = normalizedName.split(' ').map(part => this.escapeRegex(part)).join('[ _]+');
+        const pattern = cleanName.split(' ').map(part => this.escapeRegex(part)).join('[ _]+');
+
         const regex = new RegExp(
             `\\[\\[Category:${pattern}(?:\\|[^\\]]*)?\\]\\]\\s*\\n?`,
             'gi'
@@ -98,23 +99,18 @@ class WikitextParser {
     }
 
     /**
-     * Escape special regex characters in a string
-     * @param {string} string - String to escape
-     * @returns {string} Escaped string
+     * Extract all category names from wikitext.
+     * @param {string} wikitext
+     * @returns {string[]} - Each entry includes the "Category:" prefix
      */
-    escapeRegex(string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
-    /**
-     * TODO: use it in the workflow
-     * Get the proper wikitext syntax for a category
-     * @param {string} categoryName - Category name (with or without "Category:" prefix)
-     * @returns {string} Wikitext category syntax
-     */
-    getCategorySyntax(categoryName) {
-        const cleanName = categoryName.replace(/^Category:/i, '');
-        return `[[Category:${cleanName}]]`;
+    extractCategories(wikitext) {
+        const categoryRegex = /\[\[Category:([^\]|]+)(?:\|[^\]]*)?\]\]/gi;
+        const results = [];
+        let match;
+        while ((match = categoryRegex.exec(wikitext)) !== null) {
+            results.push(`Category:${this.normalize(match[1].trim())}`);
+        }
+        return results;
     }
 }
 

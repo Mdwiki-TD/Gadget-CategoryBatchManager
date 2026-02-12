@@ -155,17 +155,6 @@ const result = await this.categoryService.updateCategoriesOptimized(
 
 ---
 
-### 9. `getCategorySyntax()`
-**الموقع:** `src/utils/WikitextParser.js` (السطور 115-118)
-
-**الوصف:** تُرجع صيغة الويكي لتصنيف.
-
-**لماذا الحذف؟**
-- وظيفة بسيطة جداً: `return [[Category:${name}]]`
-- يمكن استخدام القالب المباشر
-- لا تضيف قيمة حقيقية
-
----
 
 ## خطة العمل المقترحة
 
@@ -198,7 +187,6 @@ const result = await this.categoryService.updateCategoriesOptimized(
 | `getCurrentCategories()` | احذفها | منخفض | - |
 | `sanitizeInput()` | احذفها | منخفض | - |
 | `extractCategories()` | احذفها | منخفض | - |
-| `getCategorySyntax()` | احذفها | منخفض | - |
 
 ---
 

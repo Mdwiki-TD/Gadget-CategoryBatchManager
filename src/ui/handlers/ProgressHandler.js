@@ -20,7 +20,7 @@ class ProgressHandler {
                 self.executionProgressPercent = percent;
                 self.executionProgressText =
                     `Processing ${results.processed} of ${results.total}... ` +
-                    `(${results.successful} successful, ${results.failed} failed)`;
+                    `(${results.successful} successful, ${results.skipped} skipped, ${results.failed} failed)`;
             },
 
             /**

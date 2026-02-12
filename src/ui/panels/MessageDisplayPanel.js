@@ -1,18 +1,20 @@
 /**
- * Progress bar UI component using Codex CSS-only classes.
- * @see https://doc.wikimedia.org/codex/latest/
+ * Fixed-position message banner.
+ * Mixin-style: exposes `showSuccessMessage`, `showWarningMessage`,
+ * `showErrorMessage` to the parent component.
+ * @returns {Object} Partial Vue app configuration
  */
-
 function MessageDisplayPanel() {
     const app = {
-        data: function () {
+        data() {
             return {
                 showMessage: false,
                 messageType: '',
                 messageContent: '',
-                messageKey: 0
+                messageKey: 0,
             };
         },
+
         template: `
             <!-- Message Display -->
             <div v-if="showMessage" class="cbm-fixed-message">
@@ -30,24 +32,17 @@ function MessageDisplayPanel() {
                 </cdx-message>
             </div>
         `,
+
         methods: {
-            handleMessageDismiss: function () {
+            handleMessageDismiss() {
                 this.showMessage = false;
                 this.messageContent = '';
             },
-
-            resetMessageState: function () {
-                this.showMessage = false;
-                this.messageType = '';
-                this.messageContent = '';
-            },
-
-            renderMessage: function (message, type = 'info') {
+            _renderMessage(message, type = 'info') {
                 console.warn(`[CBM] ${type}:`, message);
 
                 // Hide first to trigger reactivity if it was already showing
                 this.showMessage = false;
-
                 this.$nextTick(() => {
                     this.messageType = type;
                     this.messageContent = message;
@@ -56,16 +51,16 @@ function MessageDisplayPanel() {
                 });
             },
 
-            showWarningMessage: function (message) {
-                this.renderMessage(message, 'warning');
+            showWarningMessage(message) {
+                this._renderMessage(message, 'warning');
             },
 
-            showErrorMessage: function (message) {
-                this.renderMessage(message, 'error');
+            showErrorMessage(message) {
+                this._renderMessage(message, 'error');
             },
 
-            showSuccessMessage: function (message) {
-                this.renderMessage(message, 'success');
+            showSuccessMessage(message) {
+                this._renderMessage(message, 'success');
             }
         }
     }

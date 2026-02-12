@@ -1,18 +1,22 @@
 /**
- *
- * @returns {Object} Vue component configuration for category lookup input
+ * Multiselect-lookup wrapper for category autocomplete fields.
+ * Emits no events of its own — all logic is delegated to the injected handler.
+ * @returns {Object} Vue component configuration
  */
 
 function CategoryLookup() {
     return {
         name: "CategoryLookup",
         props: {
-            model: Object,
-            label: String,
-            ariaLabel: String,
-            placeholder: String,
-            type: String,
-            handler: Object
+            /** Reactive data object (chips, selected, input, menuItems, menuConfig, message) */
+            model: { type: Object, required: true },
+            label: { type: String, required: true },
+            ariaLabel: { type: String, required: true },
+            placeholder: { type: String, default: 'Type to search categories' },
+            /** 'add' | 'remove' — passed through to the handler */
+            type: { type: String, required: true },
+            /** CategoryInputsHandler instance */
+            handler: { type: Object, required: true },
         },
 
         template: `

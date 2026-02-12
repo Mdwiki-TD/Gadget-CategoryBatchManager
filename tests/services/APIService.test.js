@@ -287,12 +287,12 @@ describe("APIService", () => {
         });
     });
 
-    describe("makeRequest", () => {
+    describe("_get", () => {
         test("should make GET request using mw.Api.get()", async () => {
             const mockResponse = { query: { pages: {} } };
             mockApi.get.mockResolvedValue(mockResponse);
 
-            const result = await service.makeRequest({
+            const result = await service._get({
                 action: "query",
                 titles: "Test",
             });
@@ -301,13 +301,14 @@ describe("APIService", () => {
             expect(mockApi.get).toHaveBeenCalledWith({
                 action: "query",
                 titles: "Test",
+                format: "json",
             });
         });
 
         test("should handle API errors", async () => {
             mockApi.get.mockRejectedValue(new Error("API error"));
 
-            await expect(service.makeRequest({ action: "query" })).rejects.toThrow(
+            await expect(service._get({ action: "query" })).rejects.toThrow(
                 "API error"
             );
         });
@@ -392,117 +393,6 @@ describe("APIService", () => {
         });
     });
 
-    describe("searchCategories", () => {
-        test("should search categories by prefix", async () => {
-            mockApi.get.mockResolvedValue([
-                "Category:Belarus",
-                [
-                    "Category:Belarus",
-                    "Category:Belarusian maps",
-                    "Category:Belarus charts",
-                ],
-                [],
-                [],
-            ]);
-
-            const result = await service.searchCategories("Bel");
-
-            expect(result).toEqual([
-                "Category:Belarus",
-                "Category:Belarusian maps",
-                "Category:Belarus charts",
-            ]);
-            expect(mockApi.get).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    action: "opensearch",
-                    search: "Category:Bel",
-                    namespace: 14,
-                })
-            );
-        });
-
-        test("should handle prefix with Category: prefix", async () => {
-            mockApi.get.mockResolvedValue([
-                "Category:Europe",
-                ["Category:Europe", "Category:European maps"],
-                [],
-                [],
-            ]);
-
-            const result = await service.searchCategories("Category:Eur");
-
-            expect(result).toEqual(["Category:Europe", "Category:European maps"]);
-            expect(mockApi.get).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    search: "Category:Eur",
-                })
-            );
-        });
-
-        test("should filter non-category results", async () => {
-            mockApi.get.mockResolvedValue([
-                "Category:Test",
-                ["Category:Test", "File:Test.jpg", "Category:Test maps"],
-                [],
-                [],
-            ]);
-
-            const result = await service.searchCategories("Test");
-
-            expect(result).toEqual(["Category:Test", "Category:Test maps"]);
-        });
-
-        test("should return empty array on error", async () => {
-            mockApi.get.mockRejectedValue(new Error("API error"));
-
-            const result = await service.searchCategories("Test");
-
-            expect(result).toEqual([]);
-        });
-
-        test("should handle empty results", async () => {
-            mockApi.get.mockResolvedValue(["Category:Test", [], [], []]);
-
-            const result = await service.searchCategories("NonExistent");
-
-            expect(result).toEqual([]);
-        });
-
-        test("should use custom limit option", async () => {
-            mockApi.get.mockResolvedValue([
-                "Category:Test",
-                ["Category:Test"],
-                [],
-                [],
-            ]);
-
-            await service.searchCategories("Test", { limit: 20 });
-
-            expect(mockApi.get).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    limit: 20,
-                })
-            );
-        });
-
-        test("should use default limit of 10", async () => {
-            mockApi.get.mockResolvedValue([
-                "Category:Test",
-                ["Category:Test"],
-                [],
-                [],
-            ]);
-
-            await service.searchCategories("Test");
-
-            expect(mockApi.get).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    limit: 10,
-                })
-            );
-        });
-    });
-
     describe("searchInCategoryWithPattern", () => {
         test("should search files using raw srsearch pattern", async () => {
             mockApi.get.mockResolvedValue({
@@ -526,6 +416,7 @@ describe("APIService", () => {
                     list: "search",
                     srsearch: "incategory:Belarus intitle:/^Chart/",
                     srnamespace: 6,
+                    format: "json",
                 })
             );
         });
@@ -781,7 +672,7 @@ describe("APIService", () => {
             await service.searchInCategoryWithPattern("incategory:Test");
 
             expect(mockConsoleWarn).toHaveBeenCalledWith(
-                "Search result limit reached (5000 files)"
+                "[CBM-API] Search result limit reached (5 000 files)."
             );
 
             mockConsoleWarn.mockRestore();
