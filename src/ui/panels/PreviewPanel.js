@@ -38,7 +38,7 @@ function PreviewPanel(changes_helpers) {
                 <p v-else>
                     No changes detected. Adjust categories and preview again.
                 </p>
-                <preview-table :rows="previewRows" />
+                <PreviewTable :rows="previewRows" />
                 <template #footer-text>
                 </template>
             </cdx-dialog>
