@@ -67,22 +67,6 @@ function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
                 <p>{{ confirmMessage }}</p>
             </cdx-dialog>
         `,
-        progressTemplate: `
-            <div
-                v-if="isProcessing || executionProgressText !== ''"
-                class="cbm-progress-section">
-                <div class="cbm-progress-bar-bg">
-                    <div
-                        class="cbm-progress-bar-fill"
-                        :style="{
-                            width: executionProgressPercent + '%',
-                        }">
-                    </div>
-                </div>
-                <div class="cbm-progress-text">
-                    {{ executionProgressText }}
-                </div>
-            </div>`,
         methods: {
             /**
              * Execute batch operation

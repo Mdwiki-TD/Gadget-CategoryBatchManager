@@ -101,19 +101,6 @@ function SearchPanel(search_handler) {
                 </div>
             </div>
         `,
-        progressTemplate: `
-            <div v-if="searchProgressPercent > 0 || searchProgressText !== ''"
-                    class="cbm-progress-section">
-                <div class="cbm-progress-bar-bg">
-                    <div class="cbm-progress-bar-fill"
-                            :style="{ width: searchProgressPercent + '%' }">
-                    </div>
-                </div>
-                <div class="cbm-progress-text">
-                    {{ searchProgressText }}
-                </div>
-            </div>
-        `,
 
         methods: {
             /**

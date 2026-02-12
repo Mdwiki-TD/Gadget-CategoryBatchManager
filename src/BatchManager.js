@@ -72,6 +72,12 @@ function BatchManager() {
                         />
                     </div>
                 </div>
+                <!-- Execute Progress Section -->
+                <ExecuteProgressPanel
+                    :is-processing="isProcessing"
+                    :progress-percent="executionProgressPercent"
+                    :progress-text="executionProgressText"
+                />
             </div>
 
             <!-- Right Panel: File List -->
@@ -84,12 +90,6 @@ function BatchManager() {
                     :progress-text="searchProgressText"
                 />
 
-                <!-- Execute Progress Section -->
-                <ExecuteProgressPanel
-                    :is-processing="isProcessing"
-                    :progress-percent="executionProgressPercent"
-                    :progress-text="executionProgressText"
-                />
             </div>
         </div>
         <!-- Message Display -->
@@ -122,14 +122,19 @@ function BatchManager() {
 
                 // Merge other panel states
                 ...search_panel.data(),
+
+                // Execution progress state (for ExecuteProgressPanel)
+                isProcessing: false,
+                executionProgressPercent: 0,
+                executionProgressText: '',
             };
         },
 
         computed: {
-            selectedFiles: function() {
+            selectedFiles: function () {
                 return this.workFiles.filter(f => f.selected);
             },
-            selectedCount: function() {
+            selectedCount: function () {
                 return this.workFiles.filter(f => f.selected).length;
             }
         },
@@ -158,6 +163,8 @@ function BatchManager() {
             CategoryInputsPanel: CategoryInputsPanel(),
             PreviewPanel: PreviewPanel(),
             ExecutePanel: ExecutePanel(),
+            SearchProgressPanel: SearchProgressPanel(),
+            ExecuteProgressPanel: ExecuteProgressPanel(),
         },
         template: template,
     };
