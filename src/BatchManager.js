@@ -94,7 +94,7 @@ function BatchManager(portletLink = null) {
                 changes_helpers: changes_helpers,
                 category_inputs_handler: category_inputs_handler,
                 search_handler: search_handler,
-                files_list: files_list_handler,
+                files_list_handler: files_list_handler,
 
                 // Merge panel states
                 ...search_panel.data(),
