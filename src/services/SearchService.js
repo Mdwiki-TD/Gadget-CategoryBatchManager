@@ -77,7 +77,7 @@ class SearchService {
      * @returns {Promise<FileModel[]>}
      */
     async _getFilesDetails(files, callbacks = {}) {
-        if (!files.length) return [];
+        if (!files?.length) return [];
 
         const batches = this.createBatches(files, 50); // 50 = API limit
         const results = [];
@@ -85,6 +85,7 @@ class SearchService {
             // Check if search was stopped
             if (this.shouldStopSearch) {
                 console.log('[CBM-FS] Search stopped during file details fetch');
+                // NOTE: should we return partial results here, or just an empty array? For now, let's return what we have so far.
                 break;
             }
 

@@ -9,6 +9,7 @@ function FilesListPanel(file_list_handler) {
     return {
         data() {
             return {
+                // TODO: workFiles is defined here and in SearchPanel — who owns and controls this state?
                 workFiles: [],
             };
         },

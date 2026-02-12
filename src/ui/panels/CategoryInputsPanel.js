@@ -1,6 +1,6 @@
 /**
  * Category add/remove multiselect inputs panel.
- * @param {CategoryInputsHandler} handler
+ * @param {CategoryInputsHandler} category_inputs_handler
  * @returns {Object} Partial Vue app configuration
  */
 
