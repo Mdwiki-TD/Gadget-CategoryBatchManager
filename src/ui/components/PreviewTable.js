@@ -30,6 +30,14 @@ function PreviewTable() {
                 :data="sortedData"
                 @update:sort="onSort"
             >
+                <template #item-file="{ item }">
+                    <a
+                        :href="'https://commons.wikimedia.org/wiki/' + encodeURIComponent(item)"
+                        target="_blank"
+                        class="cbm-file-link"
+                    >{{ item }}</a>
+                </template>
+
                 <template #item-wouldAdd="{ item }">
                     <div v-if="item.length > 0" class="cbm-category-list cbm-add">
                         <span v-for="(cat, index) in item" :key="index" class="cbm-category-tag cbm-tag-add">

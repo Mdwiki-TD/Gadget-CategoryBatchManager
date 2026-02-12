@@ -89,6 +89,17 @@
     font-weight: 500;
 }
 
+.cbm-file-link {
+    word-break: break-word;
+    font-weight: 500;
+    color: #3366cc;
+    text-decoration: none;
+}
+
+.cbm-file-link:hover {
+    text-decoration: underline;
+}
+
 .cbm-add-cell,
 .cbm-remove-cell {
     width: 35%;
