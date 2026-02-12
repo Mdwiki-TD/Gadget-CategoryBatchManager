@@ -11,6 +11,7 @@ import CategoryLookup from './ui/components/CategoryLookup.js';
 import PreviewTable from './ui/components/PreviewTable.js';
 import ProgressBar from './ui/components/ProgressBar.js';
 import { ChangesHelper, ValidationHelper } from './ui/helpers';
+import mw from './services/mw.js';
 
 function BatchManager() {
     // ── Services ──────────────────────────────────────────────────────────
@@ -30,6 +31,10 @@ function BatchManager() {
     const category_inputs_handler = new CategoryInputsHandler(api);
 
     // ── Panel configurations ──────────────────────────────────────────────
+    const defaultCategory =
+        mw.config.get('wgCanonicalNamespace') === 'Category'
+            ? mw.config.get('wgPageName')
+            : '';
     const message_display_panel = MessageDisplayPanel();
 
     // ── Template ─────────────────────────────────────────────────────────
@@ -38,7 +43,7 @@ function BatchManager() {
             <!-- Left Panel: Search and Actions -->
             <div class="cbm-left-panel">
                 <!-- Search Section -->
-                <SearchPanel :search-handler="search_handler" />
+                <SearchPanel :search-handler="search_handler" :default-category="defaultCategory" />
 
                 <!-- Actions Section -->
                 <div>

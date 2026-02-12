@@ -4,26 +4,23 @@
  * @returns {Object} Partial Vue app configuration (data + template + methods)
  */
 
-import mw from '../../services/mw.js';
-
 function SearchPanel() {
-    const defaultCategory =
-        mw.config.get('wgCanonicalNamespace') === 'Category'
-            ? mw.config.get('wgPageName')
-            : '';
-
     return {
         props: {
             searchHandler: {
                 type: Object,
                 required: true
+            },
+            defaultCategory: {
+                type: String,
+                default: ''
             }
         },
         data() {
             return {
 
                 // ── User inputs ──────────────────────────────────────────
-                sourceCategory: defaultCategory,
+                sourceCategory: this.defaultCategory,
                 titlePattern: '',
                 searchPattern: '',
                 searchLimit: 5000,
