@@ -24,9 +24,9 @@ function PreviewTable() {
                 v-model:sort="sort"
                 class="cdx-docs-table-with-sort cbm-preview-table"
                 caption=""
-                hideCaption="true"
+                :hideCaption="true"
                 :columns="columns"
-                showVerticalBorders="true"
+                :showVerticalBorders="true"
                 :data="sortedData"
                 @update:sort="onSort"
             >
