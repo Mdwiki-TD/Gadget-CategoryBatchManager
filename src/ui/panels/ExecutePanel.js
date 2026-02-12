@@ -54,6 +54,7 @@ function ExecutePanel() {
                 }
             };
         },
+        emits: ['display-message', 'update:is-processing', 'update:progress-percent', 'update:progress-text', 'show-warning-message', 'show-success-message', 'show-error-message'],
         template: `
             <div>
                 <cdx-button

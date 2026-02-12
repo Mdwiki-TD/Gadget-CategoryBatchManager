@@ -70,6 +70,8 @@ function PreviewPanel() {
             </cdx-dialog>
         `,
 
+        emits: ['display-message'],
+
         components: {
             PreviewTable: PreviewTable(),
         },

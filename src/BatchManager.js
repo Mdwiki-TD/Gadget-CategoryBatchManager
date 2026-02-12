@@ -30,6 +30,7 @@ function BatchManager() {
 
     // ── Panel configurations ──────────────────────────────────────────────
     const search_panel = SearchPanel(search_handler);
+    const message_display_panel = MessageDisplayPanel();
 
     // ── Template ─────────────────────────────────────────────────────────
     const template = `
@@ -96,7 +97,20 @@ function BatchManager() {
             </div>
         </div>
         <!-- Message Display -->
-        <MessageDisplayPanel />
+        <div v-if="showMessage" class="cbm-fixed-message">
+            <cdx-message
+                :key="messageKey"
+                allow-user-dismiss
+                :type="messageType"
+                :fade-in="true"
+                :auto-dismiss="true"
+                :display-time="3000"
+                dismiss-button-label="Close"
+                @dismissed="handleMessageDismiss"
+            >
+                {{ messageContent }}
+            </cdx-message>
+        </div>
     `;
 
     // ── Helper to create lookup model ─────────────────────────────────────
@@ -130,6 +144,9 @@ function BatchManager() {
                 isProcessing: false,
                 executionProgressPercent: 0,
                 executionProgressText: '',
+
+                // Merge message display state
+                ...message_display_panel.data(),
             };
         },
 
@@ -144,6 +161,7 @@ function BatchManager() {
 
         methods: {
             ...search_panel.methods,
+            ...message_display_panel.methods,
 
             // Helper for CategoryInputsPanel
             displayCategoryMessage(text, type = 'error', target = 'add') {
@@ -161,7 +179,6 @@ function BatchManager() {
         components: {
             CategoryLookup: CategoryLookup(),
             PreviewTable: PreviewTable(),
-            MessageDisplayPanel: MessageDisplayPanel(),
             FilesListPanel: FilesListPanel(),
             CategoryInputsPanel: CategoryInputsPanel(),
             PreviewPanel: PreviewPanel(),
