@@ -5,7 +5,7 @@
  */
 
 import { APIService, BatchProcessor, CategoryService, SearchService } from './services';
-import { CategoryInputsPanel, ExecutePanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel } from './ui/panels';
+import { CategoryInputsPanel, ExecutePanel, ExecuteProgressPanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel, SearchProgressPanel } from './ui/panels';
 import { CategoryInputsHandler, ExecuteHandler, FileListHandler, SearchHandler, ProgressHandler } from './ui/handlers';
 import CategoryLookup from './ui/components/CategoryLookup.js';
 import PreviewTable from './ui/components/PreviewTable.js';
@@ -78,8 +78,18 @@ function BatchManager() {
             <div class="cbm-right-panel">
                 <FilesListPanel :work-files="workFiles" />
 
-                <!-- Progress Section -->
-                ${search_panel.progressTemplate}
+                <!-- Search Progress Section -->
+                <SearchProgressPanel
+                    :progress-percent="searchProgressPercent"
+                    :progress-text="searchProgressText"
+                />
+
+                <!-- Execute Progress Section -->
+                <ExecuteProgressPanel
+                    :is-processing="isProcessing"
+                    :progress-percent="executionProgressPercent"
+                    :progress-text="executionProgressText"
+                />
             </div>
         </div>
         <!-- Message Display -->
