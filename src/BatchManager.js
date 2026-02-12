@@ -5,10 +5,11 @@
  */
 
 import { APIService, BatchProcessor, CategoryService, SearchService } from './services';
-import { CategoryInputsPanel, ExecutePanel, ExecuteProgressPanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel, SearchProgressPanel } from './ui/panels';
+import { CategoryInputsPanel, ExecutePanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel } from './ui/panels';
 import { CategoryInputsHandler, ExecuteHandler, FileListHandler, SearchHandler, ProgressHandler } from './ui/handlers';
 import CategoryLookup from './ui/components/CategoryLookup.js';
 import PreviewTable from './ui/components/PreviewTable.js';
+import ProgressBar from './ui/components/ProgressBar.js';
 import { ChangesHelper, ValidationHelper } from './ui/helpers';
 
 function BatchManager() {
@@ -77,10 +78,10 @@ function BatchManager() {
                     </div>
                 </div>
                 <!-- Execute Progress Section -->
-                <ExecuteProgressPanel
-                    :is-processing="isProcessing"
-                    :progress-percent="executionProgressPercent"
-                    :progress-text="executionProgressText"
+                <ProgressBar
+                    :visible="isProcessing"
+                    :percent="executionProgressPercent"
+                    :text="executionProgressText"
                 />
             </div>
 
@@ -89,9 +90,10 @@ function BatchManager() {
                 <FilesListPanel :work-files="workFiles" />
 
                 <!-- Search Progress Section -->
-                <SearchProgressPanel
-                    :progress-percent="searchProgressPercent"
-                    :progress-text="searchProgressText"
+                <ProgressBar
+                    :visible="searchProgressPercent > 0"
+                    :percent="searchProgressPercent"
+                    :text="searchProgressText"
                 />
 
             </div>
@@ -179,12 +181,11 @@ function BatchManager() {
         components: {
             CategoryLookup: CategoryLookup(),
             PreviewTable: PreviewTable(),
+            ProgressBar: ProgressBar(),
             FilesListPanel: FilesListPanel(),
             CategoryInputsPanel: CategoryInputsPanel(),
             PreviewPanel: PreviewPanel(),
             ExecutePanel: ExecutePanel(),
-            SearchProgressPanel: SearchProgressPanel(),
-            ExecuteProgressPanel: ExecuteProgressPanel(),
         },
         template: template,
     };
