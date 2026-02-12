@@ -4,3 +4,5 @@
  */
 export { default as CategoryLookup } from './CategoryLookup.js';
 export { default as PreviewTable } from './PreviewTable.js';
+export { default as Tabs } from './Tabs.js';
+export { default as Tab } from './Tab.js';

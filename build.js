@@ -22,6 +22,8 @@ const SOURCE_FILES = [
 
     'src/ui/components/CategoryLookup.js',
     'src/ui/components/PreviewTable.js',
+    'src/ui/components/Tab.js',
+    'src/ui/components/Tabs.js',
 
     'src/ui/panels/CategoryInputsPanel.js',
     'src/ui/panels/ExecutePanel.js',
