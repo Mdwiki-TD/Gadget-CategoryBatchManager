@@ -61,6 +61,8 @@ class ChangeCalculator {
             file: file.title,
             currentCategories: current,
             newCategories: after,
+            wouldAdd: categoriesToAdd.filter((cat) => !current.includes(cat)),
+            wouldRemove: categoriesToRemove.filter((cat) => current.includes(cat)),
             willChange: JSON.stringify(current) !== JSON.stringify(after)
         };
     }
