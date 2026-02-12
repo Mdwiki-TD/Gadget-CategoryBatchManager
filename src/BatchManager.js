@@ -1,6 +1,7 @@
 /**
- * Creates the Vue app definition for the Category Batch Manager tool.
- * @returns {Object} Vue app definition object.
+ * Assemble the full Vue app from panels and services.
+ * @param {HTMLElement|null} portletLink
+ * @returns {Object} Vue app definition
  */
 
 import { APIService, BatchProcessor, CategoryService, SearchService } from './services';
@@ -9,70 +10,43 @@ import { CategoryInputsHandler, ExecuteHandler, FileListHandler, SearchHandler, 
 import CategoryLookup from './ui/components/CategoryLookup.js';
 import { ChangesHelper, ValidationHelper } from './ui/helpers';
 
-function load_template(portletLink, mainTemplate) {
-    if (portletLink) {
-        // If portletLink is provided, we are in a category page and want to use a dialog
-        return `
-            <cdx-dialog
-                v-model:open="showMainDialog"
-                class="cbm-container"
-                title="Category Batch Manager"
-                :use-close-button="true"
-                close-button-label="Close"
-                @default="showMainDialog = false"
-            >
-                ${mainTemplate}
-            </cdx-dialog>
-        `;
-    } else {
-        // If no portletLink, we are likely in a special page and can render directly without a dialog
-        return `
-            <div class="cbm-container">
-                <h2 class="cbm-title">Category Batch Manager</h2>
-                ${mainTemplate}
-            </div>`;
-    }
-}
-
 function BatchManager(portletLink = null) {
-
-    // services
-    const api_service = new APIService();
-    const search_service = new SearchService(api_service);
-    const categoryService = new CategoryService(api_service);
+    // ── Services ──────────────────────────────────────────────────────────
+    const api = new APIService();
+    const search_service = new SearchService(api);
+    const categoryService = new CategoryService(api);
     const batchProcessor = new BatchProcessor(categoryService);
 
-    // helpers
+    // ── Helpers ───────────────────────────────────────────────────────────
     const validation_helper = new ValidationHelper();
     const changes_helpers = new ChangesHelper(validation_helper);
 
-    // handlers
-    const files_list = new FileListHandler();
+    // ── Handlers ──────────────────────────────────────────────────────────
+    const files_list_handler = new FileListHandler();
     const search_handler = new SearchHandler(search_service);
     const progress_handler = new ProgressHandler();
     const execute_handler = new ExecuteHandler(batchProcessor);
-    const category_inputs_handler = new CategoryInputsHandler(api_service);
+    const category_inputs_handler = new CategoryInputsHandler(api);
 
-    // vue apps
+    // ── Panel configurations ──────────────────────────────────────────────
+    const category_inputs = CategoryInputsPanel(category_inputs_handler);
     const execute_panel = ExecutePanel(execute_handler, progress_handler, changes_helpers);
-    const preview_panel_app = PreviewPanel(changes_helpers);
-    const category_inputs_app = CategoryInputsPanel(category_inputs_handler);
-    const message_display_app = MessageDisplayPanel();
-    const search_panel_app = SearchPanel(search_handler);
-    const files_list_app = FilesListPanel(files_list);
+    const files_list = FilesListPanel(files_list_handler);
+    const message_panel = MessageDisplayPanel();
+    const preview_panel = PreviewPanel(changes_helpers);
+    const search_panel = SearchPanel(search_handler);
 
-    const default_state = portletLink === null;
-
-    const template = load_template(portletLink, `
+    // ── Template ─────────────────────────────────────────────────────────
+    const innerTemplate = `
         <div class="cbm-main-layout">
             <!-- Left Panel: Search and Actions -->
             <div class="cbm-left-panel">
                 <!-- Search Section -->
-                ${search_panel_app.template}
+                ${search_panel.template}
 
                 <!-- Actions Section -->
                 <div>
-                    ${category_inputs_app.template}
+                    ${category_inputs.template}
 
                     <div class="margin-bottom-20 hidden">
                         <cdx-label input-id="cbm-summary" class="cbm-label">
@@ -82,89 +56,96 @@ function BatchManager(portletLink = null) {
                     </div>
 
                     <div class="cbm-button-group">
-                        ${preview_panel_app.template}
+                        ${preview_panel.template}
                         ${execute_panel.template}
                     </div>
                 </div>
-                ${execute_panel.progress_template}
+                ${execute_panel.progressTemplate}
             </div>
 
             <!-- Right Panel: File List -->
             <div class="cbm-right-panel">
-                ${files_list_app.template}
+                ${files_list.template}
 
                 <!-- Progress Section -->
-                ${search_panel_app.progress_template}
+                ${search_panel.progressTemplate}
             </div>
         </div>
         <!-- Message Display -->
-        ${message_display_app.template}
-    `);
+        ${message_panel.template}
+    `;
 
+    const template = portletLink
+        ? `<cdx-dialog
+               v-model:open="showMainDialog"
+               class="cbm-container"
+               title="Category Batch Manager"
+               :use-close-button="true"
+               close-button-label="Close"
+               @default="showMainDialog = false">
+               ${innerTemplate}
+           </cdx-dialog>`
+        : `<div class="cbm-container">
+               <h2 class="cbm-title">Category Batch Manager</h2>
+               ${innerTemplate}
+           </div>`;
+
+    // ── App definition ────────────────────────────────────────────────────
     const app = {
-        data: function () {
+        data() {
             return {
-                showMainDialog: default_state,
-                // vue apps handlers
+                showMainDialog: !portletLink,
+
                 execute_handler: execute_handler,
                 progress_handler: progress_handler,
                 changes_helpers: changes_helpers,
                 category_inputs_handler: category_inputs_handler,
                 search_handler: search_handler,
-                files_list: files_list,
+                files_list: files_list_handler,
 
                 editSummary: 'Batch category update via Category Batch Manager',
 
                 // SearchPanel state
-                ...search_panel_app.data(),
+                ...search_panel.data(),
 
                 // MessageDisplayPanel state
-                ...message_display_app.data(),
+                ...message_panel.data(),
 
                 // ExecutePanel state
                 ...execute_panel.data(),
 
                 // CategoryInputsApp state
-                ...category_inputs_app.data(),
+                ...category_inputs.data(),
 
                 // PreviewPanel state
-                ...preview_panel_app.data(),
+                ...preview_panel.data(),
 
                 // FilesListPanel state
-                ...files_list_app.data(),
+                ...files_list.data(),
             };
         },
+
         computed: {
-            ...files_list_app.computed,
+            ...files_list.computed,
         },
+
         methods: {
             openMainDialog() {
                 this.showMainDialog = true;
             },
 
-            // SearchPanel methods
-            ...search_panel_app.methods,
-
-            // ExecutePanel methods
+            ...search_panel.methods,
+            ...category_inputs.methods,
+            ...files_list.methods,
+            ...message_panel.methods,
+            ...preview_panel.methods,
             ...execute_panel.methods,
-
-            // CategoryInputsPanel methods
-            ...category_inputs_app.methods,
-
-            // Message handlers
-            ...message_display_app.methods,
-
-            // PreviewPanel methods
-            ...preview_panel_app.methods,
-
-            // FilesListPanel methods
-            ...files_list_app.methods,
         },
-        template: template,
+
         components: {
             CategoryLookup: CategoryLookup(),
         },
-
+        template: template,
     };
     if (portletLink) {
         app.mounted = function () {
