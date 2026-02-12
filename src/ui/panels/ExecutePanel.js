@@ -1,44 +1,26 @@
 
+import { ExecuteHandler, ProgressHandler } from "../handlers";
+import { ChangesHelper } from "../helpers";
+
+
 /**
  * Execute Panel Vue app factory
  * UI component only - delegates business logic to handlers
  * @see https://doc.wikimedia.org/codex/latest/
+ * @param {ExecuteHandler} execute_handler - ExecuteHandler instance
+ * @param {ProgressHandler} progress_handler - ProgressHandler instance
+ * @param {ChangesHelper} changes_helpers
  * @returns {Object} Vue app configuration
  */
-function ExecutePanel() {
-    return {
-        props: {
-            executeHandler: {
-                type: Object,
-                required: true
-            },
-            progressHandler: {
-                type: Object,
-                required: true
-            },
-            changesHelpers: {
-                type: Object,
-                required: true
-            },
-            sourceCategory: {
-                type: String,
-                default: ''
-            },
-            selectedFiles: {
-                type: Array,
-                default: () => []
-            },
-            addCategorySelected: {
-                type: Array,
-                default: () => []
-            },
-            removeCategorySelected: {
-                type: Array,
-                default: () => []
-            }
-        },
+
+function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
+    const app = {
         data() {
             return {
+                execute_handler: execute_handler,
+                progress_handler: progress_handler,
+                changes_helpers: changes_helpers,
+
                 // Processing state
                 isProcessing: false,
 
@@ -60,48 +42,47 @@ function ExecutePanel() {
             };
         },
         template: `
-            <div>
-                <cdx-button
-                    v-if="!isProcessing"
-                    @click="executeOperation"
-                    action="progressive"
-                    weight="primary">
-                    GO
-                </cdx-button>
-                <cdx-button
-                    v-if="isProcessing"
-                    @click="stopOperation"
-                    action="destructive"
-                    weight="primary">
-                    Stop Process
-                </cdx-button>
-                <cdx-dialog
-                    v-model:open="openConfirmDialog"
-                    title="Confirm Batch Update"
-                    :use-close-button="true"
-                    :primary-action="confirmPrimaryAction"
-                    :default-action="confirmDefaultAction"
-                    @primary="confirmOnPrimaryAction"
-                    @default="openConfirmDialog = false">
-                    <p>{{ confirmMessage }}</p>
-                </cdx-dialog>
-                <div
-                    v-if="isProcessing || executionProgressText !== ''"
-                    class="cbm-progress-section">
-                    <div class="cbm-progress-bar-bg">
-                        <div
-                            class="cbm-progress-bar-fill"
-                            :style="{
-                                width: executionProgressPercent + '%',
-                            }">
-                        </div>
-                    </div>
-                    <div class="cbm-progress-text">
-                        {{ executionProgressText }}
+            <cdx-button
+                v-if="!isProcessing"
+                @click="executeOperation"
+                action="progressive"
+                weight="primary">
+                GO
+            </cdx-button>
+            <cdx-button
+                v-if="isProcessing"
+                @click="stopOperation"
+                action="destructive"
+                weight="primary">
+                Stop Process
+            </cdx-button>
+            <cdx-dialog
+                v-model:open="openConfirmDialog"
+                title="Confirm Batch Update"
+                :use-close-button="true"
+                :primary-action="confirmPrimaryAction"
+                :default-action="confirmDefaultAction"
+                @primary="confirmOnPrimaryAction"
+                @default="openConfirmDialog = false">
+                <p>{{ confirmMessage }}</p>
+            </cdx-dialog>
+        `,
+        progressTemplate: `
+            <div
+                v-if="isProcessing || executionProgressText !== ''"
+                class="cbm-progress-section">
+                <div class="cbm-progress-bar-bg">
+                    <div
+                        class="cbm-progress-bar-fill"
+                        :style="{
+                            width: executionProgressPercent + '%',
+                        }">
                     </div>
                 </div>
-            </div>
-        `,
+                <div class="cbm-progress-text">
+                    {{ executionProgressText }}
+                </div>
+            </div>`,
         methods: {
             /**
              * Execute batch operation
@@ -111,18 +92,18 @@ function ExecutePanel() {
                 console.log('[CBM-E] Starting batch operation');
                 const callbacks = {
                     onError: (msg) => {
-                        this.$emit('display-message', msg, 'error', 'add');
+                        this.displayCategoryMessage(msg, 'error', 'add');
                     },
                     onWarning: (msg) => {
-                        this.$emit('display-message', msg, 'warning', 'add');
+                        this.displayCategoryMessage(msg, 'warning', 'add');
                     }
                 };
 
-                const preparation = this.changesHelpers.validateAndReturnPreparation(
+                const preparation = changes_helpers.validateAndReturnPreparation(
                     this.sourceCategory,
                     this.selectedFiles,
-                    this.addCategorySelected,
-                    this.removeCategorySelected,
+                    this.addCategory.selected,
+                    this.removeCategory.selected,
                     callbacks
                 );
                 if (!preparation) {
@@ -132,7 +113,7 @@ function ExecutePanel() {
                 console.log('[CBM-E] Execution result:', preparation.filesToProcess.length, 'items');
 
                 // Generate confirmation message
-                this.confirmMessage = this.executeHandler.generateConfirmMessage(
+                this.confirmMessage = execute_handler.generateConfirmMessage(
                     preparation.filesCount,
                     preparation.validAddCategories,
                     preparation.removeCategories
@@ -160,10 +141,10 @@ function ExecutePanel() {
              */
             async processBatch(preparation) {
                 try {
-                    const callbacks = this.progressHandler.createCallbacks(this);
+                    const callbacks = progress_handler.createCallbacks(this);
 
-                    const results = await this.executeHandler.executeBatch(
-                        preparation.filesToProcess,
+                    const results = await execute_handler.executeBatch(
+                        preparation.filesToProcess, // [CBM-E] Batch processing error: TypeError: Cannot read properties of undefined (reading 'length')
                         preparation.validAddCategories,
                         preparation.removeCategories,
                         callbacks
@@ -173,22 +154,24 @@ function ExecutePanel() {
                     this.executionProgressText = "";
 
                     // Format and show completion message
-                    const completion = this.progressHandler.formatCompletionMessage(
+                    const completion = progress_handler.formatCompletionMessage(
                         results,
-                        this.executeHandler.shouldStop()
+                        execute_handler.shouldStop()
                     );
 
                     if (completion.type === 'warning') {
-                        this.$emit('show-warning-message', completion.message);
+                        // NOTE: this didn't show up
+                        this.showWarningMessage(completion.message);
                     } else {
-                        this.$emit('show-success-message', completion.message);
+                        // NOTE: this didn't show up
+                        this.showSuccessMessage(completion.message);
                     }
 
                 } catch (error) {
                     console.error('[CBM-E] Batch processing error:', error);
                     this.isProcessing = false;
                     this.executionProgressText = "";
-                    this.$emit('show-error-message', `Batch processing failed: ${error.message}`);
+                    this.showErrorMessage(`Batch processing failed: ${error.message}`);
                 }
             },
 
@@ -196,10 +179,12 @@ function ExecutePanel() {
              * Stop ongoing batch operation
              */
             stopOperation() {
-                this.executeHandler.stopBatch();
+                execute_handler.stopBatch();
             }
         }
     };
+
+    return app;
 }
 
 export default ExecutePanel;
