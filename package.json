@@ -2,15 +2,30 @@
   "name": "category-batch-manager",
   "version": "1.1.1",
   "description": "Category Batch Manager for OWID Importer - Wikimedia Commons gadget",
-  "main": "src/gadget-entry.js",
+  "main": "src/main.js",
   "scripts": {
+    "dev": "vite",
+    "build": "node build.js",
+    "preview": "vite preview",
     "test": "jest",
-    "build": "node build.js"
+    "test:coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "vue": "^3.5.13"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.0",
-    "jest": "^29.7.0"
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitest/ui": "^4.0.18",
+    "@wikimedia/codex": "^2.3.4",
+    "@wikimedia/codex-design-tokens": "^2.3.4",
+    "@wikimedia/codex-icons": "^2.3.4",
+    "jest": "^29.7.0",
+    "jsdom": "^25.0.0",
+    "less": "^4.5.1",
+    "vite": "^6.0.5",
+    "vitest": "^4.0.18"
   },
   "license": "MIT"
 }

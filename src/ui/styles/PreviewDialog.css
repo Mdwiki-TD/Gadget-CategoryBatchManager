@@ -1,0 +1,138 @@
+
+.cbm-preview-dialog {
+    width: 90vw !important;
+    max-width: 90% !important;
+    max-height: 80vh !important;
+}
+
+
+.cbm-preview-table .cbm-category-item {
+    margin-bottom: 2px;
+}
+
+.cbm-preview-table .cbm-diff-positive {
+    color: var(--color-success, #00af89);
+    font-weight: 600;
+}
+
+.cbm-preview-table .cbm-diff-negative {
+    color: var(--color-destructive, #d33);
+    font-weight: 600;
+}
+
+.cbm-preview-table .cbm-diff-zero {
+    color: var(--color-subtle, #72777d);
+}
+
+
+.cbm-preview-wrapper {
+    display: inline-block;
+}
+
+.cbm-preview-summary {
+    margin-bottom: 16px;
+}
+
+.cbm-preview-empty {
+    color: #72777d;
+    font-style: italic;
+}
+
+.cbm-preview-stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.cbm-stat {
+    display: flex;
+    gap: 8px;
+}
+
+.cbm-stat-label {
+    color: #72777d;
+}
+
+.cbm-stat-value {
+    font-weight: 600;
+}
+
+.cbm-preview-table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #eaecf0;
+    border-radius: 4px;
+}
+
+.cbm-preview-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cbm-preview-table th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid #eaecf0;
+    z-index: 1;
+}
+
+.cbm-preview-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eaecf0;
+    vertical-align: top;
+}
+
+.cbm-preview-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.cbm-preview-table tr.cbm-row-no-changes {
+    opacity: 0.6;
+}
+
+.cbm-file-cell {
+    max-width: 200px;
+}
+
+.cbm-file-title {
+    word-break: break-word;
+    font-weight: 500;
+}
+
+.cbm-add-cell,
+.cbm-remove-cell {
+    width: 35%;
+}
+
+.cbm-category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cbm-category-tag {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-size: 0.875em;
+}
+
+.cbm-tag-add {
+    background-color: #e6f0e6;
+    color: #14866d;
+}
+
+.cbm-tag-remove {
+    background-color: #fee7e7;
+    color: #b32424;
+}
+
+.cbm-empty-cell {
+    color: #72777d;
+    font-style: italic;
+}

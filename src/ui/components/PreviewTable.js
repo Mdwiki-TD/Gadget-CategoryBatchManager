@@ -23,8 +23,10 @@ function PreviewTable() {
             <cdx-table
                 v-model:sort="sort"
                 class="cdx-docs-table-with-sort cbm-preview-table"
-                caption="Files to be updated"
+                caption=""
+                hideCaption="true"
                 :columns="columns"
+                showVerticalBorders="true"
                 :data="sortedData"
                 @update:sort="onSort"
             >

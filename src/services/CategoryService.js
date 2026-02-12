@@ -122,6 +122,7 @@ class CategoryService {
     async updateCategoriesOptimized(fileTitle, toAdd, toRemove) {
         const api = new mw.Api();
         const parser = this.parser;
+        const buildEditSummary = this.buildEditSummary.bind(this);
 
         try {
             await api.edit(fileTitle, function (revision) {
@@ -144,13 +145,10 @@ class CategoryService {
                     return false; // No changes needed
                 }
 
-                const parts = [];
-                if (toAdd.length) parts.push(`+${toAdd.join(', ')}`);
-                if (toRemove.length) parts.push(`-${toRemove.join(', ')}`);
-
+                const summary = buildEditSummary(toAdd, toRemove);
                 return {
                     text: newWikitext,
-                    summary: `Batch category update: ${parts.join('; ')} (via Category Batch Manager)`,
+                    summary: summary,
                     minor: false
                 };
             });
@@ -177,7 +175,10 @@ class CategoryService {
         }
         return categories;
     }
-
+    categoryLink(category) {
+        const catName = category.startsWith('Category:') ? category.slice(9) : category;
+        return `[[Category:${catName}]]`;
+    }
     /**
      * TODO: use it in the workflow or move it to a utility module
      * Build an edit summary from add/remove lists
@@ -187,9 +188,9 @@ class CategoryService {
      */
     buildEditSummary(toAdd, toRemove) {
         const parts = [];
-        if (toAdd.length) parts.push(`+${toAdd.join(', ')}`);
-        if (toRemove.length) parts.push(`-${toRemove.join(', ')}`);
-        return `Batch category update: ${parts.join('; ')} (via Category Batch Manager)`;
+        if (toAdd.length) parts.push(`Adding ${toAdd.map(this.categoryLink).join(', ')}`);
+        if (toRemove.length) parts.push(`Removing ${toRemove.map(this.categoryLink).join(', ')}`);
+        return `${parts.join('; ')} (via Category Batch Manager)`;
     }
 }
 
