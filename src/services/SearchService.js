@@ -35,10 +35,7 @@ class SearchService {
     }
 
     async searchWithPattern(srsearch) {
-        return this.searchWithPatternCallback(srsearch, null, {
-            onProgress: (text) => console.log(text),
-            onProgressFileDetails: (text, percent) => console.log(text, percent)
-        });
+        return this.searchWithPatternCallback(srsearch, undefined, {});
     }
     /**
      * Search files matching `srsearch` and enrich each result with full
