@@ -12,23 +12,21 @@ function CategoryInputsPanel() {
     const api = new APIService();
     const category_inputs_handler = new CategoryInputsHandler(api);
 
-    /** Default shape for a lookup model object */
-    const newLookupModel = () => ({
-        menuItems: [],
-        menuConfig: { boldLabel: true, visibleItemLimit: 10 },
-        chips: [],
-        selected: [],
-        input: '',
-        message: { show: false, type: '', text: '', key: 0 },
-    });
-
     return {
+        props: {
+            addCategory: {
+                type: Object,
+                required: true
+            },
+            removeCategory: {
+                type: Object,
+                required: true
+            }
+        },
+
         data() {
             return {
                 category_inputs_handler: category_inputs_handler,
-
-                addCategory: newLookupModel(),
-                removeCategory: newLookupModel(),
             };
         },
         template: `
