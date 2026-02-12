@@ -6,7 +6,7 @@
 
 import { APIService, BatchProcessor, CategoryService, SearchService } from './services';
 import { CategoryInputsPanel, ExecutePanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel } from './ui/panels';
-import { CategoryInputsHandler, ExecuteHandler, FileListHandler, SearchHandler, ProgressHandler } from './ui/handlers';
+import { CategoryInputsHandler, ExecuteHandler, SearchHandler, ProgressHandler } from './ui/handlers';
 import CategoryLookup from './ui/components/CategoryLookup.js';
 import PreviewTable from './ui/components/PreviewTable.js';
 import ProgressBar from './ui/components/ProgressBar.js';
