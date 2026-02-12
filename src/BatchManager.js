@@ -90,6 +90,7 @@ function BatchManager() {
     const app = {
         data() {
             return {
+                category_inputs_handler: category_inputs_handler,
                 execute_handler: execute_handler,
                 progress_handler: progress_handler,
                 changes_helpers: changes_helpers,
