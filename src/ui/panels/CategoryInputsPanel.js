@@ -1,17 +1,11 @@
 /**
  * Category add/remove multiselect inputs panel.
- * @param {CategoryInputsHandler} category_inputs_handler
  * @returns {Object} Partial Vue app configuration
  */
 
-import { APIService } from "../../services";
 import { CategoryLookup } from "../components";
-import { CategoryInputsHandler } from './../handlers';
 
 function CategoryInputsPanel() {
-    const api = new APIService();
-    const category_inputs_handler = new CategoryInputsHandler(api);
-
     return {
         props: {
             addCategory: {
@@ -21,13 +15,11 @@ function CategoryInputsPanel() {
             removeCategory: {
                 type: Object,
                 required: true
+            },
+            handler: {
+                type: Object,
+                required: true
             }
-        },
-
-        data() {
-            return {
-                category_inputs_handler: category_inputs_handler,
-            };
         },
         template: `
             <CategoryLookup
@@ -36,7 +28,7 @@ function CategoryInputsPanel() {
                 aria-label="Add categories"
                 placeholder="Type to search categories"
                 type="add"
-                :handler="category_inputs_handler"
+                :handler="handler"
             />
 
             <CategoryLookup
@@ -45,7 +37,7 @@ function CategoryInputsPanel() {
                 aria-label="Remove categories"
                 placeholder="Type to search categories"
                 type="remove"
-                :handler="category_inputs_handler"
+                :handler="handler"
             />
         `,
         components: {

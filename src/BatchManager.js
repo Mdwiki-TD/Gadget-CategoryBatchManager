@@ -46,6 +46,7 @@ function BatchManager() {
                     <CategoryInputsPanel
                         :add-category="addCategory"
                         :remove-category="removeCategory"
+                        :handler="category_inputs_handler"
                     />
 
                     <div class="cbm-button-group">
