@@ -22,6 +22,7 @@ function SearchPanel(search_handler) {
                 sourceCategory: defaultCategory,
                 titlePattern: '',
                 searchPattern: '',
+                searchLimit: 5000,
 
                 workFiles: [],
                 // ── UI state (mirrors handler state via callbacks) ────────
@@ -74,6 +75,14 @@ function SearchPanel(search_handler) {
                             id="cbm-search-pattern"
                             v-model="searchPattern"
                             placeholder="" />
+                        <cdx-text-input
+                            id="cbm-search-limit"
+                            v-model.number="searchLimit"
+                            type="number"
+                            min="1"
+                            max="10000"
+                            class="cbm-limit-input"
+                            placeholder="Limit" />
                         <cdx-button
                             v-if="!isSearching"
                             action="progressive"
@@ -144,7 +153,8 @@ function SearchPanel(search_handler) {
                 await search_handler.startSearch(
                     this.sourceCategory,
                     this.titlePattern,
-                    this.searchPattern
+                    this.searchPattern,
+                    this.searchLimit
                 );
             },
 

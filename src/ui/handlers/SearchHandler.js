@@ -64,7 +64,7 @@ class SearchHandler {
         return srsearch;
     }
 
-    async startSearch(sourceCategory, titlePattern, searchPattern) {
+    async startSearch(sourceCategory, titlePattern, searchPattern, searchLimit) {
         if (this.isSearching) {
             console.warn('[CBM-SH] Search already in progress — ignoring duplicate call');
             return;
@@ -78,9 +78,9 @@ class SearchHandler {
         }
         this.isSearching = true;
         this._fireProgress('Searching for files…', 0);
-
+        searchLimit = searchLimit || 5000; // Default limit if not provided
         try {
-            const results = await this.search_service.searchWithPatternCallback(pattern, {
+            const results = await this.search_service.searchWithPatternCallback(pattern, searchLimit, {
                 onProgress: (text) => {
                     this._fireProgress(text, 0);
                 },
