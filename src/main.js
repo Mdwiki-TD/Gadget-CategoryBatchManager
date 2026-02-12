@@ -1,8 +1,8 @@
 
-import { defineComponent, ref, createApp } from "vue";
+import { ref, createApp } from "vue";
 import './ui/styles/main.css'
 import '@wikimedia/codex/dist/codex.style.css'
-import BatchManager from "./BatchManager.js";
+import BatchManagerFactory from "./BatchManager.js";
 
 import {
     CdxButton,
@@ -18,9 +18,13 @@ import {
     CdxTable,
 } from "@wikimedia/codex";
 
+// Instantiate BatchManager component (pass null for standalone mode)
+const BatchManager = BatchManagerFactory(null);
+
 const App = {
     name: "App",
-    components: defineComponent({
+    components: {
+        BatchManager,
         CdxButton,
         CdxDialog,
         CdxTextInput,
@@ -32,7 +36,7 @@ const App = {
         CdxLabel,
         CdxMultiselectLookup,
         CdxTable,
-    }),
+    },
     template: `
         <BatchManager />
     `,
@@ -61,6 +65,15 @@ const App = {
 };
 
 createApp(App)
-    // .use(BatchManager)
-    .provide("BatchManager", BatchManager)
+    .component('cdx-text-input', CdxTextInput)
+    .component('cdx-textarea', CdxTextArea)
+    .component('cdx-select', CdxSelect)
+    .component('cdx-checkbox', CdxCheckbox)
+    .component('cdx-button', CdxButton)
+    .component('cdx-progress-bar', CdxProgressBar)
+    .component('cdx-message', CdxMessage)
+    .component('cdx-dialog', CdxDialog)
+    .component('cdx-label', CdxLabel)
+    .component('cdx-multiselect-lookup', CdxMultiselectLookup)
+    .component('cdx-table', CdxTable)
     .mount('#app')
