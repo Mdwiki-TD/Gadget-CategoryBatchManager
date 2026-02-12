@@ -177,7 +177,9 @@ class CategoryService {
         }
         return categories;
     }
-
+    categoryLink(category) {
+        return `[[Category:${category}]]`;
+    }
     /**
      * TODO: use it in the workflow or move it to a utility module
      * Build an edit summary from add/remove lists
@@ -187,9 +189,9 @@ class CategoryService {
      */
     buildEditSummary(toAdd, toRemove) {
         const parts = [];
-        if (toAdd.length) parts.push(`+${toAdd.join(', ')}`);
-        if (toRemove.length) parts.push(`-${toRemove.join(', ')}`);
-        return `Batch category update: ${parts.join('; ')} (via Category Batch Manager)`;
+        if (toAdd.length) parts.push(`Adding ${toAdd.map(this.categoryLink).join(', ')}`);
+        if (toRemove.length) parts.push(`Removing ${toRemove.map(this.categoryLink).join(', ')}`);
+        return `${parts.join('; ')} (via Category Batch Manager)`;
     }
 }
 
