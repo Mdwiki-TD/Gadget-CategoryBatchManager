@@ -99,7 +99,7 @@ class APIService {
 
         const pages = data?.query?.pages;
         if (!pages) {
-            console.error('No pages found in API response for title:', title);
+            console.error('[CBM-API] No pages found in API response for title:', title);
             return '';
         }
         const page = Object.values(pages)[0];
