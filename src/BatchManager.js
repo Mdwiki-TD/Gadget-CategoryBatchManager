@@ -48,13 +48,6 @@ function BatchManager(portletLink = null) {
                 <div>
                     ${category_inputs.template}
 
-                    <div class="margin-bottom-20 hidden">
-                        <cdx-label input-id="cbm-summary" class="cbm-label">
-                            Edit Summary
-                        </cdx-label>
-                        <cdx-text-input id="cbm-summary" v-model="editSummary" />
-                    </div>
-
                     <div class="cbm-button-group">
                         ${preview_panel.template}
                         ${execute_panel.template}
@@ -103,25 +96,13 @@ function BatchManager(portletLink = null) {
                 search_handler: search_handler,
                 files_list: files_list_handler,
 
-                editSummary: 'Batch category update via Category Batch Manager',
-
-                // SearchPanel state
+                // Merge panel states
                 ...search_panel.data(),
-
-                // MessageDisplayPanel state
-                ...message_panel.data(),
-
-                // ExecutePanel state
-                ...execute_panel.data(),
-
-                // CategoryInputsApp state
                 ...category_inputs.data(),
-
-                // PreviewPanel state
-                ...preview_panel.data(),
-
-                // FilesListPanel state
                 ...files_list.data(),
+                ...message_panel.data(),
+                ...preview_panel.data(),
+                ...execute_panel.data(),
             };
         },
 
@@ -147,6 +128,7 @@ function BatchManager(portletLink = null) {
         },
         template: template,
     };
+
     if (portletLink) {
         app.mounted = function () {
             portletLink.addEventListener('click', this.openMainDialog);
@@ -155,6 +137,7 @@ function BatchManager(portletLink = null) {
             portletLink.removeEventListener('click', this.openMainDialog);
         };
     }
+
     return app;
 }
 
