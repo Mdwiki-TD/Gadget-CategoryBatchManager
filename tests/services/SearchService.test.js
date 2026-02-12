@@ -107,7 +107,10 @@ describe('SearchService', () => {
       const result = await service.searchWithPattern('incategory:Belarus intitle:/^Chart/');
 
       expect(result).toHaveLength(2);
-      expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith('incategory:Belarus intitle:/^Chart/', {});
+      expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith(
+        'incategory:Belarus intitle:/^Chart/',
+        expect.objectContaining({ onProgress: expect.any(Function) })
+      );
     });
 
     test('should return empty array when no matches', async () => {
@@ -199,7 +202,10 @@ describe('SearchService', () => {
 
       await service.searchWithPattern(complexPattern);
 
-      expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith(complexPattern, {});
+      expect(mockApi.searchInCategoryWithPattern).toHaveBeenCalledWith(
+        complexPattern,
+        expect.objectContaining({ onProgress: expect.any(Function) })
+      );
     });
 
     test('should create FileModel instances from search results', async () => {
