@@ -256,3 +256,22 @@
         /* background-color: #212529; */
     }
 }
+
+/* ==================== PreviewTable ==================== */
+.cbm-preview-table .cbm-category-item {
+    margin-bottom: 2px;
+}
+
+.cbm-preview-table .cbm-diff-positive {
+    color: var(--color-success, #00af89);
+    font-weight: 600;
+}
+
+.cbm-preview-table .cbm-diff-negative {
+    color: var(--color-destructive, #d33);
+    font-weight: 600;
+}
+
+.cbm-preview-table .cbm-diff-zero {
+    color: var(--color-subtle, #72777d);
+}

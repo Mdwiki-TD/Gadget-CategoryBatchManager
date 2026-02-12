@@ -8,6 +8,7 @@ import { APIService, BatchProcessor, CategoryService, SearchService } from './se
 import { CategoryInputsPanel, ExecutePanel, FilesListPanel, MessageDisplayPanel, PreviewPanel, SearchPanel } from './ui/panels';
 import { CategoryInputsHandler, ExecuteHandler, FileListHandler, SearchHandler, ProgressHandler } from './ui/handlers';
 import CategoryLookup from './ui/components/CategoryLookup.js';
+import PreviewTable from './ui/components/PreviewTable.js';
 import { ChangesHelper, ValidationHelper } from './ui/helpers';
 
 function BatchManager(portletLink = null) {
@@ -125,6 +126,7 @@ function BatchManager(portletLink = null) {
 
         components: {
             CategoryLookup: CategoryLookup(),
+            PreviewTable: PreviewTable(),
         },
         template: template,
     };
