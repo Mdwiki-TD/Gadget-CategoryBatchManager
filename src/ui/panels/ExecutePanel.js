@@ -16,7 +16,7 @@ import { ChangesHelper } from "../helpers";
 
 function ExecutePanel(execute_handler, progress_handler, changes_helpers) {
     const app = {
-        data: function () {
+        data() {
             return {
                 execute_handler: execute_handler,
                 progress_handler: progress_handler,

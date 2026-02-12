@@ -1,66 +1,59 @@
-
-import { ChangeCalculator } from "../../utils";
-import { ChangesHelper } from "../helpers";
-
 /**
  * PreviewPanel
  * @param {ChangesHelper} changes_helpers - ChangesHelper instance for validation and preparation
  * @returns {Object} Vue app configuration
  */
 
+import { ChangesHelper } from "../helpers";
+
 function PreviewPanel(changes_helpers) {
-    const app = {
-        data: function () {
+    return {
+        data() {
             return {
                 previewRows: [],
-                changesCount: '',
-                openPreviewHandler: false,
+                changesCount: 0,
+                openPreviewDialog: false,
             };
         },
+
         template: `
             <cdx-button
-                @click="handlePreview"
                 action="default"
                 weight="normal"
                 :disabled="isProcessing"
-                >
+                @click="handlePreview">
                 Preview Changes
             </cdx-button>
             <cdx-dialog
-                v-model:open="openPreviewHandler"
+                v-model:open="openPreviewDialog"
                 class="cbm-preview-dialog"
                 title="Preview Changes"
                 :use-close-button="true"
-                @default="openPreviewHandler = false"
+                @default="openPreviewDialog = false"
             >
                 <p v-if="changesCount > 0">
-                    {{ changesCount }} file(s) will be updated. Review the changes below before saving.
+                    {{ changesCount }} file(s) will be updated.
                 </p>
                 <p v-else>
-                    No changes detected. Please adjust your categories to add/remove and preview again.
+                    No changes detected. Adjust categories and preview again.
                 </p>
                 <table class="cbm-preview-table">
                     <thead>
                         <tr>
                             <th>File</th>
-                            <th>Current Categories</th>
-                            <th>New Categories</th>
-                            <th>Diff</th>
+                            <th>Current categories</th>
+                            <th>New categories</th>
+                            <th>Δ</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         <tr v-if="previewRows.length > 0" v-for="(row, index) in previewRows" :key="index">
                             <td>{{ row.file }}</td>
-
                             <td>
-                                <div v-for="(cat, i) in row.currentCategories" :key="i">
-                                    {{ cat }}
-                                </div>
+                                <div v-for="(cat, j) in row.currentCategories" :key="j">{{ cat }}</div>
                             </td>
-
                             <td>
-                                <div v-for="(cat, i) in row.newCategories" :key="i">
+                                <div v-for="(cat, j) in row.newCategories" :key="j">
                                     {{ cat }}
                                 </div>
                             </td>
@@ -85,39 +78,37 @@ function PreviewPanel(changes_helpers) {
                         this.displayCategoryMessage(msg, 'warning', 'add');
                     }
                 };
-                const preparation = changes_helpers.validateAndReturnPreparation(
+
+                const prep = changes_helpers.validateAndReturnPreparation(
                     this.sourceCategory,
                     this.selectedFiles,
                     this.addCategory.selected,
                     this.removeCategory.selected,
                     callbacks
                 );
-                if (!preparation) {
+                if (!prep) {
                     console.error('[CBM] preparation failed');
                     return;
                 }
-                console.log('[CBM-P] Preview result:', preparation.filesToProcess.length, 'items');
+                console.log('[CBM-P] Preview result:', prep.filesToProcess.length, 'items');
 
-                // filesToProcess now contains preview objects with: file, currentCategories, newCategories, willChange
                 // Add diff calculation for display
-                this.previewRows = preparation.filesToProcess.map(row => ({
+                this.previewRows = prep.filesToProcess.map(row => ({
                     ...row,
-                    diff: row.newCategories.length - row.currentCategories.length
+                    diff: row.newCategories.length - row.currentCategories.length,
                 }));
 
-                this.changesCount = preparation.filesToProcess.length;
+                this.changesCount = prep.filesToProcess.length;
 
-                if (this.changesCount === 0) {
+                if (!this.changesCount) {
                     console.log('[CBM] No changes detected');
                     this.displayCategoryMessage('ℹ️ No changes detected.', 'notice', 'add');
                 }
                 console.log('[CBM-P] Opening preview dialog');
-                this.openPreviewHandler = true;
-            }
-        }
+                this.openPreviewDialog = true;
+            },
+        },
     };
-
-    return app;
 }
 
 export default PreviewPanel;

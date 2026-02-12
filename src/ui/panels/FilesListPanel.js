@@ -6,7 +6,7 @@
 
 function FilesListPanel(file_list_handler) {
     const app = {
-        data: function () {
+        data() {
             return {
                 file_list_handler: file_list_handler,
                 workFiles: [],
