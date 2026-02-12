@@ -1,11 +1,8 @@
 /**
- * Service for interacting with the MediaWiki API
+ * Thin wrapper around `mw.Api`.
  *
- * All requests go through mw.Api which handles CSRF-token management,
- * automatic bad-token retry, and correct origin headers.
- *
- * For local development without MediaWiki, set `window.mw` to a shim
- * that wraps fetch() — see README or DEPLOYMENT.md for details.
+ * All write operations go through `mw.Api.edit()` which handles CSRF-token
+ * management, automatic bad-token retry, and correct origin headers.
  *
  * @class APIService
  */
@@ -21,16 +18,14 @@ class APIService {
          */
         try {
             this.mwApi = new mw.Api();
-        } catch (error) {
-            this.mwApi = new Api();
+        } catch {
+            this.mwApi = new Api(); // local-dev shim
         }
     }
-    /* ------------------------------------------------------------------ */
-    /*  Public helpers used by other services                              */
-    /* ------------------------------------------------------------------ */
+
+    // ── File & category queries ────────────────────────────────────────────
 
     /**
-     * TODO: remove it and related tests
      * Fetch files from a category with pagination support.
      * @param {string} categoryName - Full category name including "Category:" prefix
      * @param {Object} [options={}] - Query options
@@ -55,7 +50,7 @@ class APIService {
                 params.cmcontinue = cmcontinue;
             }
 
-            const data = await this.makeRequest(params);
+            const data = await this._get(params);
             allMembers.push(...data.query.categorymembers);
 
             cmcontinue = data.continue ? data.continue.cmcontinue : null;
@@ -63,22 +58,19 @@ class APIService {
 
         return allMembers;
     }
-
     /**
-     * Get file details including categories.
-     * @param {Array<string>} titles - Array of file titles
-     * @returns {Promise<Object>} API response with file info
+     * Fetch detailed info (categories + imageinfo) for up to 50 titles.
+     * @param {string[]} titles
+     * @returns {Promise<Object>}
      */
-    async getFileInfo(titles) {
-        const params = {
+    getFileInfo(titles) {
+        return this._get({
             action: 'query',
             titles: titles.join('|'),
             prop: 'categories|imageinfo',
             cllimit: 500,
             format: 'json'
-        };
-
-        return this.makeRequest(params);
+        });
     }
     /**
      * Get page content (wikitext).
@@ -87,19 +79,18 @@ class APIService {
      */
     async getPageContent(title) {
         if (!title) {
-            console.error('getPageContent called with empty title', title);
+            console.error('[CBM-API] getPageContent called with empty title');
             return '';
         }
-        const params = {
+        const data = await this._get({
             action: 'query',
             titles: title,
             prop: 'revisions',
             rvprop: 'content',
             rvslots: 'main',
             format: 'json'
-        };
+        });
 
-        const data = await this.makeRequest(params);
         const pages = data?.query?.pages;
         if (!pages) {
             console.error('No pages found in API response for title:', title);
@@ -132,7 +123,7 @@ class APIService {
         };
 
         try {
-            const data = await this.makeRequest(params);
+            const data = await this._get(params);
             // opensearch returns: [query, [titles], [descriptions], [urls]]
             // We only need the titles
             const titles = data[1] || [];
@@ -164,7 +155,7 @@ class APIService {
         if (options.offset) {
             params.continue = String(options.offset);
         }
-        const data = await this.makeRequest(params);
+        const data = await this._get(params);
         // data[1] contains the category titles
         if (data && data[1]) {
             return data[1].map(function (title) {
@@ -226,7 +217,7 @@ class APIService {
                 params.sroffset = continueToken;
             }
 
-            const response = await this.makeRequest(params);
+            const response = await this._get(params);
 
             if (response.query && response.query.search) {
                 const searchResults = response.query.search.map(file => ({
@@ -320,7 +311,7 @@ class APIService {
     async fetchUserRateLimits() {
         const DEFAULT_LIMIT = { hits: 5, seconds: 1 };
         try {
-            const data = await this.makeRequest({
+            const data = await this._get({
                 action: 'query',
                 meta: 'userinfo',
                 uiprop: 'ratelimits',
@@ -357,7 +348,7 @@ class APIService {
      * @param {Object} params - Query parameters
      * @returns {Promise<Object>} Parsed JSON response
      */
-    async makeRequest(params) {
+    async _get(params) {
         try {
             return await this.mwApi.get(params);
         } catch (error) {

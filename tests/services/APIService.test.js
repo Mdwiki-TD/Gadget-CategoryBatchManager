@@ -287,12 +287,12 @@ describe("APIService", () => {
         });
     });
 
-    describe("makeRequest", () => {
+    describe("_get", () => {
         test("should make GET request using mw.Api.get()", async () => {
             const mockResponse = { query: { pages: {} } };
             mockApi.get.mockResolvedValue(mockResponse);
 
-            const result = await service.makeRequest({
+            const result = await service._get({
                 action: "query",
                 titles: "Test",
             });
@@ -307,7 +307,7 @@ describe("APIService", () => {
         test("should handle API errors", async () => {
             mockApi.get.mockRejectedValue(new Error("API error"));
 
-            await expect(service.makeRequest({ action: "query" })).rejects.toThrow(
+            await expect(service._get({ action: "query" })).rejects.toThrow(
                 "API error"
             );
         });

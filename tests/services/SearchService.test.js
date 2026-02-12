@@ -13,7 +13,7 @@ describe('SearchService', () => {
     mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
 
     mockApi = {
-      makeRequest: jest.fn(),
+      _get: jest.fn(),
       getFileInfo: jest.fn(),
       searchInCategory: jest.fn(),
       searchInCategoryWithPattern: jest.fn()

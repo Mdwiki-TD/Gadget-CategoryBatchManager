@@ -1,24 +1,25 @@
 /**
- * File model representing a Wikimedia Commons file
+ * Immutable-ish value object representing one Wikimedia Commons file.
+ * `selected` is the only field expected to mutate (driven by checkboxes).
  * @class FileModel
  */
 class FileModel {
     /**
-     * @param {Object} data - File data
-     * @param {string} data.title - Full file title (e.g., "File:Example,BLR.svg")
-     * @param {number} data.pageid - Unique page ID
-     * @param {boolean} [data.selected=true] - Whether file is selected for operation
-     * @param {Array<string>} [data.currentCategories=[]] - Current categories
-     * @param {string} [data.thumbnail=''] - URL to thumbnail
-     * @param {number} [data.size=0] - File size in bytes
+     * @param {Object}   data
+     * @param {string}   data.title
+     * @param {number}   data.pageid
+     * @param {boolean}  [data.selected=true]
+     * @param {string[]} [data.currentCategories=[]]
+     * @param {string}   [data.thumbnail='']
+     * @param {number}   [data.size=0]
      */
-    constructor(data) {
-        this.title = data.title;
-        this.pageid = data.pageid;
-        this.selected = data.selected !== undefined ? data.selected : true;
-        this.currentCategories = data.currentCategories || [];
-        this.thumbnail = data.thumbnail || '';
-        this.size = data.size || 0;
+    constructor({ title, pageid, selected = true, currentCategories = [], thumbnail = '', size = 0 }) {
+        this.title = title;
+        this.pageid = pageid;
+        this.selected = selected;
+        this.currentCategories = currentCategories;
+        this.thumbnail = thumbnail;
+        this.size = size;
     }
 }
 
