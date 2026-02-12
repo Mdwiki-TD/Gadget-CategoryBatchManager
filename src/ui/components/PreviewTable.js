@@ -22,8 +22,7 @@ function PreviewTable() {
         template: `
             <cdx-table
                 v-model:sort="sort"
-                class="cdx-docs-table-with-sort"
-                class="cbm-preview-table"
+                class="cdx-docs-table-with-sort cbm-preview-table"
                 caption="Files to be updated"
                 :columns="columns"
                 :data="sortedData"
@@ -60,9 +59,9 @@ function PreviewTable() {
             tableData() {
                 return this.rows.map(row => ({
                     file: row.file,
-                    currentCategories: row.currentCategories,
-                    newCategories: row.newCategories,
-                    diff: row.diff
+                    currentCategories: row.currentCategories || [],
+                    newCategories: row.newCategories || [],
+                    diff: row.diff || 0
                 }));
             },
             sortedData() {
@@ -73,7 +72,10 @@ function PreviewTable() {
                     return this.tableData;
                 }
 
-                const sorted = [...this.tableData].sort((a, b) => {
+                // Use local variable with JSDoc to fix TS error about tableData being a function
+                /** @type {any[]} */
+                const data = (/** @type {any} */ (this)).tableData;
+                const sorted = [...data].sort((a, b) => {
                     let comparison = 0;
 
                     if (sortKey === 'file') {
@@ -99,7 +101,7 @@ function PreviewTable() {
             },
             formatDiff(diff) {
                 if (diff > 0) return `+${diff}`;
-                return diff.toString();
+                return (diff || 0).toString();
             }
         }
     };
