@@ -126,6 +126,7 @@ function BatchManager(portletLink = null) {
 
         components: {
             CategoryLookup: CategoryLookup(),
+            PreviewTable: PreviewTable(),
         },
         template: template,
     };
