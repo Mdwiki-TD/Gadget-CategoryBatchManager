@@ -18,7 +18,7 @@
 }
 
 .cbm-preview-empty {
-    color: #72777d;
+    color: var(--color-inverted, #72777d);
     font-style: italic;
 }
 
@@ -32,10 +32,6 @@
 .cbm-stat {
     display: flex;
     gap: 8px;
-}
-
-.cbm-stat-label {
-    color: #72777d;
 }
 
 .cbm-stat-value {
@@ -57,7 +53,7 @@
 .cbm-preview-table th {
     position: sticky;
     top: 0;
-    background-color: #f8f9fa;
+    background-color: var(--background-color-neutral-subtle, #f8f9fa);
     padding: 12px;
     text-align: left;
     font-weight: 600;
@@ -72,7 +68,7 @@
 }
 
 .cbm-preview-table tr:hover {
-    background-color: #f8f9fa;
+    background-color: var(--background-color-neutral-subtle, #f8f9fa);
 }
 
 .cbm-preview-table tr.cbm-row-no-changes {
