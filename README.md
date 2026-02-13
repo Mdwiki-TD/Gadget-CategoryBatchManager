@@ -27,7 +27,23 @@ A Vue.js-based MediaWiki gadget for batch category management on Wikimedia Commo
   - Wikimedia Codex design system
   - Dialog-based interface for Category pages
   - Responsive layout
+## Preview at Wikimedia Commons
 
+To install this tool on Wikimedia Commons:
+
+1. Open your personal JavaScript page:  
+   `https://commons.wikimedia.org/wiki/Special:MyPage/common.js`
+
+2. Add the following lines:
+
+```javascript
+mw.loader.load('https://commons.wikimedia.org/wiki/User:Mr._Ibrahem/Gadget-CategoryBatchManager.js?action=raw&ctype=text/javascript');
+mw.loader.load('https://commons.wikimedia.org/wiki/User:Mr._Ibrahem/Gadget-CategoryBatchManager.css?action=raw&ctype=text/css', 'text/css');
+```
+
+3. Save the page.  
+4. Refresh the browser cache (Ctrl + F5).
+   
 ## Deployment to Wikimedia Commons
 
 ### Step-by-Step Guide
