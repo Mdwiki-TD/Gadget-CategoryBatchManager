@@ -6,3 +6,4 @@
 export { default as Validator } from './Validator.js';
 export { default as WikitextParser } from './WikitextParser.js';
 export { default as ChangeCalculator } from './ChangeCalculator.js';
+export { DEFAULT_EXECUTION_SUMMARY } from './Constants.js';

@@ -8,6 +8,7 @@ const path = require('path');
 
 // File order according to dependency requirements
 const SOURCE_FILES = [
+    'src/utils/Constants.js',
     'src/utils/ChangeCalculator.js',
     'src/utils/RateLimiter.js',
     'src/utils/Validator.js',

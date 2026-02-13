@@ -1,3 +1,5 @@
+import { DEFAULT_EXECUTION_SUMMARY } from '../../utils/Constants.js';
+
 /**
  * Reports Panel Vue component
  * Displays detailed results of batch operations in a table
@@ -13,12 +15,7 @@ function ReportsPanel() {
             },
             summary: {
                 type: Object,
-                default: () => ({
-                    total: 0,
-                    successful: 0,
-                    skipped: 0,
-                    failed: 0
-                })
+                default: () => ({ ...DEFAULT_EXECUTION_SUMMARY })
             }
         },
 

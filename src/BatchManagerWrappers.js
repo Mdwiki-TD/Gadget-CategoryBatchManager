@@ -5,6 +5,7 @@
 
 import BatchManager from './BatchManager.js';
 import ReportsPanel from './ui/panels/ReportsPanel.js';
+import { DEFAULT_EXECUTION_SUMMARY } from './utils/Constants.js';
 
 /**
  * Dialog wrapper for BatchManager
@@ -57,12 +58,7 @@ function BatchManagerDialog(portletLink) {
                 showMainDialog: false,
                 activeTab: 'manager',
                 fileResults: [],
-                executionSummary: {
-                    total: 0,
-                    successful: 0,
-                    skipped: 0,
-                    failed: 0
-                }
+                executionSummary: { ...DEFAULT_EXECUTION_SUMMARY }
             };
         },
         methods: {
