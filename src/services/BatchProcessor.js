@@ -5,6 +5,7 @@
 
 import RateLimiter from './../utils/RateLimiter.js';
 import CategoryService from './../services/CategoryService.js';
+import { FILE_STATUS } from './../utils/Constants.js';
 
 class BatchProcessor {
     /**
@@ -104,7 +105,7 @@ class BatchProcessor {
                         results.successful++;
                         results.fileResults.push({
                             file: file.title,
-                            status: 'success',
+                            status: FILE_STATUS.SUCCESS,
                             message: 'Modified successfully'
                         });
                         onFileComplete(file, true);
@@ -112,7 +113,7 @@ class BatchProcessor {
                         results.skipped++;
                         results.fileResults.push({
                             file: file.title,
-                            status: 'skipped',
+                            status: FILE_STATUS.SKIPPED,
                             message: 'No changes needed'
                         });
                         onFileComplete(file, false);
@@ -132,7 +133,7 @@ class BatchProcessor {
                 results.errors.push({ file: file.title, error: error.message });
                 results.fileResults.push({
                     file: file.title,
-                    status: 'failed',
+                    status: FILE_STATUS.FAILED,
                     message: error.message
                 });
                 onError(file, error);

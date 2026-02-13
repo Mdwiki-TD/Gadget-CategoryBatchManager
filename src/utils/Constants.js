@@ -3,6 +3,16 @@
  */
 
 /**
+ * File processing status constants
+ * Used to maintain consistency across BatchProcessor and ReportsPanel
+ */
+const FILE_STATUS = Object.freeze({
+    SUCCESS: 'success',
+    SKIPPED: 'skipped',
+    FAILED: 'failed'
+});
+
+/**
  * Default shape for execution summary results
  * Used as initial state and prop default across components
  */
@@ -13,4 +23,4 @@ const DEFAULT_EXECUTION_SUMMARY = Object.freeze({
     failed: 0
 });
 
-export { DEFAULT_EXECUTION_SUMMARY };
+export { FILE_STATUS, DEFAULT_EXECUTION_SUMMARY };

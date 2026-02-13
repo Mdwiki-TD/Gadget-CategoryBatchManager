@@ -1,4 +1,4 @@
-import { DEFAULT_EXECUTION_SUMMARY } from '../../utils/Constants.js';
+import { DEFAULT_EXECUTION_SUMMARY, FILE_STATUS } from '../../utils/Constants.js';
 
 /**
  * Reports Panel Vue component
@@ -139,9 +139,9 @@ function ReportsPanel() {
         methods: {
             getStatusLabel(status) {
                 const labels = {
-                    success: 'Success',
-                    skipped: 'No Change',
-                    failed: 'Failed'
+                    [FILE_STATUS.SUCCESS]: 'Success',
+                    [FILE_STATUS.SKIPPED]: 'No Change',
+                    [FILE_STATUS.FAILED]: 'Failed'
                 };
                 return labels[status] || status;
             }
