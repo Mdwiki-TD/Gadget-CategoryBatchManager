@@ -118,7 +118,7 @@ function ReportsPanel() {
                         caption="Detailed Results"
                         :hideCaption="true"
                     >
-                        <template #cell-status="{ row }">
+                        <template #item-status="{ row }">
                             <span :class="['cbm-status-badge', 'cbm-badge-' + row.status]">
                                 {{ row.statusLabel }}
                             </span>
