@@ -26,20 +26,20 @@ function ReportsPanel() {
         },
 
         computed: {
-            filteredResults: function() {
+            filteredResults: function () {
                 if (this.filter === 'all') {
                     return this.fileResults;
                 }
-                return this.fileResults.filter(function(r) { return r.status === this.filter; }.bind(this));
+                return this.fileResults.filter(function (r) { return r.status === this.filter; }.bind(this));
             },
 
-            hasResults: function() {
+            hasResults: function () {
                 return this.fileResults.length > 0;
             },
 
-            tableData: function() {
+            tableData: function () {
                 const self = this;
-                return this.filteredResults.map(function(r, index) {
+                return this.filteredResults.map(function (r, index) {
                     return {
                         index: index + 1,
                         file: r.file,
@@ -50,7 +50,7 @@ function ReportsPanel() {
                 });
             },
 
-            tableColumns: function() {
+            tableColumns: function () {
                 return [
                     { id: 'index', label: '#', width: '50px' },
                     { id: 'file', label: 'File' },
@@ -117,6 +117,8 @@ function ReportsPanel() {
                         :columns="tableColumns"
                         :use-row-headers="false"
                         class="cbm-reports-table"
+                        caption="Detailed Results"
+                        :hideCaption="true"
                     >
                         <template #cell-status="{ row }">
                             <span :class="['cbm-status-badge', 'cbm-badge-' + row.status]">

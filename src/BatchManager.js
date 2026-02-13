@@ -12,7 +12,6 @@ import PreviewTable from './ui/components/PreviewTable.js';
 import ProgressBar from './ui/components/ProgressBar.js';
 import { ChangesHelper, ValidationHelper } from './ui/helpers';
 import mw from './services/mw.js';
-import { DEFAULT_EXECUTION_SUMMARY } from './utils/Constants.js';
 
 function BatchManager() {
     // ── Services ──────────────────────────────────────────────────────────
@@ -165,10 +164,6 @@ function BatchManager() {
                 searchProgressPercent: 0,
                 searchProgressText: '',
 
-                // Reports state
-                fileResults: [],
-                executionSummary: { ...DEFAULT_EXECUTION_SUMMARY },
-
                 // Merge message display state
                 ...message_display_panel.data(),
             };
@@ -200,11 +195,8 @@ function BatchManager() {
                 });
             },
 
-            // Handle execution completion and store results
+            // Handle execution completion - pass through to parent
             handleExecutionComplete(results) {
-                this.fileResults = results.fileResults;
-                this.executionSummary = results.summary;
-                // Emit up to parent (BatchManagerWrappers)
                 this.$emit('execution-complete', results);
             },
         },
