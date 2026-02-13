@@ -31,6 +31,7 @@ const SOURCE_FILES = [
     'src/ui/panels/FilesListPanel.js',
     'src/ui/panels/MessageDisplayPanel.js',
     'src/ui/panels/PreviewPanel.js',
+    'src/ui/panels/ReportsPanel.js',
     'src/ui/panels/SearchPanel.js',
 
     'src/ui/handlers/CategoryInputsHandler.js',

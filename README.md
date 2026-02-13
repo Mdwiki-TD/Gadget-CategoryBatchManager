@@ -27,7 +27,23 @@ A Vue.js-based MediaWiki gadget for batch category management on Wikimedia Commo
   - Wikimedia Codex design system
   - Dialog-based interface for Category pages
   - Responsive layout
+## Preview at Wikimedia Commons
 
+To install this tool on Wikimedia Commons:
+
+1. Open your personal JavaScript page:  
+   `https://commons.wikimedia.org/wiki/Special:MyPage/common.js`
+
+2. Add the following lines:
+
+```javascript
+mw.loader.load('https://commons.wikimedia.org/wiki/User:Mr._Ibrahem/Gadget-CategoryBatchManager.js?action=raw&ctype=text/javascript');
+mw.loader.load('https://commons.wikimedia.org/wiki/User:Mr._Ibrahem/Gadget-CategoryBatchManager.css?action=raw&ctype=text/css', 'text/css');
+```
+
+3. Save the page.  
+4. Refresh the browser cache (Ctrl + F5).
+   
 ## Deployment to Wikimedia Commons
 
 ### Step-by-Step Guide
@@ -39,7 +55,7 @@ A Vue.js-based MediaWiki gadget for batch category management on Wikimedia Commo
 npm test
 
 # Build production files
-npm run build
+node build.js
 ```
 
 This creates:
@@ -126,8 +142,8 @@ npm run build
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/Category-Batch-Manager.git
-cd Category-Batch-Manager
+git clone https://github.com/Mdwiki-TD/Gadget-CategoryBatchManager
+cd Gadget-CategoryBatchManager
 
 # Install dependencies
 npm install
@@ -146,12 +162,12 @@ npm test
 npm run test:coverage
 
 # Build for production
-npm run build
+node build.js
 ```
 
 ### Build Output
 
-The `npm run build` command creates:
+The `node build.js` command creates:
 - `dist/test3.js` - Concatenated JavaScript bundle
 - `dist/test3.css` - Concatenated CSS bundle
 
@@ -260,7 +276,5 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and resolved issues.
 MIT License - See LICENSE file for details
 
 ## Links
-
-- [Wikimedia Commons](https://commons.wikimedia.org/)
-- [MediaWiki Gadgets Documentation](https://www.mediawiki.org/wiki/Manual:Gadgets)
+- [Gadget page at Wikimedia Commons](https://commons.wikimedia.org/wiki/User:Mr._Ibrahem/Gadget-CategoryBatchManager)
 - [Wikimedia Codex Design System](https://doc.wikimedia.org/codex/latest/)
