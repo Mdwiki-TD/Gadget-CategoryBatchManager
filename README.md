@@ -55,7 +55,7 @@ mw.loader.load('https://commons.wikimedia.org/wiki/User:Mr._Ibrahem/Gadget-Categ
 npm test
 
 # Build production files
-npm run build
+node build.js
 ```
 
 This creates:
