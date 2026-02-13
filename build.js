@@ -8,6 +8,7 @@ const path = require('path');
 
 // File order according to dependency requirements
 const SOURCE_FILES = [
+    'src/utils/Constants.js',
     'src/utils/ChangeCalculator.js',
     'src/utils/RateLimiter.js',
     'src/utils/Validator.js',
@@ -31,6 +32,7 @@ const SOURCE_FILES = [
     'src/ui/panels/FilesListPanel.js',
     'src/ui/panels/MessageDisplayPanel.js',
     'src/ui/panels/PreviewPanel.js',
+    'src/ui/panels/ReportsPanel.js',
     'src/ui/panels/SearchPanel.js',
 
     'src/ui/handlers/CategoryInputsHandler.js',

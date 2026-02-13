@@ -23,7 +23,7 @@ function PreviewTable() {
             <cdx-table
                 v-model:sort="sort"
                 class="cdx-docs-table-with-sort cbm-preview-table"
-                caption=""
+                caption="Preview of changes"
                 :hideCaption="true"
                 :columns="columns"
                 :showVerticalBorders="true"

@@ -127,3 +127,71 @@
     color: #72777d;
     font-style: italic;
 }
+
+/* ==================== Mobile Responsive Styles ==================== */
+
+@media screen and (max-width: 768px) {
+    .cbm-preview-dialog {
+        width: 100vw !important;
+        max-width: 100% !important;
+        max-height: 90vh !important;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .cbm-preview-table-container {
+        max-height: 300px;
+        overflow-x: auto;
+    }
+
+    .cbm-preview-table th,
+    .cbm-preview-table td {
+        padding: 8px;
+        font-size: 0.85em;
+    }
+
+    .cbm-file-cell {
+        max-width: 150px;
+    }
+
+    .cbm-add-cell,
+    .cbm-remove-cell {
+        width: auto;
+        min-width: 100px;
+    }
+
+    .cbm-preview-stats {
+        gap: 12px;
+        flex-direction: column;
+    }
+
+    .cbm-stat {
+        font-size: 0.9em;
+    }
+
+    .cbm-category-tag {
+        font-size: 0.8em;
+        padding: 2px 4px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .cbm-preview-table-container {
+        max-height: 250px;
+    }
+
+    .cbm-preview-table th,
+    .cbm-preview-table td {
+        padding: 6px;
+        font-size: 0.8em;
+    }
+
+    .cbm-file-cell {
+        max-width: 100px;
+    }
+
+    .cbm-add-cell,
+    .cbm-remove-cell {
+        min-width: 80px;
+    }
+}

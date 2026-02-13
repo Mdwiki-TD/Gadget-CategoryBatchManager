@@ -86,6 +86,7 @@ function BatchManager() {
                             @update:is-processing="isProcessing = $event"
                             @update:progress-percent="executionProgressPercent = $event"
                             @update:progress-text="executionProgressText = $event"
+                        @execution-complete="handleExecutionComplete"
                         />
                     </div>
                 </div>
@@ -177,6 +178,8 @@ function BatchManager() {
             }
         },
 
+        emits: ['execution-complete'],
+
         methods: {
             ...message_display_panel.methods,
 
@@ -190,6 +193,11 @@ function BatchManager() {
                     model.message.show = true;
                     model.message.key++;
                 });
+            },
+
+            // Handle execution completion - pass through to parent
+            handleExecutionComplete(results) {
+                this.$emit('execution-complete', results);
             },
         },
 

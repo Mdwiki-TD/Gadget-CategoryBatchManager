@@ -54,7 +54,7 @@ function ExecutePanel() {
                 }
             };
         },
-        emits: ['display-message', 'update:is-processing', 'update:progress-percent', 'update:progress-text', 'show-warning-message', 'show-success-message', 'show-error-message'],
+        emits: ['display-message', 'update:is-processing', 'update:progress-percent', 'update:progress-text', 'show-warning-message', 'show-success-message', 'show-error-message', 'execution-complete'],
         template: `
             <div>
                 <cdx-button
@@ -176,6 +176,17 @@ function ExecutePanel() {
                     } else {
                         this.$emit('show-success-message', completion.message);
                     }
+
+                    // Emit complete results for reports
+                    this.$emit('execution-complete', {
+                        fileResults: results.fileResults || [],
+                        summary: {
+                            total: results.total,
+                            successful: results.successful,
+                            skipped: results.skipped,
+                            failed: results.failed
+                        }
+                    });
 
                 } catch (error) {
                     console.error('[CBM-E] Batch processing error:', error);

@@ -4,6 +4,8 @@
  */
 
 import BatchManager from './BatchManager.js';
+import ReportsPanel from './ui/panels/ReportsPanel.js';
+import { DEFAULT_EXECUTION_SUMMARY } from './utils/Constants.js';
 
 /**
  * Dialog wrapper for BatchManager
@@ -14,6 +16,19 @@ import BatchManager from './BatchManager.js';
 
 function BatchManagerDialog(portletLink) {
 
+    const innerTemplate = `
+        <cdx-tabs v-model:active="activeTab" :framed="true">
+            <cdx-tab name="manager" label="Batch Manager">
+                <BatchManager @execution-complete="handleExecutionComplete" />
+            </cdx-tab>
+            <cdx-tab name="reports" label="Reports">
+                <ReportsPanel
+                    :file-results="fileResults"
+                    :summary="executionSummary"
+                />
+            </cdx-tab>
+        </cdx-tabs>
+        `;
     const template = portletLink
         ? `<cdx-dialog
                v-model:open="showMainDialog"
@@ -22,29 +37,11 @@ function BatchManagerDialog(portletLink) {
                :use-close-button="true"
                close-button-label="Close"
                @default="showMainDialog = false">
-               <cdx-tabs v-model:active="activeTab" :framed="true">
-                   <cdx-tab name="manager" label="Batch Manager">
-                       <BatchManager />
-                   </cdx-tab>
-                   <cdx-tab name="reports" label="Reports">
-                       <div class="cbm-reports-placeholder">
-                           <p>Reports will be available here soon.</p>
-                       </div>
-                   </cdx-tab>
-               </cdx-tabs>
+               ${innerTemplate}
            </cdx-dialog>`
         : `<div class="cbm-container cbm-container2">
                <h2 class="cbm-title">Category Batch Manager</h2>
-               <cdx-tabs v-model:active="activeTab" :framed="true">
-                   <cdx-tab name="manager" label="Batch Manager">
-                       <BatchManager />
-                   </cdx-tab>
-                   <cdx-tab name="reports" label="Reports">
-                       <div class="cbm-reports-placeholder">
-                           <p>Reports will be available here soon.</p>
-                       </div>
-                   </cdx-tab>
-               </cdx-tabs>
+               ${innerTemplate}
            </div>
         `;
     const app = {
@@ -53,12 +50,18 @@ function BatchManagerDialog(portletLink) {
             return {
                 showMainDialog: false,
                 activeTab: 'manager',
+                fileResults: [],
+                executionSummary: { ...DEFAULT_EXECUTION_SUMMARY }
             };
         },
         methods: {
             openMainDialog() {
                 this.showMainDialog = true;
             },
+            handleExecutionComplete(results) {
+                this.fileResults = results.fileResults;
+                this.executionSummary = results.summary;
+            }
         },
         template: template,
         mounted() {
@@ -73,6 +76,7 @@ function BatchManagerDialog(portletLink) {
         },
         components: {
             BatchManager: BatchManager(),
+            ReportsPanel: ReportsPanel()
         },
     };
 
