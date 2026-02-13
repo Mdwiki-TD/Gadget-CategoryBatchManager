@@ -165,22 +165,48 @@ The gadget entry point is `gadget-entry.js`:
 
 ---
 
-## Key Files by Responsibility
-
-| File | Purpose |
-|------|---------|
-| `src/BatchManager.js` | Main app composition - creates services, handlers, assembles UI |
-| `src/BatchManagerWrappers.js` | Wraps BatchManager in CdxDialog or standalone div |
-| `src/gadget-entry.js` | MediaWiki gadget entry point, Vue app mounting |
-| `build.js` | Custom bundler for production (NOT Vite) |
-| `src/services/APIService.js` | MediaWiki API wrapper |
-| `src/services/BatchProcessor.js` | Batch execution with rate limiting |
-| `src/services/CategoryService.js` | Category add/remove operations |
-| `src/utils/RateLimiter.js` | Rate limiting with dynamic configuration |
-| `src/utils/WikitextParser.js` | Parse/modify wikitext category links |
-| `src/utils/Validator.js` | Category normalization, circular detection |
-| `src/ui/handlers/*.js` | Orchestration layer between services and UI |
-
+## Project Structure
+```
+src/
+├── BatchManager.js              # Composition root
+├── BatchManagerWrappers.js      # Dialog/Standalone wrappers
+├── gadget-entry.js              # MediaWiki entry point
+├── main.js                      # Development entry point
+├── models/
+│   └── FileModel.js             # File data structure
+├── services/
+│   ├── APIService.js            # MediaWiki API wrapper
+│   ├── SearchService.js         # File search logic
+│   ├── CategoryService.js       # Category operations
+│   ├── BatchProcessor.js        # Batch execution engine
+│   └── mw.js                    # MediaWiki object mock
+├── ui/
+│   ├── components/
+│   │   ├── CategoryLookup.js   # Multiselect with autocomplete
+│   │   ├── PreviewTable.js     # Change table display
+│   │   └── ProgressBar.js      # Progress indicator
+│   ├── panels/
+│   │   ├── SearchPanel.js      # Search interface
+│   │   ├── CategoryInputsPanel.js
+│   │   ├── FilesListPanel.js
+│   │   ├── PreviewPanel.js
+│   │   └── ExecutePanel.js
+│   ├── handlers/
+│   │   ├── SearchHandler.js    # Search orchestration
+│   │   ├── ExecuteHandler.js   # Execution orchestration
+│   │   ├── CategoryInputsHandler.js
+│   │   └── ProgressHandler.js
+│   ├── helpers/
+│   │   ├── ValidationHelper.js # Input validation
+│   │   └── ChangesHelper.js    # Change detection
+│   └── styles/
+│       └── main.css             # Component styles
+└── utils/
+    ├── ChangeCalculator.js      # Diff computation
+    ├── RateLimiter.js           # Concurrency control
+    ├── Validator.js             # Data validation
+    └── WikitextParser.js        # Content parsing
+```
 ---
 
 ## Common Operations
