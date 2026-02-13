@@ -30,7 +30,7 @@ function ReportsPanel() {
                 if (this.filter === 'all') {
                     return this.fileResults;
                 }
-                return this.fileResults.filter(function (r) { return r.status === this.filter; }.bind(this));
+                return this.fileResults.filter(r => r.status === this.filter);
             },
 
             hasResults: function () {
