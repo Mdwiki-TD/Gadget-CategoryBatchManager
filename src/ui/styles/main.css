@@ -355,6 +355,227 @@
     color: var(--color-warning, #b07000);
 }
 
+/* ==================== Mobile Responsive Styles ==================== */
+
+/* Container adjustments for mobile */
+@media screen and (max-width: 768px) {
+    .cbm-container {
+        width: 100vw !important;
+        max-width: 100% !important;
+        max-height: none;
+        margin: 0;
+        padding: 8px;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .cbm-container2 {
+        margin: 10px auto !important;
+        padding: 15px !important;
+    }
+
+    .cbm-title {
+        font-size: 1.2em;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+    }
+
+    /* Main Layout: Stack vertically on mobile */
+    .cbm-main-layout {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .cbm-left-panel,
+    .cbm-right-panel {
+        flex: none;
+        width: 100%;
+    }
+
+    .cbm-right-panel {
+        border: none;
+        background-color: transparent;
+    }
+
+    /* Button group: Stack buttons on mobile */
+    .cbm-button-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .cbm-button-group .cdx-button {
+        width: 100%;
+    }
+
+    /* Input button group */
+    .cbm-input-button-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .cbm-input-button-group>* {
+        width: 100%;
+    }
+
+    .cbm-limit-input {
+        max-width: 100%;
+        flex: 1 !important;
+    }
+
+    /* Two column row: Stack on mobile */
+    .cbm-two-column-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .cbm-column-two-thirds,
+    .cbm-column-one-third {
+        flex: none;
+        width: 100%;
+    }
+
+    /* Files list adjustments */
+    .cbm-files-list {
+        padding: 12px;
+    }
+
+    .cbm-files-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .cbm-header-buttons {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .cbm-files-scrollable {
+        max-height: 300px;
+    }
+
+    .cbm-file-row {
+        padding: 6px;
+        gap: 8px;
+    }
+
+    .cbm-file-row label {
+        font-size: 0.85em;
+    }
+
+    /* Fixed message: Full width on mobile */
+    .cbm-fixed-message {
+        width: 95%;
+        max-width: none;
+        bottom: 10px;
+        left: 2.5%;
+        transform: none;
+    }
+
+    /* Reports Panel mobile adjustments */
+    .cbm-reports-panel {
+        padding: 5px;
+    }
+
+    .cbm-reports-summary {
+        gap: 8px;
+    }
+
+    .cbm-summary-card {
+        min-width: 70px;
+        padding: 10px;
+    }
+
+    .cbm-summary-number {
+        font-size: 1.5em;
+    }
+
+    .cbm-summary-label {
+        font-size: 0.75em;
+    }
+
+    .cbm-reports-filters {
+        gap: 5px;
+    }
+
+    .cbm-reports-filters .cdx-button {
+        padding: 6px 10px;
+        font-size: 0.85em;
+    }
+
+    .cbm-reports-table-container {
+        max-height: 350px;
+        overflow-x: auto;
+    }
+
+    /* Progress section */
+    .cbm-progress-section {
+        margin-top: 15px;
+        padding: 10px;
+    }
+
+    .cbm-progress-bar-bg {
+        height: 16px;
+    }
+
+    /* Empty state */
+    .cbm-empty-state {
+        padding: 30px 20px;
+    }
+
+    .cbm-empty-state p {
+        font-size: 1em;
+    }
+}
+
+/* Extra small devices */
+@media screen and (max-width: 480px) {
+    .cbm-container {
+        padding: 5px;
+    }
+
+    .cbm-title {
+        font-size: 1.1em;
+    }
+
+    .cbm-reports-summary {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cbm-summary-card {
+        min-width: auto;
+    }
+
+    .cbm-file-row {
+        flex-wrap: wrap;
+    }
+
+    .cbm-file-row label {
+        width: 100%;
+        order: 3;
+        margin-top: 5px;
+    }
+
+    .cbm-files-scrollable {
+        max-height: 250px;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    .cbm-file-remove-btn {
+        padding: 8px 12px;
+        font-size: 1.8em;
+    }
+
+    .cbm-button-group .cdx-button,
+    .cbm-header-buttons .cdx-button {
+        min-height: 44px;
+    }
+}
+
 .cbm-badge-failed {
     background-color: var(--background-color-error, #fee7e6);
     color: var(--color-error, #d33);
