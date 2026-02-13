@@ -38,16 +38,14 @@ function ReportsPanel() {
             },
 
             tableData: function () {
-                const self = this;
-                return this.filteredResults.map(function (r, index) {
-                    return {
-                        index: index + 1,
-                        file: r.file,
-                        status: r.status,
-                        statusLabel: self.getStatusLabel(r.status),
-                        message: r.message
-                    };
-                });
+                // @ts-ignore
+                return this.filteredResults.map((r, index) => ({
+                    index: index + 1,
+                    file: r.file,
+                    status: r.status,
+                    statusLabel: this.getStatusLabel(r.status),
+                    message: r.message
+                }));
             },
 
             tableColumns: function () {
