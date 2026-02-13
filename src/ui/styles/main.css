@@ -355,6 +355,11 @@
     color: var(--color-warning, #b07000);
 }
 
+.cbm-badge-failed {
+    background-color: var(--background-color-error, #fee7e6);
+    color: var(--color-error, #d33);
+}
+
 /* ==================== Mobile Responsive Styles ==================== */
 
 /* Container adjustments for mobile */
@@ -574,11 +579,6 @@
     .cbm-header-buttons .cdx-button {
         min-height: 44px;
     }
-}
-
-.cbm-badge-failed {
-    background-color: var(--background-color-error, #fee7e6);
-    color: var(--color-error, #d33);
 }
 
 /* Empty State */

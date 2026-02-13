@@ -125,7 +125,17 @@ class BatchProcessor {
                 if (error?.code === 'ratelimited' || error?.message === 'ratelimited') {
                     console.warn('[CBM-BP] ratelimited — waiting 60 s before continuing');
                     await this.rate_limiter.wait(60000);
-                    return; // file stays unprocessed; caller may retry
+                    // Record as failed so reports are complete
+                    results.processed++;
+                    results.failed++;
+                    results.errors.push({ file: file.title, error: 'Rate limited' });
+                    results.fileResults.push({
+                        file: file.title,
+                        status: FILE_STATUS.FAILED,
+                        message: 'Rate limited — skipped after backoff'
+                    });
+                    onError(file, error);
+                    return;
                 }
 
                 results.processed++;
