@@ -142,8 +142,8 @@ npm run build
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/Category-Batch-Manager.git
-cd Category-Batch-Manager
+git clone https://github.com/Mdwiki-TD/Gadget-CategoryBatchManager
+cd Gadget-CategoryBatchManager
 
 # Install dependencies
 npm install
@@ -162,12 +162,12 @@ npm test
 npm run test:coverage
 
 # Build for production
-npm run build
+node build.js
 ```
 
 ### Build Output
 
-The `npm run build` command creates:
+The `node build.js` command creates:
 - `dist/test3.js` - Concatenated JavaScript bundle
 - `dist/test3.css` - Concatenated CSS bundle
 
@@ -276,7 +276,5 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and resolved issues.
 MIT License - See LICENSE file for details
 
 ## Links
-
-- [Wikimedia Commons](https://commons.wikimedia.org/)
-- [MediaWiki Gadgets Documentation](https://www.mediawiki.org/wiki/Manual:Gadgets)
+- [Gadget page at Wikimedia Commons](https://commons.wikimedia.org/wiki/User:Mr._Ibrahem/Gadget-CategoryBatchManager)
 - [Wikimedia Codex Design System](https://doc.wikimedia.org/codex/latest/)
