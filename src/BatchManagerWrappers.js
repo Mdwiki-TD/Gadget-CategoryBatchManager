@@ -16,6 +16,19 @@ import { DEFAULT_EXECUTION_SUMMARY } from './utils/Constants.js';
 
 function BatchManagerDialog(portletLink) {
 
+    const innerTemplate = `
+        <cdx-tabs v-model:active="activeTab" :framed="true">
+            <cdx-tab name="manager" label="Batch Manager">
+                <BatchManager @execution-complete="handleExecutionComplete" />
+            </cdx-tab>
+            <cdx-tab name="reports" label="Reports">
+                <ReportsPanel
+                    :file-results="fileResults"
+                    :summary="executionSummary"
+                />
+            </cdx-tab>
+        </cdx-tabs>
+        `;
     const template = portletLink
         ? `<cdx-dialog
                v-model:open="showMainDialog"
@@ -24,31 +37,11 @@ function BatchManagerDialog(portletLink) {
                :use-close-button="true"
                close-button-label="Close"
                @default="showMainDialog = false">
-               <cdx-tabs v-model:active="activeTab" :framed="true">
-                   <cdx-tab name="manager" label="Batch Manager">
-                       <BatchManager @execution-complete="handleExecutionComplete" />
-                   </cdx-tab>
-                   <cdx-tab name="reports" label="Reports">
-                       <ReportsPanel
-                           :file-results="fileResults"
-                           :summary="executionSummary"
-                       />
-                   </cdx-tab>
-               </cdx-tabs>
+               ${innerTemplate}
            </cdx-dialog>`
         : `<div class="cbm-container cbm-container2">
                <h2 class="cbm-title">Category Batch Manager</h2>
-               <cdx-tabs v-model:active="activeTab" :framed="true">
-                   <cdx-tab name="manager" label="Batch Manager">
-                       <BatchManager @execution-complete="handleExecutionComplete" />
-                   </cdx-tab>
-                   <cdx-tab name="reports" label="Reports">
-                       <ReportsPanel
-                           :file-results="fileResults"
-                           :summary="executionSummary"
-                       />
-                   </cdx-tab>
-               </cdx-tabs>
+               ${innerTemplate}
            </div>
         `;
     const app = {
