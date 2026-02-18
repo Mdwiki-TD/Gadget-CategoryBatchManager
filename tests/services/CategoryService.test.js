@@ -58,6 +58,20 @@ describe('CategoryService', () => {
       expect(result.modified).toBe(true);
       expect(mockApi.editPage).toHaveBeenCalledTimes(1);
     });
+
+    test('should return failure when page content is empty', async () => {
+      mockApi.getPageContent.mockResolvedValue(null);
+
+      const result = await service.updateCategories(
+        'File:Test.svg',
+        ['Category:New'],
+        []
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.modified).toBe(false);
+      expect(mockApi.editPage).not.toHaveBeenCalled();
+    });
   });
 
   describe('buildEditSummary', () => {
@@ -232,6 +246,70 @@ describe('CategoryService', () => {
       await expect(
         service.updateCategoriesOptimized('File:Test.svg', ['Cat'], [])
       ).rejects.toEqual(error);
+    });
+
+    test('should handle nocreate-missing error', async () => {
+      mockMwApiEdit.mockRejectedValue('nocreate-missing');
+
+      const result = await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        ['Category:New'],
+        []
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.modified).toBe(false);
+      expect(result.error).toBe('Page does not exist');
+    });
+
+    test('should handle invalidtitle error', async () => {
+      mockMwApiEdit.mockRejectedValue('invalidtitle');
+
+      const result = await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        ['Category:New'],
+        []
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.modified).toBe(false);
+      expect(result.error).toBe('Invalid title');
+    });
+
+    test('should handle unknown error', async () => {
+      mockMwApiEdit.mockRejectedValue('unknown');
+
+      const result = await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        ['Category:New'],
+        []
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.modified).toBe(false);
+      expect(result.error).toBe('Unknown API error');
+    });
+
+    test('should handle no-changes via transform callback rejection', async () => {
+      let capturedTransformFn;
+      mockMwApiEdit.mockImplementation((title, fn) => {
+        capturedTransformFn = fn;
+        // Simulate the rejection that occurs when transform returns Promise.reject('no-changes')
+        return Promise.reject('no-changes');
+      });
+
+      await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        [],
+        []
+      );
+
+      // Verify the callback was captured and would reject when content is unchanged
+      const mockRevision = { content: '[[Category:Existing]]' };
+      const result = capturedTransformFn(mockRevision);
+
+      // The transform function should return a rejected promise for unchanged content
+      await expect(result).rejects.toBe('no-changes');
     });
   });
 });
