@@ -65,8 +65,13 @@ class CategoryService {
     }
 
     /**
-     * TODO: use it in the workflow
-     * Combined add and remove operation using mw.Api.edit() for better conflict handling
+     * Combined add and remove operation using mw.Api.edit() for better conflict handling.
+     * Relies on mw.Api.edit internals:
+     *   - callback receives { timestamp, content } (content = revision.slots.main.content)
+     *   - callback must return { text, summary, minor } or a Promise resolving to one
+     *   - returning $.Deferred().reject() aborts the edit chain cleanly
+     *   - final resolved value is data.edit = { result: "Success", ... }
+     *
      * @param {string} fileTitle - File page title
      * @param {Array<string>} toAdd - Categories to add
      * @param {Array<string>} toRemove - Categories to remove
@@ -77,10 +82,9 @@ class CategoryService {
         const parser = this.parser;
         const buildEditSummary = this.buildEditSummary.bind(this);
 
-        let hasChanges = false;
-
         try {
-            await api.edit(fileTitle, function (revision) {
+            const editResult = await api.edit(fileTitle, function (revision) {
+                // revision.content = revision.slots.main.content (mapped by mw.Api.edit)
                 let newWikitext = revision.content;
 
                 // Remove categories first
@@ -95,12 +99,11 @@ class CategoryService {
                     }
                 }
 
-                // Only save if changed
+                // Abort cleanly if no changes — returning false would stringify to "false"
+                // and overwrite the page, so we reject the promise chain instead.
                 if (newWikitext === revision.content) {
-                    return false; // No changes needed
+                    return $.Deferred().reject('no-changes');
                 }
-
-                hasChanges = true;
                 const summary = buildEditSummary(toAdd, toRemove);
                 return {
                     text: newWikitext,
@@ -111,8 +114,14 @@ class CategoryService {
                 };
             });
 
-            return { success: true, modified: hasChanges };
+            // editResult = data.edit = { result: "Success", pageid, title, ... }
+            return {
+                success: editResult.result === 'Success',
+                modified: true
+            };
+
         } catch (error) {
+
             // Handle specific error codes from mw.Api
             if (error === 'nocreate-missing') {
                 return { success: false, modified: false, error: 'Page does not exist' };
@@ -123,13 +132,17 @@ class CategoryService {
             if (error === 'unknown') {
                 return { success: false, modified: false, error: 'Unknown API error' };
             }
-            if (error.message && error.message.includes('no changes')) {
+            // Thrown by our $.Deferred().reject('no-changes') above
+            if (error === 'no-changes') {
+                return { success: true, modified: false };
+            }
+            // MediaWiki API "no changes" error (edge case from server side)
+            if (error && error.message && error.message.includes('no changes')) {
                 return { success: true, modified: false };
             }
             throw error;
         }
     }
-
     categoryLink(category) {
         const catName = category.startsWith('Category:') ? category.slice(9) : category;
         return `[[Category:${catName}]]`;
