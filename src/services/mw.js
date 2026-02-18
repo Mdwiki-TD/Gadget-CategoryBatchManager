@@ -94,6 +94,7 @@ class Api {
     /**
      * Edit a page via the MediaWiki API.
      * Requires authentication - in dev mode this returns a simulated response.
+     * https://doc.wikimedia.org/mediawiki-core/master/js/mw.Api.html#edit
      * @param {string} title
      * @param {Function} transformFn - Returns edit parameters
      * @returns {Promise<Object>}

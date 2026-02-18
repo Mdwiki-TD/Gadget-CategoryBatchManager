@@ -5,6 +5,7 @@
 
 import WikitextParser from './../utils/WikitextParser.js';
 import APIService from './APIService.js';
+import mw from './mw.js';
 
 
 class CategoryService {
