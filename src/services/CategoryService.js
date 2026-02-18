@@ -114,19 +114,6 @@ class CategoryService {
         }
     }
 
-    /**
-     * TODO: use it in the workflow
-     * Get current categories for a file using the optimized API method
-     * @param {string} fileTitle - File page title
-     * @returns {Promise<Array<string>>} Array of category names
-     */
-    async getCurrentCategories(fileTitle) {
-        const categories = await this.api.getCategories(fileTitle);
-        if (categories === false) {
-            return [];
-        }
-        return categories;
-    }
     categoryLink(category) {
         const catName = category.startsWith('Category:') ? category.slice(9) : category;
         return `[[Category:${catName}]]`;
