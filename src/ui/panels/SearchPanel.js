@@ -148,7 +148,8 @@ function SearchPanel() {
              * Registers callbacks on the handler then delegates the work.
              */
             async searchFiles() {
-                if (!this.sourceCategory.trim() && !this.searchPattern.trim()) {
+                const hasCategory = this.selectedCategory || this.sourceCategory?.trim();
+                if (!hasCategory && !this.searchPattern?.trim()) {
                     this.$emit('show-warning-message', 'Please enter a source category or search pattern.');
                     return;
                 }
@@ -176,7 +177,7 @@ function SearchPanel() {
                 this.isSearching = true;
                 this.searchProgressText = '';
                 this.searchProgressPercent = 0;
-                this.$emit('update:source-category', this.sourceCategory);
+                this.$emit('update:source-category', this.selectedCategory || this.sourceCategory);
                 this.$emit('update:search-progress-text', '');
                 this.$emit('update:search-progress-percent', 0);
 
@@ -185,7 +186,7 @@ function SearchPanel() {
                 this.$emit('update:work-files', this.workFiles);
 
                 await this.searchHandler.startSearch(
-                    this.sourceCategory,
+                    this.selectedCategory || this.sourceCategory,
                     this.titlePattern,
                     this.searchPattern,
                     this.searchLimit
