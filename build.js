@@ -48,16 +48,17 @@ const SOURCE_FILES = [
     'src/gadget-entry.js',
 ];
 
-const CSS_SOURCE = 'src/ui/styles/main.css';
 const CSS_SOURCES = [
     'src/ui/styles/main.css',
     'src/ui/styles/PreviewDialog.css'
 ];
 
 const DIST_DIR = 'dist';
-const OUTPUT_JS = 'dist/test3.js';
+// const OUTPUT_JS = 'dist/test3.js';
+// const OUTPUT_CSS = 'dist/test3.css';
 
-const OUTPUT_CSS = 'dist/test3.css';
+const OUTPUT_JS = 'dist/test4.js';
+const OUTPUT_CSS = 'dist/test4.css';
 
 /**
  * Strip module.exports blocks from JavaScript code
