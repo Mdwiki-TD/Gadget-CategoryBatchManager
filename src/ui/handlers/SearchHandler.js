@@ -78,7 +78,7 @@ class SearchHandler {
         }
         this.isSearching = true;
         this._fireProgress('Searching for files…', 0);
-        searchLimit = searchLimit ?? 5000; // Default limit if not provided
+        searchLimit = (searchLimit && searchLimit > 0) ? searchLimit : 5000; // Default limit if not provided
         try {
             const results = await this.search_service.searchWithPatternCallback(pattern, searchLimit, {
                 onProgress: (text) => {

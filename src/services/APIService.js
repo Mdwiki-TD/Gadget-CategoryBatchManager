@@ -135,7 +135,7 @@ class APIService {
     async searchInCategoryWithPattern(srsearch, limit = null, callbacks = {}) {
         const results = [];
         let sroffset = null;
-        limit = limit ?? 5000;
+        limit = (limit && limit > 0) ? limit : 5000;
 
         do {
             const params = {
