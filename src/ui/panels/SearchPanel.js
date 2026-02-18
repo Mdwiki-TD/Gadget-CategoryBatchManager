@@ -38,7 +38,7 @@ function SearchPanel() {
                 // ── Category lookup state ───────────────────────────────
                 categoryMenuItems: [],
                 categoryMenuConfig: { boldLabel: true, visibleItemLimit: 10 },
-                selectedCategory: null,
+                selectedCategory: '',
             };
         },
         emits: ['show-warning-message', 'update:work-files', 'update:source-category', 'update:search-progress-percent', 'update:search-progress-text'],
@@ -62,6 +62,9 @@ function SearchPanel() {
                             placeholder=""
                             aria-label="Source Category"
                             @input="onCategoryInput">
+                            <template #default="{ menuItem }">
+                                {{ menuItem.label }}
+                            </template>
                             <template #no-results>
                                 Type at least 2 characters to search
                             </template>
@@ -134,10 +137,7 @@ function SearchPanel() {
 
                 try {
                     const categories = await this.api.fetchCategories(value, { limit: 10 });
-                    this.categoryMenuItems = categories.map(title => ({
-                        label: title,
-                        value: title
-                    }));
+                    this.categoryMenuItems = categories;
                 } catch (error) {
                     this.categoryMenuItems = [];
                 }
