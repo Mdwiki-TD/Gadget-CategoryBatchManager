@@ -7,43 +7,6 @@ describe('WikitextParser', () => {
     parser = new WikitextParser();
   });
 
-  describe('extractCategories', () => {
-    test('should extract single category', () => {
-      const wikitext = 'Some text [[Category:Test]] more text';
-      const result = parser.extractCategories(wikitext);
-      expect(result).toEqual(['Category:Test']);
-    });
-
-    test('should extract multiple categories', () => {
-      const wikitext = '[[Category:A]] text [[Category:B]]';
-      const result = parser.extractCategories(wikitext);
-      expect(result).toEqual(['Category:A', 'Category:B']);
-    });
-
-    test('should handle categories with sort keys', () => {
-      const wikitext = '[[Category:Test|Sort Key]]';
-      const result = parser.extractCategories(wikitext);
-      expect(result).toEqual(['Category:Test']);
-    });
-
-    test('should return empty array for no categories', () => {
-      const wikitext = 'Some text without categories';
-      const result = parser.extractCategories(wikitext);
-      expect(result).toEqual([]);
-    });
-
-    test('should handle empty wikitext', () => {
-      const result = parser.extractCategories('');
-      expect(result).toEqual([]);
-    });
-
-    test('should trim category names', () => {
-      const wikitext = '[[Category: Spaces ]]';
-      const result = parser.extractCategories(wikitext);
-      expect(result).toEqual(['Category:Spaces']);
-    });
-  });
-
   describe('hasCategory', () => {
     test('should return true when category exists', () => {
       const wikitext = '[[Category:Test]]';

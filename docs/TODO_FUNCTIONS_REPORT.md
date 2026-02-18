@@ -1,47 +1,51 @@
-# تقرير عن الوظائف غير المستخدمة (TODO: use it in the workflow)
+# Unused Functions Report (TODO: use it in the workflow)
 
-**التاريخ:** 11 فبراير 2026
-**النسخة:** 1.1.1
-
----
-
-## ملخص تنفيذي
-
-وجدنا **9 وظائف** موسومة بـ `TODO: use it in the workflow` لم يتم استخدامها في سير العمل الحالي. بعض هذه الوظائف يمكن أن تحسن الأداء بشكل كبير، بينما البعض الآخر يمكن حذفه أو دمجه.
+**Date:** February 11, 2026
+**Version:** 1.1.1
 
 ---
 
-## الوظائف الموصى باستخدامها (أولوية عالية)
+## Executive Summary
+
+We identified **9 functions** tagged with `TODO: use it in the workflow` that are not currently used in the workflow. Some of these functions can significantly improve performance, while others can be deleted or merged.
+
+---
+
+## Functions Recommended for Use (High Priority)
 
 ### 1. `updateCategoriesOptimized()` ⭐⭐⭐
-**الموقع:** `src/services/CategoryService.js` (السطور 110-153)
 
-**الوصف:** وظيفة محسّنة لتحديث التصنيفات باستخدام `mw.Api.edit()` بدلاً من الطريقة التقليدية.
+**Location:** `src/services/CategoryService.js` (Lines 110–153)
 
-**المميزات:**
-- معالجة أفضل لتعارضات التعديل (edit conflicts)
-- تستخدم `mw.Api.edit()` مع دالة تحويل (transform function)
-- تضمن قراءة أحدث نسخة من الصفحة قبل التعديل
-- منع الخسارة في التعديلات المتزامنة
+**Description:** An optimized function for updating categories using `mw.Api.edit()` instead of the traditional approach.
 
-**الحالة الحالية:**
-- ✅ مختبرة بالكامل (10 اختبارات)
-- ✅ تغطية 100%
-- ❌ غير مستخدمة في سير العمل
+**Features:**
 
-**التوصية:** **استبدل `updateCategories()` بـ `updateCategoriesOptimized()`**
+-   Better handling of edit conflicts
+-   Uses `mw.Api.edit()` with a transform function
+-   Ensures the latest version of the page is read before editing
+-   Prevents data loss in concurrent edits
 
-**التغيير المطلوب:**
+**Current Status:**
+
+-   ✅ Fully tested (10 tests)
+-   ✅ 100% coverage
+-   ❌ Not used in the workflow
+
+**Recommendation:** **Replace `updateCategories()` with `updateCategoriesOptimized()`**
+
+**Required Change:**
+
 ```javascript
-// في BatchProcessor.js (السطر 74)
-// الحالي:
+// In BatchProcessor.js (Line 74)
+// Current:
 const result = await this.categoryService.updateCategories(
     file.title,
     categoriesToAdd,
     categoriesToRemove
 );
 
-// الموصى به:
+// Recommended:
 const result = await this.categoryService.updateCategoriesOptimized(
     file.title,
     categoriesToAdd,
@@ -49,153 +53,110 @@ const result = await this.categoryService.updateCategoriesOptimized(
 );
 ```
 
-**الفائدة:** تحسين كبير في موثوقية التعديلات المتزامنة وتقليل تضارب التعديلات.
+**Benefit:** Significant improvement in the reliability of concurrent edits and reduced edit conflicts.
 
 ---
 
 ### 2. `isValidCategoryName()` ⭐⭐
-**الموقع:** `src/utils/Validator.js` (السطور 12-20)
 
-**الوصف:** تتحقق من صحة اسم التصنيف.
+**Location:** `src/utils/Validator.js` (Lines 12–20)
 
-**المميزات:**
-- تتحقق من عدم وجود أحرف غير صالحة
-- تمنع حقن الكود
-- تتحقق من طول الاسم
+**Description:** Validates a category name.
 
-**الحالة الحالية:**
-- ✅ مختبرة
-- ❌ غير مستخدمة
+**Features:**
 
-**التوصية:** **إضافتها للتحقق من مدخلات المستخدم**
+-   Checks for invalid characters
+-   Prevents code injection
+-   Validates name length
 
-**مكان الاستخدام المقترح:**
-- في `CategoryInputsHandler.js` - عند إضافة/حذف تصنيفات
-- في `ChangesHandler.js` - عند التحقق من صحة التصنيفات قبل المعالجة
+**Current Status:**
 
----
+-   ✅ Tested
+-   ❌ Not used in the workflow
 
-## الوظائف التي يمكن دمجها
+**Recommendation:** **Add it for user input validation**
 
-### 3. `buildEditSummary()` ⭐
-**الموقع:** `src/services/CategoryService.js` (السطور 176-181)
+**Suggested Usage Locations:**
 
-**الوصف:** تبني ملخص التعديل من قوائم الإضافة/الحذف.
-
-**الحالة الحالية:**
-- ✅ مختبرة
-- ❌ غير مستخدمة (لكن المنطق موجود داخل `updateCategoriesOptimized()`)
-
-**التوصية:** **دمجها في `updateCategoriesOptimized()` فقط**
-
-**السبب:** المنطق موجود بالفعل داخل `updateCategoriesOptimized()` (السطور 135-141). الوظيفة المستقلة غير ضرورية.
+-   In `CategoryInputsHandler.js` — when adding/removing categories
+-   In `ChangesHandler.js` — when validating categories before processing
 
 ---
 
-## الوظائف الموصى بحذفها
-
-### 4. `addCategoriesToFile()`
-**الموقع:** `src/services/CategoryService.js` (السطور 24-43)
-
-**الوصف:** تضيف تصنيفات فقط (بدون حذف).
-
-**لماذا الحذف؟**
-- الوظيفة الحالية `updateCategoriesOptimized()` تتعامل مع الإضافة والحذف معاً
-- لا توجد حاجة لوظيفة إضافة فقط
-- تقليل تعقيد الكود
-
----
-
-### 5. `removeCategoriesFromFile()`
-**الموقع:** `src/services/CategoryService.js` (السطور 52-69)
-
-**الوصف:** تحذف تصنيفات فقط.
-
-**لماذا الحذف؟**
-- نفس سبب `addCategoriesToFile()`
-- الوظيفة الشاملة `updateCategoriesOptimized()` تغني عنها
-
----
+## Functions Recommended for Deletion
 
 ### 6. `getCurrentCategories()`
-**الموقع:** `src/services/CategoryService.js` (السطور 161-167)
 
-**الوصف:** تجلب التصنيفات الحالية لملف.
+**Location:** `src/services/CategoryService.js` (Lines 161–167)
 
-**لماذا الحذف؟**
-- وظيفة غلاف بسيطة (`wrapper`) لـ `api.getCategories()`
-- لا تضيف قيمة حقيقية
-- يمكن استخدام `api.getCategories()` مباشرة
+**Description:** Fetches the current categories for a file.
 
-**التوصية:** حذف واستخدام `APIService.getCategories()` مباشرة عند الحاجة.
+**Why Delete?**
 
----
+-   A simple wrapper around `api.getCategories()`
+-   Adds no real value
+-   `api.getCategories()` can be used directly
 
-### 7. `sanitizeInput()`
-**الموقع:** `src/utils/Validator.js` (السطور 62-65)
-
-**الوصف:** تنظيف مدخلات المستخدم.
-
-**لماذا الحذف؟**
-- الوظيفة تفعل فقط `trim()` - لا تنظف فعلياً
-- يمكن استخدام `input.trim()` مباشرة
-- اسمها مضلل - لا توجد عملية "تنظيف" حقيقية
+**Recommendation:** Delete and use `APIService.getCategories()` directly when needed.
 
 ---
 
 ### 8. `extractCategories()`
-**الموقع:** `src/utils/WikitextParser.js` (السطور 12-22)
 
-**الوصف:** تستخرج جميع التصنيفات من نص الويكي.
+**Location:** `src/utils/WikitextParser.js` (Lines 12–22)
 
-**لماذا الحذف؟**
-- الاعتماد على `APIService.getCategories()` أكثر موثوقية
-- تحليل الويكي صعب وعرضة للأخطاء
-- لا توجد حاجة لاستخراج التصنيفات من النص
+**Description:** Extracts all categories from wikitext.
 
----
+**Why Delete?**
 
-
-## خطة العمل المقترحة
-
-### المرحلة الأولى - استبدال الوظيفة المحسّنة (ضروري)
-1. استبدال `updateCategories()` بـ `updateCategoriesOptimized()` في `BatchProcessor.js`
-2. اختبار التغيير بشكل مكثف
-3. مراقبة الأداء في بيئة الإنتاج
-
-### المرحلة الثانية - إضافة التحقق من الصحة (موصى به)
-1. إضافة `isValidCategoryName()` في `CategoryInputsHandler.js`
-2. إضافة رسائل خطأ واضحة للمستخدم
-3. اختبار الحالات الحرجة
-
-### المرحلة الثالثة - التنظيف (اختياري)
-1. حذف الوظائف غير المستخدمة
-2. تحديث الاختبارات
-3. تحديث التوثيق
+-   Relying on `APIService.getCategories()` is more reliable
+-   Wikitext parsing is complex and error-prone
+-   There is no need to extract categories from raw text
 
 ---
 
-## ملخص التوصيات
+## Proposed Action Plan
 
-| الوظيفة | التوصية | الأولوية | الجهد |
-|---------|---------|---------|-------|
-| `updateCategoriesOptimized()` | استخدمها | عالية | منخفض |
-| `isValidCategoryName()` | استخدمها | متوسطة | منخفض |
-| `buildEditSummary()` | ادمجها | منخفض | منخفض |
-| `addCategoriesToFile()` | احذفها | منخفض | - |
-| `removeCategoriesFromFile()` | احذفها | منخفض | - |
-| `getCurrentCategories()` | احذفها | منخفض | - |
-| `sanitizeInput()` | احذفها | منخفض | - |
-| `extractCategories()` | احذفها | منخفض | - |
+### Phase 1 — Replace the Optimized Function (Required)
+
+1. Replace `updateCategories()` with `updateCategoriesOptimized()` in `BatchProcessor.js`
+2. Test the change thoroughly
+3. Monitor performance in the production environment
+
+### Phase 2 — Add Validation (Recommended)
+
+1. Add `isValidCategoryName()` in `CategoryInputsHandler.js`
+2. Add clear error messages for the user
+3. Test edge cases
+
+### Phase 3 — Cleanup (Optional)
+
+1. Delete unused functions
+2. Update tests
+3. Update documentation
 
 ---
 
-## الخلاصة
+## Recommendations Summary
 
-- **وظيفتان** تستحقان الاستخدام: `updateCategoriesOptimized()` و `isValidCategoryName()`
-- **سبع وظائف** يمكن حذفها لتبسيط الكود
-- استخدام `updateCategoriesOptimized()` سيعطي **تحسناً كبيراً** في موثوقية التعديلات
+| Function                      | Recommendation | Priority | Effort |
+| ----------------------------- | -------------- | -------- | ------ |
+| `updateCategoriesOptimized()` | Use it         | High     | Low    |
+| `isValidCategoryName()`       | Use it         | Medium   | Low    |
+| `buildEditSummary()`          | Merge it       | Low      | Low    |
+| `removeCategoriesFromFile()`  | Delete it      | Low      | —      |
+| `getCurrentCategories()`      | Delete it      | Low      | —      |
+| `sanitizeInput()`             | Delete it      | Low      | —      |
+| `extractCategories()`         | Delete it      | Low      | —      |
 
 ---
 
-**التوصية النهائية:** البدء باستخدام `updateCategoriesOptimized()` فوراً لتحسين موثوقية العملية، مع التخطيط لحذف الوظائف غير المستخدمة في الإصدار القادم.
+## Conclusion
+
+-   **Two functions** are worth using: `updateCategoriesOptimized()` and `isValidCategoryName()`
+-   **Seven functions** can be deleted to simplify the codebase
+-   Using `updateCategoriesOptimized()` will deliver a **significant improvement** in edit reliability
+
+---
+
+**Final Recommendation:** Start using `updateCategoriesOptimized()` immediately to improve process reliability, while planning to remove unused functions in the next release.

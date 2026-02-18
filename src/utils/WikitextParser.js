@@ -98,20 +98,6 @@ class WikitextParser {
         return wikitext.replace(regex, '');
     }
 
-    /**
-     * Extract all category names from wikitext.
-     * @param {string} wikitext
-     * @returns {string[]} - Each entry includes the "Category:" prefix
-     */
-    extractCategories(wikitext) {
-        const categoryRegex = /\[\[Category:([^\]|]+)(?:\|[^\]]*)?\]\]/gi;
-        const results = [];
-        let match;
-        while ((match = categoryRegex.exec(wikitext)) !== null) {
-            results.push(`Category:${this.normalize(match[1].trim())}`);
-        }
-        return results;
-    }
 }
 
 export default WikitextParser;
