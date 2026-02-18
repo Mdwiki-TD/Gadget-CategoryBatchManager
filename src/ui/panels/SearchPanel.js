@@ -59,7 +59,7 @@ function SearchPanel() {
                             :menu-items="categoryMenuItems"
                             :menu-config="categoryMenuConfig"
                             :disabled="searchPattern.trim() !== ''"
-                            placeholder="Category:Our World in Data graphs of Austria"
+                            placeholder=""
                             aria-label="Source Category"
                             @input="onCategoryInput">
                             <template #no-results>
