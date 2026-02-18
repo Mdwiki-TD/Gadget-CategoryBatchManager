@@ -49,7 +49,9 @@ function FilesListPanel() {
                             :input-id="'file-' + file.pageid"
                             :aria-label="file.title" />
                         <cdx-label :for="'file-' + file.pageid">
-                            {{ file.title }}
+                            <a :href="'https://commons.wikimedia.org/wiki/' + encodeURIComponent(file.title)" target="_blank" @click.stop>
+                                {{ file.title }}
+                            </a>
                         </cdx-label>
                         <button
                             class="cbm-file-remove-btn"
