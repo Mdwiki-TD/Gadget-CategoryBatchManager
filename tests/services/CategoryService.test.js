@@ -4,31 +4,39 @@ const { default: WikitextParser } = require('../../src/utils/WikitextParser');
 // Make WikitextParser available globally for CategoryService
 global.WikitextParser = WikitextParser;
 
+// Mock the mw module
+let mockMwApiEdit = jest.fn();
+
+jest.mock('../../src/services/mw.js', () => ({
+  __esModule: true,
+  default: {
+    Api: jest.fn().mockImplementation(() => ({
+      edit: mockMwApiEdit
+    })),
+    config: {
+      get: jest.fn()
+    }
+  }
+}));
+
 describe('CategoryService', () => {
   let service;
   let mockApi;
-  let mockMwApiEdit;
 
   beforeEach(() => {
+    // Reset the mock before each test
     mockMwApiEdit = jest.fn();
-
-    // Mock mw.Api globally for updateCategoriesOptimized tests
-    global.mw = {
-      Api: jest.fn().mockImplementation(() => ({
-        edit: mockMwApiEdit
-      }))
-    };
+    
+    // Update the mock implementation for this test
+    require('../../src/services/mw.js').default.Api = jest.fn().mockImplementation(() => ({
+      edit: mockMwApiEdit
+    }));
 
     mockApi = {
       getPageContent: jest.fn(),
       editPage: jest.fn().mockResolvedValue({ edit: { result: 'Success' } })
     };
     service = new CategoryService(mockApi);
-  });
-
-  afterEach(() => {
-    // Clean up global mw mock
-    delete global.mw;
   });
 
   describe('updateCategories', () => {
