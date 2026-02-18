@@ -6,6 +6,7 @@
 import WikitextParser from './../utils/WikitextParser.js';
 import APIService from './APIService.js';
 
+
 class CategoryService {
     /**
      * @param {APIService} api_service - API service instance
@@ -16,66 +17,17 @@ class CategoryService {
     }
 
     /**
-     * TODO: use it in the workflow
-     * Add categories to a file
-     * @param {string} fileTitle - File page title
-     * @param {Array<string>} categoriesToAdd - Categories to add
-     * @returns {Promise<{success: boolean, modified: boolean}>}
+     * Build an edit summary from add/remove lists
+     * @param {Array<string>} toAdd - Categories added
+     * @param {Array<string>} toRemove - Categories removed
+     * @returns {string} Edit summary
      */
-    async addCategoriesToFile(fileTitle, categoriesToAdd) {
-        const wikitext = await this.api.getPageContent(fileTitle);
-        if (!wikitext) {
-            return { success: false, modified: false };
-        }
-
-        let newWikitext = wikitext;
-        for (const category of categoriesToAdd) {
-            if (!this.parser.hasCategory(newWikitext, category)) {
-                newWikitext = this.parser.addCategory(newWikitext, category);
-            }
-        }
-        let success = true;
-        if (newWikitext !== wikitext) {
-            let result = await this.api.editPage(
-                fileTitle,
-                newWikitext,
-                `Adding categories: ${categoriesToAdd.join(', ')}`
-            );
-            success = result && result.edit && result.edit.result === 'Success';
-        }
-
-        return { success: success, modified: newWikitext !== wikitext };
+    buildEditSummary(toAdd, toRemove) {
+        const parts = [];
+        if (toAdd.length) parts.push(`Adding ${toAdd.map(this.categoryLink).join(', ')}`);
+        if (toRemove.length) parts.push(`Removing ${toRemove.map(this.categoryLink).join(', ')}`);
+        return `${parts.join('; ')} (via Category Batch Manager)`;
     }
-
-    /**
-     * TODO: use it in the workflow
-     * Remove categories from a file
-     * @param {string} fileTitle - File page title
-     * @param {Array<string>} categoriesToRemove - Categories to remove
-     * @returns {Promise<{success: boolean, modified: boolean}>}
-     */
-    async removeCategoriesFromFile(fileTitle, categoriesToRemove) {
-        const wikitext = await this.api.getPageContent(fileTitle);
-        if (!wikitext) {
-            return { success: false, modified: false };
-        }
-        let newWikitext = wikitext;
-        for (const category of categoriesToRemove) {
-            newWikitext = this.parser.removeCategory(newWikitext, category);
-        }
-        let success = true;
-        if (newWikitext !== wikitext) {
-            let result = await this.api.editPage(
-                fileTitle,
-                newWikitext,
-                `Removing categories: ${categoriesToRemove.join(', ')}`
-            );
-            success = result && result.edit && result.edit.result === 'Success';
-        }
-
-        return { success: success, modified: newWikitext !== wikitext };
-    }
-
     /**
      * Combined add and remove operation
      * @param {string} fileTitle - File page title
@@ -178,19 +130,6 @@ class CategoryService {
     categoryLink(category) {
         const catName = category.startsWith('Category:') ? category.slice(9) : category;
         return `[[Category:${catName}]]`;
-    }
-    /**
-     * TODO: use it in the workflow or move it to a utility module
-     * Build an edit summary from add/remove lists
-     * @param {Array<string>} toAdd - Categories added
-     * @param {Array<string>} toRemove - Categories removed
-     * @returns {string} Edit summary
-     */
-    buildEditSummary(toAdd, toRemove) {
-        const parts = [];
-        if (toAdd.length) parts.push(`Adding ${toAdd.map(this.categoryLink).join(', ')}`);
-        if (toRemove.length) parts.push(`Removing ${toRemove.map(this.categoryLink).join(', ')}`);
-        return `${parts.join('; ')} (via Category Batch Manager)`;
     }
 }
 

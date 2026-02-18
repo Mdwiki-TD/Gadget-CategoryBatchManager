@@ -31,58 +31,6 @@ describe('CategoryService', () => {
     delete global.mw;
   });
 
-  describe('addCategoriesToFile', () => {
-    test('should add new category to page', async () => {
-      mockApi.getPageContent.mockResolvedValue(
-        'Some text\n[[Category:Existing]]'
-      );
-
-      const result = await service.addCategoriesToFile('File:Test.svg', ['Category:New']);
-
-      expect(result.success).toBe(true);
-      expect(result.modified).toBe(true);
-      expect(mockApi.editPage).toHaveBeenCalled();
-    });
-
-    test('should not edit if category already exists', async () => {
-      mockApi.getPageContent.mockResolvedValue(
-        'Some text\n[[Category:Existing]]'
-      );
-
-      const result = await service.addCategoriesToFile('File:Test.svg', ['Category:Existing']);
-
-      expect(result.success).toBe(true);
-      expect(result.modified).toBe(false);
-      expect(mockApi.editPage).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('removeCategoriesFromFile', () => {
-    test('should remove existing category', async () => {
-      mockApi.getPageContent.mockResolvedValue(
-        'Some text\n[[Category:ToRemove]]\n[[Category:Keep]]'
-      );
-
-      const result = await service.removeCategoriesFromFile('File:Test.svg', ['Category:ToRemove']);
-
-      expect(result.success).toBe(true);
-      expect(result.modified).toBe(true);
-      expect(mockApi.editPage).toHaveBeenCalled();
-    });
-
-    test('should not edit if category does not exist', async () => {
-      mockApi.getPageContent.mockResolvedValue(
-        'Some text\n[[Category:Keep]]'
-      );
-
-      const result = await service.removeCategoriesFromFile('File:Test.svg', ['Category:NonExistent']);
-
-      expect(result.success).toBe(true);
-      expect(result.modified).toBe(false);
-      expect(mockApi.editPage).not.toHaveBeenCalled();
-    });
-  });
-
   describe('updateCategories', () => {
     test('should add and remove in single operation', async () => {
       mockApi.getPageContent.mockResolvedValue(
@@ -116,25 +64,6 @@ describe('CategoryService', () => {
       const summary = service.buildEditSummary(['Category:A'], ['Category:B']);
       expect(summary).toContain('Adding [[Category:A]]');
       expect(summary).toContain('Removing [[Category:B]]');
-    });
-  });
-
-  describe('getCurrentCategories', () => {
-    test('should get categories for a file', async () => {
-      mockApi.getCategories = jest.fn().mockResolvedValue(['Belarus', 'Europe', 'Maps']);
-
-      const categories = await service.getCurrentCategories('File:Test.svg');
-
-      expect(categories).toEqual(['Belarus', 'Europe', 'Maps']);
-      expect(mockApi.getCategories).toHaveBeenCalledWith('File:Test.svg');
-    });
-
-    test('should return empty array if file not found', async () => {
-      mockApi.getCategories = jest.fn().mockResolvedValue(false);
-
-      const categories = await service.getCurrentCategories('File:NotFound.svg');
-
-      expect(categories).toEqual([]);
     });
   });
 

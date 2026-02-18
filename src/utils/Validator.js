@@ -54,17 +54,6 @@ class Validator {
             .replace(/'/g, "\\'");    // Escape single quotes
     }
     /**
-     * TODO: use it in the workflow
-     * Sanitize user input to prevent injection
-     * @param {string} input - Raw user input
-     * @returns {string} Sanitized input
-     */
-    static sanitizeInput(input) {
-        if (!input || typeof input !== 'string') return '';
-        return input.trim();
-    }
-
-    /**
      * Normalize category name for comparison (remove prefix, convert underscores to spaces)
      * @param {string} categoryName - Category name to normalize
      * @returns {string} Normalized category name

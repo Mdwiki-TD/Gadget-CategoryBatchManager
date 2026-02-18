@@ -64,28 +64,6 @@ describe('Validator', () => {
     });
   });
 
-  describe('sanitizeInput', () => {
-    test('should trim whitespace', () => {
-      expect(Validator.sanitizeInput('  hello  ')).toBe('hello');
-    });
-
-    test('should return empty string for null', () => {
-      expect(Validator.sanitizeInput(null)).toBe('');
-    });
-
-    test('should return empty string for undefined', () => {
-      expect(Validator.sanitizeInput(undefined)).toBe('');
-    });
-
-    test('should return empty string for non-string', () => {
-      expect(Validator.sanitizeInput(123)).toBe('');
-    });
-
-    test('should handle empty string', () => {
-      expect(Validator.sanitizeInput('')).toBe('');
-    });
-  });
-
   describe('sanitizeTitlePattern', () => {
     test('should trim whitespace', () => {
       expect(Validator.sanitizeTitlePattern('  hello  ')).toBe('hello');

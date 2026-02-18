@@ -131,18 +131,6 @@ const result = await this.categoryService.updateCategoriesOptimized(
 
 ---
 
-### 7. `sanitizeInput()`
-**الموقع:** `src/utils/Validator.js` (السطور 62-65)
-
-**الوصف:** تنظيف مدخلات المستخدم.
-
-**لماذا الحذف؟**
-- الوظيفة تفعل فقط `trim()` - لا تنظف فعلياً
-- يمكن استخدام `input.trim()` مباشرة
-- اسمها مضلل - لا توجد عملية "تنظيف" حقيقية
-
----
-
 ### 8. `extractCategories()`
 **الموقع:** `src/utils/WikitextParser.js` (السطور 12-22)
 
