@@ -14,6 +14,10 @@ function SearchPanel() {
             defaultCategory: {
                 type: String,
                 default: ''
+            },
+            api: {
+                type: Object,
+                required: true
             }
         },
         data() {
@@ -30,6 +34,11 @@ function SearchPanel() {
                 isSearching: false,
                 searchProgressText: '',
                 searchProgressPercent: 0,
+
+                // ── Category lookup state ───────────────────────────────
+                categoryMenuItems: [],
+                categoryMenuConfig: { boldLabel: true, visibleItemLimit: 10 },
+                selectedCategory: null,
             };
         },
         emits: ['show-warning-message', 'update:work-files', 'update:source-category', 'update:search-progress-percent', 'update:search-progress-text'],
@@ -43,11 +52,20 @@ function SearchPanel() {
                             class="cbm-label">
                             Source Category
                         </cdx-label>
-                        <cdx-text-input
+                        <cdx-lookup
                             id="cbm-source-category"
-                            v-model="sourceCategory"
+                            v-model:input-value="sourceCategory"
+                            v-model:selected="selectedCategory"
+                            :menu-items="categoryMenuItems"
+                            :menu-config="categoryMenuConfig"
                             :disabled="searchPattern.trim() !== ''"
-                            placeholder="Category:Our World in Data graphs of Austria" />
+                            placeholder="Category:Our World in Data graphs of Austria"
+                            aria-label="Source Category"
+                            @input="onCategoryInput">
+                            <template #no-results>
+                                Type at least 2 characters to search
+                            </template>
+                        </cdx-lookup>
                     </div>
                     <div class="cbm-input-group cbm-column-one-third">
                         <cdx-label
@@ -105,6 +123,26 @@ function SearchPanel() {
         `,
 
         methods: {
+            /**
+             * Handle category input for autocomplete.
+             */
+            async onCategoryInput(value) {
+                if (!value || value.length < 2) {
+                    this.categoryMenuItems = [];
+                    return;
+                }
+
+                try {
+                    const categories = await this.api.fetchCategories(value, { limit: 10 });
+                    this.categoryMenuItems = categories.map(title => ({
+                        label: title,
+                        value: title
+                    }));
+                } catch (error) {
+                    this.categoryMenuItems = [];
+                }
+            },
+
             /**
              * Initiate a file search.
              * Registers callbacks on the handler then delegates the work.

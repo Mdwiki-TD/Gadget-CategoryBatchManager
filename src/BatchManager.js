@@ -46,6 +46,7 @@ function BatchManager() {
                 <SearchPanel
                     :search-handler="search_handler"
                     :default-category="defaultCategory"
+                    :api="api"
                     @show-warning-message="showWarningMessage"
                     @update:work-files="workFiles = $event"
                     @update:source-category="sourceCategory = $event"
@@ -142,6 +143,7 @@ function BatchManager() {
     const app = {
         data() {
             return {
+                api: api,
                 category_inputs_handler: category_inputs_handler,
                 execute_handler: execute_handler,
                 progress_handler: progress_handler,

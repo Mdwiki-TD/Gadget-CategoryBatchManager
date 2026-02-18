@@ -22,6 +22,7 @@ import {
     CdxLabel,
     CdxMultiselectLookup,
     CdxTable,
+    CdxLookup,
 } from "@wikimedia/codex";
 
 // Instantiate BatchManager component (pass null for standalone mode)
@@ -72,4 +73,5 @@ createApp(App)
     .component('cdx-label', CdxLabel)
     .component('cdx-multiselect-lookup', CdxMultiselectLookup)
     .component('cdx-table', CdxTable)
+    .component('cdx-lookup', CdxLookup)
     .mount('#app')
