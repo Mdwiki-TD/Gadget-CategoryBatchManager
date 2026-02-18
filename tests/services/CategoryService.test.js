@@ -14,7 +14,10 @@ jest.mock('../../src/services/mw.js', () => ({
       edit: mockMwApiEdit
     })),
     config: {
-      get: jest.fn()
+      get: jest.fn((key) => {
+        if (key === 'wgUserName') return 'TestUser';
+        return undefined;
+      })
     }
   }
 }));
@@ -26,7 +29,7 @@ describe('CategoryService', () => {
   beforeEach(() => {
     // Reset the mock before each test
     mockMwApiEdit = jest.fn();
-    
+
     // Update the mock implementation for this test
     require('../../src/services/mw.js').default.Api = jest.fn().mockImplementation(() => ({
       edit: mockMwApiEdit
