@@ -70,12 +70,14 @@ class CategoryService {
      * @param {string} fileTitle - File page title
      * @param {Array<string>} toAdd - Categories to add
      * @param {Array<string>} toRemove - Categories to remove
-     * @returns {Promise<{success: boolean, modified: boolean}>}
+     * @returns {Promise<{success: boolean, modified: boolean, error?: string}>}
      */
     async updateCategoriesOptimized(fileTitle, toAdd, toRemove) {
         const api = new mw.Api();
         const parser = this.parser;
         const buildEditSummary = this.buildEditSummary.bind(this);
+
+        let hasChanges = false;
 
         try {
             await api.edit(fileTitle, function (revision) {
@@ -98,16 +100,29 @@ class CategoryService {
                     return false; // No changes needed
                 }
 
+                hasChanges = true;
                 const summary = buildEditSummary(toAdd, toRemove);
                 return {
                     text: newWikitext,
                     summary: summary,
-                    minor: false
+                    minor: false,
+                    assert: mw.config.get('wgUserName') ? 'user' : undefined,
+                    nocreate: true
                 };
             });
 
-            return { success: true, modified: true };
+            return { success: true, modified: hasChanges };
         } catch (error) {
+            // Handle specific error codes from mw.Api
+            if (error === 'nocreate-missing') {
+                return { success: false, modified: false, error: 'Page does not exist' };
+            }
+            if (error === 'invalidtitle') {
+                return { success: false, modified: false, error: 'Invalid title' };
+            }
+            if (error === 'unknown') {
+                return { success: false, modified: false, error: 'Unknown API error' };
+            }
             if (error.message && error.message.includes('no changes')) {
                 return { success: true, modified: false };
             }
