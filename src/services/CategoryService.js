@@ -102,7 +102,7 @@ class CategoryService {
                 // Abort cleanly if no changes — returning false would stringify to "false"
                 // and overwrite the page, so we reject the promise chain instead.
                 if (newWikitext === revision.content) {
-                    return $.Deferred().reject('no-changes');
+                    return Promise.reject('no-changes');
                 }
                 const summary = buildEditSummary(toAdd, toRemove);
                 return {

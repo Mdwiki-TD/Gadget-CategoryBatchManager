@@ -80,7 +80,7 @@ describe('CategoryService', () => {
 
   describe('updateCategoriesOptimized', () => {
     test('should add and remove categories using mw.Api.edit', async () => {
-      mockMwApiEdit.mockResolvedValue({ edit: { result: 'Success' } });
+      mockMwApiEdit.mockResolvedValue({ result: 'Success' });
 
       const result = await service.updateCategoriesOptimized(
         'File:Test.svg',
@@ -129,42 +129,29 @@ describe('CategoryService', () => {
     });
 
     test('should not add duplicate categories', async () => {
-      let capturedTransformFn;
-      mockMwApiEdit.mockImplementation((title, fn) => {
-        capturedTransformFn = fn;
-        return Promise.resolve({ edit: { result: 'Success' } });
-      });
+      mockMwApiEdit.mockRejectedValue('no-changes');
 
-      await service.updateCategoriesOptimized(
+      const result = await service.updateCategoriesOptimized(
         'File:Test.svg',
         ['Category:Existing'],
         []
       );
 
-      const mockRevision = { content: '[[Category:Existing]]' };
-      const result = capturedTransformFn(mockRevision);
-
-      // Should return false since no changes needed
-      expect(result).toBe(false);
+      expect(result.success).toBe(true);
+      expect(result.modified).toBe(false);
     });
 
     test('should return false when no changes needed', async () => {
-      let capturedTransformFn;
-      mockMwApiEdit.mockImplementation((title, fn) => {
-        capturedTransformFn = fn;
-        return Promise.resolve({ edit: { result: 'Success' } });
-      });
+      mockMwApiEdit.mockRejectedValue('no-changes');
 
-      await service.updateCategoriesOptimized(
+      const result = await service.updateCategoriesOptimized(
         'File:Test.svg',
         ['Category:Existing'],
         []
       );
 
-      const mockRevision = { content: '[[Category:Existing]]' };
-      const result = capturedTransformFn(mockRevision);
-
-      expect(result).toBe(false);
+      expect(result.success).toBe(true);
+      expect(result.modified).toBe(false);
     });
 
     test('should build correct edit summary', async () => {
