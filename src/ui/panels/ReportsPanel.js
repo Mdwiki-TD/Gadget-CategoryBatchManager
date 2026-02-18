@@ -118,6 +118,11 @@ function ReportsPanel() {
                         caption="Detailed Results"
                         :hideCaption="true"
                     >
+                        <template #item-file="{ row }">
+                            <a :href="'https://commons.wikimedia.org/wiki/' + encodeURIComponent(row.file)" target="_blank">
+                                {{ row.file }}
+                            </a>
+                        </template>
                         <template #item-status="{ row }">
                             <span :class="['cbm-status-badge', 'cbm-badge-' + row.status]">
                                 {{ row.statusLabel }}
