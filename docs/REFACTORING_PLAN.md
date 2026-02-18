@@ -54,7 +54,7 @@ The Category Batch Manager is a well-structured Vue.js/MediaWiki gadget that dem
 
 -   [x] **CategoryService.js:19-48** - `addCategoriesToFile()` - Single-purpose function superseded by `updateCategories()`
 -   [x] **CategoryService.js:57-77** - `removeCategoriesFromFile()` - Single-purpose function superseded by `updateCategories()`
--   [ ] **CategoryService.js:122-163** - `updateCategoriesOptimized()` - Tested but not integrated (CRITICAL)
+-   [x] **CategoryService.js:122-163** - `updateCategoriesOptimized()` - Tested but not integrated (CRITICAL)
 -   [x] **CategoryService.js:171-177** - `getCurrentCategories()` - Thin wrapper around `api.getCategories()`
 -   [ ] **Validator.js:12-20** - `isValidCategoryName()` - Validation not used in workflow
 -   [x] **Validator.js:62-65** - `sanitizeInput()` - Only trims, misleading name
@@ -332,7 +332,7 @@ Panel -> Handler -> Service
 
 ### Phase 1: Quick Wins (1-2 days)
 
--   [ ] Replace `updateCategories()` with `updateCategoriesOptimized()` in BatchProcessor
+-   [x] Replace `updateCategories()` with `updateCategoriesOptimized()` in BatchProcessor
 -   [ ] Integrate `isValidCategoryName()` in CategoryInputsHandler
 -   [ ] Rename `RateLimiter.batch()` static method to `batchParallel()`
 -   [ ] Add missing JSDoc to public methods

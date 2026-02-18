@@ -30,41 +30,6 @@ class CategoryService {
         return `${parts.join('; ')} (via Category Batch Manager)`;
     }
     /**
-     * Combined add and remove operation
-     * @param {string} fileTitle - File page title
-     * @param {Array<string>} toAdd - Categories to add
-     * @param {Array<string>} toRemove - Categories to remove
-     * @returns {Promise<{success: boolean, modified: boolean}>}
-     */
-    async updateCategories(fileTitle, toAdd, toRemove) {
-        const wikitext = await this.api.getPageContent(fileTitle);
-        if (!wikitext) {
-            return { success: false, modified: false };
-        }
-        let newWikitext = wikitext;
-
-        // Remove first
-        for (const category of toRemove) {
-            newWikitext = this.parser.removeCategory(newWikitext, category);
-        }
-
-        // Then add
-        for (const category of toAdd) {
-            if (!this.parser.hasCategory(newWikitext, category)) {
-                newWikitext = this.parser.addCategory(newWikitext, category);
-            }
-        }
-        let success = true;
-        if (newWikitext !== wikitext) {
-            const summary = this.buildEditSummary(toAdd, toRemove);
-            const result = await this.api.editPage(fileTitle, newWikitext, summary);
-            success = result && result.edit && result.edit.result === 'Success';
-        }
-
-        return { success: success, modified: newWikitext !== wikitext };
-    }
-
-    /**
      * Combined add and remove operation using mw.Api.edit() for better conflict handling.
      * Relies on mw.Api.edit internals:
      *   - callback receives { timestamp, content } (content = revision.slots.main.content)

@@ -42,38 +42,6 @@ describe('CategoryService', () => {
     service = new CategoryService(mockApi);
   });
 
-  describe('updateCategories', () => {
-    test('should add and remove in single operation', async () => {
-      mockApi.getPageContent.mockResolvedValue(
-        'Some text\n[[Category:Old]]'
-      );
-
-      const result = await service.updateCategories(
-        'File:Test.svg',
-        ['Category:New'],
-        ['Category:Old']
-      );
-
-      expect(result.success).toBe(true);
-      expect(result.modified).toBe(true);
-      expect(mockApi.editPage).toHaveBeenCalledTimes(1);
-    });
-
-    test('should return failure when page content is empty', async () => {
-      mockApi.getPageContent.mockResolvedValue(null);
-
-      const result = await service.updateCategories(
-        'File:Test.svg',
-        ['Category:New'],
-        []
-      );
-
-      expect(result.success).toBe(false);
-      expect(result.modified).toBe(false);
-      expect(mockApi.editPage).not.toHaveBeenCalled();
-    });
-  });
-
   describe('buildEditSummary', () => {
     test('should build summary with additions', () => {
       const summary = service.buildEditSummary(['Category:A'], []);

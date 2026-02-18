@@ -25,7 +25,7 @@ describe('BatchProcessor', () => {
     mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
 
     mockCategoryService = {
-      updateCategories: jest.fn().mockResolvedValue({ success: true, modified: true }),
+      updateCategoriesOptimized: jest.fn().mockResolvedValue({ success: true, modified: true }),
       api: {
         fetchUserRateLimits: jest.fn().mockResolvedValue({ hits: 100, seconds: 60 })
       }
@@ -60,7 +60,7 @@ describe('BatchProcessor', () => {
       expect(results.failed).toBe(0);
       expect(results.errors).toHaveLength(0);
     }); test('should handle errors in individual files', async () => {
-      mockCategoryService.updateCategories
+      mockCategoryService.updateCategoriesOptimized
         .mockResolvedValueOnce({ success: true, modified: true })
         .mockRejectedValueOnce(new Error('Edit conflict'));
 
@@ -84,7 +84,7 @@ describe('BatchProcessor', () => {
     });
 
     test('should count skipped files when no changes made', async () => {
-      mockCategoryService.updateCategories
+      mockCategoryService.updateCategoriesOptimized
         .mockResolvedValueOnce({ success: true, modified: true })
         .mockResolvedValueOnce({ success: true, modified: false });
 
@@ -135,7 +135,7 @@ describe('BatchProcessor', () => {
     });
 
     test('should call onError callback on failure', async () => {
-      mockCategoryService.updateCategories.mockRejectedValue(new Error('fail'));
+      mockCategoryService.updateCategoriesOptimized.mockRejectedValue(new Error('fail'));
       const onError = jest.fn();
       const files = [{ title: 'File:A.svg' }];
 
@@ -156,7 +156,7 @@ describe('BatchProcessor', () => {
         { title: 'File:C.svg' }
       ];
 
-      mockCategoryService.updateCategories.mockImplementation(() => {
+      mockCategoryService.updateCategoriesOptimized.mockImplementation(() => {
         processor.stop();
         return Promise.resolve({ success: true, modified: true });
       });
@@ -177,7 +177,7 @@ describe('BatchProcessor', () => {
         { title: 'File:B.svg' }
       ];
 
-      mockCategoryService.updateCategories.mockImplementation(() => {
+      mockCategoryService.updateCategoriesOptimized.mockImplementation(() => {
         processor.stop();
         return Promise.resolve({ success: true, modified: true });
       });
@@ -226,7 +226,7 @@ describe('BatchProcessor', () => {
       ];
 
       // Make the first call trigger stop
-      mockCategoryService.updateCategories.mockImplementation(() => {
+      mockCategoryService.updateCategoriesOptimized.mockImplementation(() => {
         processor.stop();
         return Promise.resolve({ success: true, modified: true });
       });
@@ -247,7 +247,7 @@ describe('BatchProcessor', () => {
         { title: 'File:B.svg' }
       ];
 
-      mockCategoryService.updateCategories.mockImplementation(() => {
+      mockCategoryService.updateCategoriesOptimized.mockImplementation(() => {
         processor.stop();
         return Promise.resolve({ success: true, modified: true });
       });
@@ -292,7 +292,7 @@ describe('BatchProcessor', () => {
       const mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
       // Simulate rate limit error with error.code
-      mockCategoryService.updateCategories.mockRejectedValue({
+      mockCategoryService.updateCategoriesOptimized.mockRejectedValue({
         code: 'ratelimited',
         message: 'ratelimited'
       });
@@ -322,7 +322,7 @@ describe('BatchProcessor', () => {
 
     test('should handle rate limit errors with message property', async () => {
       // Simulate rate limit error with message only
-      mockCategoryService.updateCategories.mockRejectedValue({
+      mockCategoryService.updateCategoriesOptimized.mockRejectedValue({
         message: 'ratelimited'
       });
 
