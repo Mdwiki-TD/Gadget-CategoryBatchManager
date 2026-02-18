@@ -49,6 +49,7 @@ describe("APIService", () => {
     afterEach(() => {
         sanitizeSpy.mockRestore();
         mockConsoleError.mockRestore();
+        delete global.window;
     });
 
     describe("getCategoryMembers", () => {
@@ -678,4 +679,143 @@ describe("APIService", () => {
             mockConsoleWarn.mockRestore();
         });
     });
+
+    describe("debug mode", () => {
+        test("should enable debug mode when URL has debug param", () => {
+            global.window = {
+                location: {
+                    search: "?debug=1"
+                }
+            };
+
+            const debugService = new APIService();
+            expect(debugService.debug).toBe(true);
+        });
+
+        test("should use debugEditProcess when debug mode is enabled", async () => {
+            global.window = {
+                location: {
+                    search: "?debug=1"
+                }
+            };
+
+            const mockConsoleLog = jest.spyOn(console, "log").mockImplementation(() => { });
+            const debugService = new APIService();
+
+            const result = await debugService.editPage(
+                "File:Test.svg",
+                "New content",
+                "Test summary",
+                { minor: true }
+            );
+
+            expect(result.edit).toBeDefined();
+            expect(result.edit.title).toBe("File:Test.svg");
+            expect(result.edit.content).toBe("New content");
+            expect(result.edit.summary).toBe("Test summary");
+            expect(result.edit.result).toMatch(/Success|Failure/);
+
+            mockConsoleLog.mockRestore();
+        });
+
+        test("should simulate network delay in debug mode", async () => {
+            global.window = {
+                location: {
+                    search: "?debug=1"
+                }
+            };
+
+            jest.spyOn(console, "log").mockImplementation(() => { });
+            const debugService = new APIService();
+
+            const start = Date.now();
+            await debugService.editPage("File:Test.svg", "Content", "Summary");
+            const elapsed = Date.now() - start;
+
+            // Should have at least 200ms delay
+            expect(elapsed).toBeGreaterThanOrEqual(200);
+        });
+    });
+
+    describe("getPageContent error handling", () => {
+        test("should return empty string for empty title", async () => {
+            const result = await service.getPageContent("");
+
+            expect(result).toBe("");
+            expect(mockConsoleError).toHaveBeenCalledWith(
+                "[CBM-API] getPageContent called with empty title"
+            );
+        });
+
+        test("should return empty string when no pages in response", async () => {
+            mockApi.get.mockResolvedValue({
+                query: {}
+            });
+
+            const result = await service.getPageContent("File:Test.svg");
+
+            expect(result).toBe("");
+            expect(mockConsoleError).toHaveBeenCalledWith(
+                "[CBM-API] No pages found in API response for title:",
+                "File:Test.svg"
+            );
+        });
+    });
+
+    describe("fetchUserRateLimits", () => {
+        test("should return rate limits from API", async () => {
+            mockApi.get.mockResolvedValue({
+                query: {
+                    userinfo: {
+                        ratelimits: {
+                            edit: {
+                                user: {
+                                    hits: 90,
+                                    seconds: 60
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const result = await service.fetchUserRateLimits();
+
+            expect(result).toEqual({ hits: 90, seconds: 60 });
+        });
+
+        test("should return default when no edit rate limits found", async () => {
+            const mockConsoleWarn = jest.spyOn(console, "warn").mockImplementation(() => { });
+
+            mockApi.get.mockResolvedValue({
+                query: {
+                    userinfo: {
+                        ratelimits: {}
+                    }
+                }
+            });
+
+            const result = await service.fetchUserRateLimits();
+
+            expect(result).toEqual({ hits: 5, seconds: 1 });
+            expect(mockConsoleWarn).toHaveBeenCalledWith(
+                "[CBM-API] No edit rate limit found — using default."
+            );
+
+            mockConsoleWarn.mockRestore();
+        });
+
+        test("should return default on API error", async () => {
+            mockApi.get.mockRejectedValue(new Error("API error"));
+
+            const result = await service.fetchUserRateLimits();
+
+            expect(result).toEqual({ hits: 5, seconds: 1 });
+            expect(mockConsoleError).toHaveBeenCalledWith(
+                "[CBM-API] fetchUserRateLimits failed — using default.",
+                expect.any(Error)
+            );
+        });
+    });
+
 });
