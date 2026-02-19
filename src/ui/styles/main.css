@@ -3,6 +3,7 @@
     margin: 30px auto !important;
     padding: 30px !important;
 }
+
 .cbm-container {
     width: 80vw !important;
     max-width: 1400px !important;
@@ -168,7 +169,6 @@
         left: 2.5%;
         transform: none;
     }
-
 }
 
 /* Extra small devices */
