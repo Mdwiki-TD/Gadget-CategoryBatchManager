@@ -34,7 +34,7 @@ function BatchManager() {
     const defaultCategory =
         mw.config.get('wgCanonicalNamespace') === 'Category'
             ? mw.config.get('wgPageName')
-            : '';
+            : "";
     const message_display_panel = MessageDisplayPanel();
 
     // ── Template ─────────────────────────────────────────────────────────
@@ -51,16 +51,14 @@ function BatchManager() {
                     @update:work-files="workFiles = $event"
                     @update:source-category="sourceCategory = $event"
                     @update:search-progress-percent="searchProgressPercent = $event"
-                    @update:search-progress-text="searchProgressText = $event"
-                />
+                    @update:search-progress-text="searchProgressText = $event" />
 
                 <!-- Actions Section -->
                 <div>
                     <CategoryInputsPanel
                         :add-category="addCategory"
                         :remove-category="removeCategory"
-                        :handler="category_inputs_handler"
-                    />
+                        :handler="category_inputs_handler" />
 
                     <div class="cbm-button-group">
                         <PreviewPanel
@@ -70,8 +68,7 @@ function BatchManager() {
                             :add-category-selected="addCategory.selected"
                             :remove-category-selected="removeCategory.selected"
                             :changes-helpers="changes_helpers"
-                            @display-message="displayCategoryMessage"
-                        />
+                            @display-message="displayCategoryMessage" />
                         <ExecutePanel
                             :execute-handler="execute_handler"
                             :progress-handler="progress_handler"
@@ -85,18 +82,18 @@ function BatchManager() {
                             @show-success-message="showSuccessMessage"
                             @show-error-message="showErrorMessage"
                             @update:is-processing="isProcessing = $event"
-                            @update:progress-percent="executionProgressPercent = $event"
+                            @update:progress-percent="
+                                executionProgressPercent = $event
+                            "
                             @update:progress-text="executionProgressText = $event"
-                        @execution-complete="handleExecutionComplete"
-                        />
+                            @execution-complete="handleExecutionComplete" />
                     </div>
                 </div>
                 <!-- Execute Progress Section -->
                 <ProgressBar
                     :visible="isProcessing"
                     :percent="executionProgressPercent"
-                    :text="executionProgressText"
-                />
+                    :text="executionProgressText" />
             </div>
 
             <!-- Right Panel: File List -->
@@ -107,13 +104,13 @@ function BatchManager() {
                 <ProgressBar
                     :visible="searchProgressPercent > 0"
                     :percent="searchProgressPercent"
-                    :text="searchProgressText"
-                />
-
+                    :text="searchProgressText" />
             </div>
         </div>
         <!-- Message Display -->
-        <div v-if="showMessage" class="cbm-fixed-message">
+        <div
+            v-if="showMessage"
+            class="cbm-fixed-message">
             <cdx-message
                 :key="messageKey"
                 allow-user-dismiss
@@ -122,21 +119,19 @@ function BatchManager() {
                 :auto-dismiss="true"
                 :display-time="3000"
                 dismiss-button-label="Close"
-                @dismissed="handleMessageDismiss"
-            >
+                @dismissed="handleMessageDismiss">
                 {{ messageContent }}
             </cdx-message>
         </div>
     `;
-
     // ── Helper to create lookup model ─────────────────────────────────────
     const createLookupModel = () => ({
         menuItems: [],
         menuConfig: { boldLabel: true, visibleItemLimit: 10 },
         chips: [],
         selected: [],
-        input: '',
-        message: { show: false, type: '', text: '', key: 0 },
+        input: "",
+        message: { show: false, type: "", text: "", key: 0 },
     });
 
     // ── App definition ────────────────────────────────────────────────────
@@ -158,13 +153,13 @@ function BatchManager() {
                 // Execution progress state (for ProgressBar)
                 isProcessing: false,
                 executionProgressPercent: 0,
-                executionProgressText: '',
+                executionProgressText: "",
 
                 // Search progress state (synced from SearchPanel)
                 sourceCategory: defaultCategory,
                 defaultCategory: defaultCategory,
                 searchProgressPercent: 0,
-                searchProgressText: '',
+                searchProgressText: "",
 
                 // Merge message display state
                 ...message_display_panel.data(),

@@ -94,24 +94,26 @@ function SearchPanel() {
                         incategory:"CC-BY-4.0" Our World in Data -incategory:"Uploaded by OWID importer tool"</code>)
                     </span>
                     <div class="cbm-input-button-group">
+                        <div class="cbm-search-pattern-wrap">
                             <cdx-text-input
                                 id="cbm-search-pattern"
                                 v-model="searchPattern"
-                                class="cbm-search-pattern-input"
                                 placeholder="" />
+                        </div>
+                        <div class="cbm-limit-wrap">
                             <cdx-text-input
                                 id="cbm-search-limit"
                                 v-model.number="searchLimit"
                                 type="number"
                                 min="1"
                                 max="10000"
-                                class="cbm-limit-input"
                                 placeholder="Limit default: max" />
+                        </div>
+                        <div class="cbm-search-btn-wrap">
                             <cdx-button
                                 v-if="!isSearching"
                                 action="progressive"
                                 weight="primary"
-                                class="cbm-search-btn"
                                 @click="searchFiles">
                                 Search
                             </cdx-button>
@@ -119,10 +121,10 @@ function SearchPanel() {
                                 v-if="isSearching"
                                 action="destructive"
                                 weight="primary"
-                                class="cbm-search-btn"
                                 @click="stopSearch">
                                 Stop
                             </cdx-button>
+                        </div>
                     </div>
                 </div>
             </div>
