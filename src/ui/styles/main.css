@@ -1,76 +1,13 @@
-/* Container styles */
-.cbm-container2 {
-    margin: 30px auto !important;
-    padding: 30px !important;
-}
+/* ==================== Global/Shared Styles ==================== */
 
-.cbm-container {
-    width: 80vw !important;
-    max-width: 1400px !important;
-    max-height: 95vh;
-    margin: 10px auto;
-    padding: 10px;
-    border: 1px solid var(--border-color-base, #a2a9b1);
-    border-radius: 4px;
-    background-color: var(--background-color-base, #f8f9fa);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Title styles */
-.cbm-title {
-    margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 1.5em;
-    border-bottom: 2px solid #0645ad;
-    padding-bottom: 10px;
-}
-
-/* ── Main Layout: Two Column ── */
-.cbm-main-layout {
-    display: flex;
-    gap: 20px;
-    height: 100%;
-    margin-top: 1rem;
-}
-
-.cbm-left-panel {
-    flex: 2;
-    display: flex;
-    flex-direction: column;
-    /* gap: 15px; */
-    /* overflow-y: auto; */
-    min-width: 0;
-}
-
-.cbm-right-panel {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid var(--border-color-base, #eaecf0);
-    border-radius: 2px;
-    background-color: var(--background-color-base, #f8f9fa);
-}
-
-/* Label styles */
+/* Label styles - used by multiple components */
 .cbm-label {
     font-weight: 600;
     margin-bottom: 5px;
     display: block;
 }
 
-/* Button group */
-.cbm-button-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.cbm-button-group .cdx-button {
-    flex: 1;
-}
-
-/* Fixed message display */
+/* Fixed message display - used by BatchManager and MessageDisplayPanel */
 .cbm-fixed-message {
     position: fixed;
     bottom: 20px;
@@ -81,7 +18,7 @@
     z-index: 999;
 }
 
-/* Utility classes */
+/* Utility classes - used across components */
 .margin-bottom-20 {
     margin-bottom: 20px;
 }
@@ -90,65 +27,18 @@
     display: flex;
     gap: 16px;
 }
+
 .cbm-column-two-thirds {
     flex: 2;
 }
+
 .cbm-column-one-third {
     flex: 1;
 }
+
 /* ==================== Mobile Responsive Styles ==================== */
 
-/* Container adjustments for mobile */
 @media screen and (max-width: 768px) {
-    .cbm-container {
-        width: 100vw !important;
-        max-width: 100% !important;
-        max-height: none;
-        margin: 0;
-        padding: 8px;
-        border: none;
-        border-radius: 0;
-        box-shadow: none;
-    }
-
-    .cbm-container2 {
-        margin: 10px auto !important;
-        padding: 15px !important;
-    }
-
-    .cbm-title {
-        font-size: 1.2em;
-        margin-bottom: 15px;
-        padding-bottom: 8px;
-    }
-
-    /* Main Layout: Stack vertically on mobile */
-    .cbm-main-layout {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .cbm-left-panel,
-    .cbm-right-panel {
-        flex: none;
-        width: 100%;
-    }
-
-    .cbm-right-panel {
-        border: none;
-        background-color: transparent;
-    }
-
-    /* Button group: Stack buttons on mobile */
-    .cbm-button-group {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .cbm-button-group .cdx-button {
-        width: 100%;
-    }
-
     /* Two column row: Stack on mobile */
     .cbm-two-column-row {
         flex-direction: column;
@@ -168,16 +58,5 @@
         bottom: 10px;
         left: 2.5%;
         transform: none;
-    }
-}
-
-/* Extra small devices */
-@media screen and (max-width: 480px) {
-    .cbm-container {
-        padding: 5px;
-    }
-
-    .cbm-title {
-        font-size: 1.1em;
     }
 }

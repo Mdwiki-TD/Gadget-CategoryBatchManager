@@ -56,6 +56,7 @@ const CSS_SOURCES = [
     'src/ui/styles/ReportsPanel.css',
     'src/ui/styles/ProgressBar.css',
     'src/ui/styles/CategoryLookup.css',
+    'src/ui/styles/BatchManager.css',
 ];
 
 const DIST_DIR = 'dist';
