@@ -14,7 +14,6 @@ import './ui/styles/ReportsPanel.css'
 import './ui/styles/ProgressBar.css'
 import './ui/styles/CategoryLookup.css'
 import '@wikimedia/codex/dist/codex.style.css'
-import { BatchManagerDialog } from './BatchManagerWrappers.js';
 
 import {
     CdxButton,
@@ -32,6 +31,7 @@ import {
     CdxTable,
     CdxLookup,
 } from "@wikimedia/codex";
+import BatchManager from "./BatchManager";
 
 // Instantiate BatchManager component (pass null for standalone mode)
 // add icon to open the dialog
@@ -51,15 +51,18 @@ if (new URLSearchParams(window.location.search).has('icon')) {
     document.body.appendChild(icon);
 }
 
-const BatchManager = BatchManagerDialog(icon);
+const BatchManagerComponent = BatchManager();
 
 const App = {
     name: "App",
     components: {
-        BatchManager,
+        BatchManagerComponent,
     },
     template: `
-        <BatchManager />
+        <div class="cbm-container cbm-container2">
+            <h2 class="cbm-title">Category Batch Manager</h2>
+            <BatchManagerComponent />
+        </div>
     `,
     setup() {
         return {
