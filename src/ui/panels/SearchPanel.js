@@ -105,7 +105,7 @@ function SearchPanel() {
                             min="1"
                             max="10000"
                             class="cbm-limit-input"
-                            placeholder="Limit" />
+                            placeholder="Limit default: max" />
                         <cdx-button
                             v-if="!isSearching"
                             action="progressive"
