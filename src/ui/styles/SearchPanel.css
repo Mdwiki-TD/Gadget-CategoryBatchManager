@@ -62,7 +62,7 @@
     .cbm-search-pattern-wrap,
     .cbm-limit-wrap,
     .cbm-search-btn-wrap {
-        flex: 1 1 100% !important;
+        flex: 1 1 100%;
         min-width: 0;
     }
 

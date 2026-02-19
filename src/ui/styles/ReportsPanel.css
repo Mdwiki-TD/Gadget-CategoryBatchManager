@@ -45,7 +45,7 @@
 }
 
 .cbm-summary-skipped .cbm-summary-number {
-    color: var(--color-warning, #ff9800);
+    color: var(--color-warning, #b07000);
 }
 
 .cbm-summary-failed .cbm-summary-number {

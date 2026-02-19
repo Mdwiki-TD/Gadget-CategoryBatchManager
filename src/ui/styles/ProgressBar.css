@@ -40,16 +40,3 @@
         height: 16px;
     }
 }
-
-/* Dark mode progress section overrides (uncomment to activate):
-@media screen and (prefers-color-scheme: dark) {
-    html.skin-theme-clientpref-os .cbm-progress-section {
-        background-color: #212529;
-    }
-}
-@media screen {
-    html.skin-theme-clientpref-night .cbm-progress-section {
-        background-color: #212529;
-    }
-}
-*/
