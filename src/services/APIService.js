@@ -25,6 +25,7 @@ class APIService {
         try {
             this.mwApi = new mw.Api();
         } catch {
+            // @ts-ignore
             this.mwApi = new Api(); // local-dev shim
         }
     }
@@ -216,7 +217,7 @@ class APIService {
      */
     async fetchCategories(searchTerm, options = {}) {
         const limit = options.limit || 10;
-        if (!searchTerm || searchTerm.length < 2) {
+        if (!searchTerm || searchTerm.length < 1) {
             return Promise.resolve([]);
         }
         const params = {

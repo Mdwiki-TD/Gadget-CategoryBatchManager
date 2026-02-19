@@ -26,7 +26,7 @@ class CategoryInputsHandler {
         }
 
         // If empty, clear menu items
-        if (!value || value.trim().length < 2) {
+        if (!value || value.trim().length < 1) {
             // console.warn(`${input_type} category input too short, clearing menu items.`);
             return [];
         }

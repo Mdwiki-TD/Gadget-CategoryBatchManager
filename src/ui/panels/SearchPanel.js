@@ -66,7 +66,7 @@ function SearchPanel() {
                                 {{ menuItem.label }}
                             </template>
                             <template #no-results>
-                                Type at least 2 characters to search
+                                No results found
                             </template>
                         </cdx-lookup>
                     </div>
@@ -136,7 +136,7 @@ function SearchPanel() {
              */
             async onCategoryInput(value) {
                 this.selectedCategory = '';
-                if (!value || value.length < 2) {
+                if (!value || value.length < 1) {
                     this.categoryMenuItems = [];
                     return;
                 }
