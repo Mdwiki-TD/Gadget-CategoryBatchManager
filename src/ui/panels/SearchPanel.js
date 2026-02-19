@@ -93,8 +93,7 @@ function SearchPanel() {
                         (e.g., <code>
                         incategory:"CC-BY-4.0" Our World in Data -incategory:"Uploaded by OWID importer tool"</code>)
                     </span>
-                    <div class="cbm-inputs">
-                        <div class="cbm-input-button-group">
+                    <div class="cbm-input-button-group">
                             <cdx-text-input
                                 id="cbm-search-pattern"
                                 v-model="searchPattern"
@@ -108,21 +107,22 @@ function SearchPanel() {
                                 max="10000"
                                 class="cbm-limit-input"
                                 placeholder="Limit default: max" />
-                        </div>
-                        <cdx-button
-                            v-if="!isSearching"
-                            action="progressive"
-                            weight="primary"
-                            @click="searchFiles">
-                            Search
-                        </cdx-button>
-                        <cdx-button
-                            v-if="isSearching"
-                            action="destructive"
-                            weight="primary"
-                            @click="stopSearch">
-                            Stop
-                        </cdx-button>
+                            <cdx-button
+                                v-if="!isSearching"
+                                action="progressive"
+                                weight="primary"
+                                class="cbm-search-btn"
+                                @click="searchFiles">
+                                Search
+                            </cdx-button>
+                            <cdx-button
+                                v-if="isSearching"
+                                action="destructive"
+                                weight="primary"
+                                class="cbm-search-btn"
+                                @click="stopSearch">
+                                Stop
+                            </cdx-button>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,3 @@
-
 /* Container styles */
 .cbm-container2 {
     margin: 30px auto !important;
@@ -37,7 +36,7 @@
     flex: 2;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    /* gap: 15px; */
     overflow-y: auto;
     min-width: 0;
 }
@@ -104,20 +103,24 @@
 
 .cbm-input-button-group {
     display: flex;
-    gap: 10px;
+    gap: 8px;
+    align-items: stretch;
 }
 
-.cbm-input-button-group>* {
-    flex: 1;
-}
-
-.cbm-input-button-group .cdx-button {
-    flex: unset;
+.cbm-search-pattern-input {
+    flex: 0 0 80%;
+    min-width: 0;
 }
 
 .cbm-limit-input {
-    max-width: 80px;
-    flex: 0 0 auto !important;
+    flex: 0 0 calc(10% - 8px);
+    min-width: 0;
+    max-width: unset;
+}
+
+.cbm-search-btn {
+    flex: 0 0 calc(10% - 8px);
+    min-width: 0;
 }
 
 /* ==================== CategoryInputs ==================== */
@@ -249,18 +252,17 @@
 .cbm-column-one-third {
     flex: 1;
 }
+/* Dark mode progress section overrides (uncomment to activate):
 @media screen and (prefers-color-scheme: dark) {
-
     html.skin-theme-clientpref-os .cbm-progress-section {
-        /* background-color: #212529; */
+        background-color: #212529;
     }
 }
-
 @media screen {
     html.skin-theme-clientpref-night .cbm-progress-section {
-        /* background-color: #212529; */
+        background-color: #212529;
     }
-}
+} */
 
 /* ==================== Reports Panel ==================== */
 
@@ -420,7 +422,7 @@
         gap: 8px;
     }
 
-    .cbm-input-button-group>* {
+    .cbm-input-button-group > * {
         width: 100%;
     }
 
