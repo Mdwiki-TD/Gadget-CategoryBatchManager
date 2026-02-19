@@ -5,6 +5,7 @@
 import { createApp } from "vue";
 import './ui/styles/main.css'
 import './ui/styles/PreviewDialog.css'
+import './ui/styles/SearchPanel.css'
 import '@wikimedia/codex/dist/codex.style.css'
 import { BatchManagerDialog } from './BatchManagerWrappers.js';
 

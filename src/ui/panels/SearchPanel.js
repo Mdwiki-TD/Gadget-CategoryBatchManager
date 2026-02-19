@@ -109,22 +109,22 @@ function SearchPanel() {
                                 max="10000"
                                 placeholder="Limit default: max" />
                         </div>
-                        <div class="cbm-search-btn-wrap">
-                            <cdx-button
-                                v-if="!isSearching"
-                                action="progressive"
-                                weight="primary"
-                                @click="searchFiles">
-                                Search
-                            </cdx-button>
-                            <cdx-button
-                                v-if="isSearching"
-                                action="destructive"
-                                weight="primary"
-                                @click="stopSearch">
-                                Stop
-                            </cdx-button>
-                        </div>
+                    </div>
+                    <div class="cbm-search-btn-wrap">
+                        <cdx-button
+                            v-if="!isSearching"
+                            action="progressive"
+                            weight="primary"
+                            @click="searchFiles">
+                            Search
+                        </cdx-button>
+                        <cdx-button
+                            v-if="isSearching"
+                            action="destructive"
+                            weight="primary"
+                            @click="stopSearch">
+                            Stop
+                        </cdx-button>
                     </div>
                 </div>
             </div>

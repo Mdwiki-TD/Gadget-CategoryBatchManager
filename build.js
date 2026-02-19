@@ -50,7 +50,8 @@ const SOURCE_FILES = [
 
 const CSS_SOURCES = [
     'src/ui/styles/main.css',
-    'src/ui/styles/PreviewDialog.css'
+    'src/ui/styles/PreviewDialog.css',
+    'src/ui/styles/SearchPanel.css',
 ];
 
 const DIST_DIR = 'dist';

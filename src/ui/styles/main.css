@@ -131,6 +131,9 @@
     width: 100%;
 }
 
+.cbm-limit-wrap .cdx-text-input .cdx-text-input__input {
+    width: 30%;
+}
 /* Make button fill its wrapper fully */
 .cbm-search-btn-wrap .cdx-button {
     width: 100%;
@@ -550,6 +553,10 @@
 
     .cbm-empty-state p {
         font-size: 1em;
+    }
+
+    .cbm-limit-wrap .cdx-text-input .cdx-text-input__input {
+        width: 100%;
     }
 }
 
