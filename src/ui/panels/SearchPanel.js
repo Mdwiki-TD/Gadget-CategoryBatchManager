@@ -93,20 +93,22 @@ function SearchPanel() {
                         (e.g., <code>
                         incategory:"CC-BY-4.0" Our World in Data -incategory:"Uploaded by OWID importer tool"</code>)
                     </span>
-                    <div class="cbm-input-button-group">
-                        <cdx-text-input
-                            id="cbm-search-pattern"
-                            v-model="searchPattern"
-                            class="cbm-search-pattern-input"
-                            placeholder="" />
-                        <cdx-text-input
-                            id="cbm-search-limit"
-                            v-model.number="searchLimit"
-                            type="number"
-                            min="1"
-                            max="10000"
-                            class="cbm-limit-input"
-                            placeholder="Limit default: max" />
+                    <div class="cbm-inputs">
+                        <div class="cbm-input-button-group">
+                            <cdx-text-input
+                                id="cbm-search-pattern"
+                                v-model="searchPattern"
+                                class="cbm-search-pattern-input"
+                                placeholder="" />
+                            <cdx-text-input
+                                id="cbm-search-limit"
+                                v-model.number="searchLimit"
+                                type="number"
+                                min="1"
+                                max="10000"
+                                class="cbm-limit-input"
+                                placeholder="Limit default: max" />
+                        </div>
                         <cdx-button
                             v-if="!isSearching"
                             action="progressive"
