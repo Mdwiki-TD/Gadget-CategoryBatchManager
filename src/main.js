@@ -4,7 +4,13 @@
 
 import { createApp } from "vue";
 import './ui/styles/main.css'
+import './ui/styles/BatchManager.css'
 import './ui/styles/PreviewDialog.css'
+import './ui/styles/SearchPanel.css'
+import './ui/styles/FilesListPanel.css'
+import './ui/styles/ReportsPanel.css'
+import './ui/styles/ProgressBar.css'
+import './ui/styles/CategoryLookup.css'
 import '@wikimedia/codex/dist/codex.style.css'
 import { BatchManagerDialog } from './BatchManagerWrappers.js';
 

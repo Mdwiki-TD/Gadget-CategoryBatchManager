@@ -38,7 +38,7 @@ function CategoryLookup() {
                         @update:input-value="onInput"
                         @load-more="onLoadMore">
                         <template #no-results>
-                            Type at least 2 characters to search
+                            No results found
                         </template>
                     </cdx-multiselect-lookup>
                 </div>

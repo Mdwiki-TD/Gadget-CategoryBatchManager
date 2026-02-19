@@ -92,7 +92,7 @@ class CategorySearchService {
     }
 
     async searchCategories(query, options = {}) {
-        if (!query || query.trim().length < 2) {
+        if (!query || query.trim().length < 1) {
             return [];
         }
         return await this.apiService.fetchCategories(query, options);

@@ -75,7 +75,8 @@ class CategoryService {
                     summary: summary,
                     minor: false,
                     assert: mw.config.get('wgUserName') ? 'user' : undefined,
-                    nocreate: true
+                    nocreate: true,
+                    tags: 'CategoryBatchManager'
                 };
             });
 
@@ -100,6 +101,10 @@ class CategoryService {
             // Thrown by our $.Deferred().reject('no-changes') above
             if (error === 'no-changes') {
                 return { success: true, modified: false };
+            }
+            // Tag not defined/active on this wiki — treat as a soft config error
+            if (error === 'tags-apply-not-allowed-one' || error === 'tags-apply-not-allowed') {
+                return { success: false, modified: false, error: 'Change tag "CategoryBatchManager" is not defined on this wiki. Please create it via Special:Tags.' };
             }
             // MediaWiki API "no changes" error (edge case from server side)
             if (error && error.message && error.message.includes('no changes')) {

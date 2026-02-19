@@ -66,7 +66,7 @@ function SearchPanel() {
                                 {{ menuItem.label }}
                             </template>
                             <template #no-results>
-                                {{ sourceCategory.length < 2 ? 'Type at least 2 characters to search' : 'No results found' }}
+                                No results found
                             </template>
                         </cdx-lookup>
                     </div>
@@ -94,18 +94,23 @@ function SearchPanel() {
                         incategory:"CC-BY-4.0" Our World in Data -incategory:"Uploaded by OWID importer tool"</code>)
                     </span>
                     <div class="cbm-input-button-group">
-                        <cdx-text-input
-                            id="cbm-search-pattern"
-                            v-model="searchPattern"
-                            placeholder="" />
-                        <cdx-text-input
-                            id="cbm-search-limit"
-                            v-model.number="searchLimit"
-                            type="number"
-                            min="1"
-                            max="10000"
-                            class="cbm-limit-input"
-                            placeholder="Limit default: max" />
+                        <div class="cbm-search-pattern-wrap">
+                            <cdx-text-input
+                                id="cbm-search-pattern"
+                                v-model="searchPattern"
+                                placeholder="" />
+                        </div>
+                        <div class="cbm-limit-wrap">
+                            <cdx-text-input
+                                id="cbm-search-limit"
+                                v-model.number="searchLimit"
+                                type="number"
+                                min="1"
+                                max="10000"
+                                placeholder="Limit default: max" />
+                        </div>
+                    </div>
+                    <div class="cbm-search-btn-wrap">
                         <cdx-button
                             v-if="!isSearching"
                             action="progressive"
@@ -131,7 +136,7 @@ function SearchPanel() {
              */
             async onCategoryInput(value) {
                 this.selectedCategory = '';
-                if (!value || value.length < 2) {
+                if (!value || value.length < 1) {
                     this.categoryMenuItems = [];
                     return;
                 }
