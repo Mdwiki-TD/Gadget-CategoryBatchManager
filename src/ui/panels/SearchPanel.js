@@ -66,7 +66,7 @@ function SearchPanel() {
                                 {{ menuItem.label }}
                             </template>
                             <template #no-results>
-                                Type at least 2 characters to search
+                                {{ sourceCategory.length < 2 ? 'Type at least 2 characters to search' : 'No results found' }}
                             </template>
                         </cdx-lookup>
                     </div>
@@ -130,6 +130,7 @@ function SearchPanel() {
              * Handle category input for autocomplete.
              */
             async onCategoryInput(value) {
+                this.selectedCategory = '';
                 if (!value || value.length < 2) {
                     this.categoryMenuItems = [];
                     return;
@@ -177,7 +178,7 @@ function SearchPanel() {
                 this.isSearching = true;
                 this.searchProgressText = '';
                 this.searchProgressPercent = 0;
-                this.$emit('update:source-category', this.selectedCategory || this.sourceCategory);
+                this.$emit('update:source-category', this.selectedCategory || this.sourceCategory.trim());
                 this.$emit('update:search-progress-text', '');
                 this.$emit('update:search-progress-percent', 0);
 
@@ -186,7 +187,7 @@ function SearchPanel() {
                 this.$emit('update:work-files', this.workFiles);
 
                 await this.searchHandler.startSearch(
-                    this.selectedCategory || this.sourceCategory,
+                    this.selectedCategory || this.sourceCategory.trim(),
                     this.titlePattern,
                     this.searchPattern,
                     this.searchLimit
