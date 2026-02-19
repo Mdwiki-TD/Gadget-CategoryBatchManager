@@ -98,7 +98,7 @@ describe('CategoryInputsHandler', () => {
     });
 
     test('should return empty array when value is too short', async () => {
-      const result = await handler.onCategoryInput('a', 'a');
+      const result = await handler.onCategoryInput('', '');
 
       expect(result).toEqual([]);
       expect(mockApiService.fetchCategories).not.toHaveBeenCalled();

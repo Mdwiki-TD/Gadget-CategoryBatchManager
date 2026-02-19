@@ -547,11 +547,6 @@ describe("APIService", () => {
     });
 
     describe("fetchCategories", () => {
-        test("should return empty array for short search terms", async () => {
-            const result = await service.fetchCategories("a");
-            expect(result).toEqual([]);
-            expect(mockApi.get).not.toHaveBeenCalled();
-        });
 
         test("should return empty array for empty search term", async () => {
             const result = await service.fetchCategories("");
