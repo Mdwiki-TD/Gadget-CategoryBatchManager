@@ -97,6 +97,7 @@ function SearchPanel() {
                         <cdx-text-input
                             id="cbm-search-pattern"
                             v-model="searchPattern"
+                            class="cbm-search-pattern-input"
                             placeholder="" />
                         <cdx-text-input
                             id="cbm-search-limit"
