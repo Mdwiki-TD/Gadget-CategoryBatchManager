@@ -58,15 +58,6 @@
     display: block;
 }
 
-/* Selected files info box */
-.cbm-selected-info {
-    margin-top: 15px;
-    border-top: 1px solid #c8ccd1;
-    padding: 10px;
-    background-color: var(--background-color-neutral, #eaecf0);
-    border-radius: 4px;
-}
-
 /* Button group */
 .cbm-button-group {
     display: flex;
