@@ -75,7 +75,8 @@ class CategoryService {
                     summary: summary,
                     minor: false,
                     assert: mw.config.get('wgUserName') ? 'user' : undefined,
-                    nocreate: true
+                    nocreate: true,
+                    tags: 'CategoryBatchManager'
                 };
             });
 
