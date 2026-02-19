@@ -135,7 +135,6 @@ function SearchPanel() {
              * Handle category input for autocomplete.
              */
             async onCategoryInput(value) {
-                this.selectedCategory = '';
                 if (!value || value.length < 1) {
                     this.categoryMenuItems = [];
                     return;
