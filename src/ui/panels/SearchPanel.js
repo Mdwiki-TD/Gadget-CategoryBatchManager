@@ -66,7 +66,7 @@ function SearchPanel() {
                                 {{ menuItem.label }}
                             </template>
                             <template #no-results>
-                                {{ sourceCategory.length < 2 ? 'Type at least 2 characters to search' : 'No results found' }}
+                                Type at least 2 characters to search
                             </template>
                         </cdx-lookup>
                     </div>
