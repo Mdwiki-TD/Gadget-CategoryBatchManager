@@ -1,0 +1,157 @@
+/* ==================== FilesListPanel Styles ==================== */
+
+.cbm-files-list {
+    background-color: var(--background-color-base, #ffffff);
+    padding: 20px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color-base, #c8ccd1);
+    height: fit-content;
+}
+
+.cbm-files-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color-base, #c8ccd1);
+}
+
+.cbm-count-badge {
+    background-color: var(--background-color-neutral, #eaf3ff);
+    color: var(--color-primary, #36c);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.cbm-header-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.cbm-files-scrollable {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.cbm-file-row {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid var(--border-color-base, #eaecf0);
+    gap: 10px;
+}
+
+.cbm-file-row .cdx-checkbox {
+    flex-shrink: 0;
+}
+
+.cbm-file-row label {
+    flex: 1;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.cbm-file-remove-btn {
+    flex-shrink: 0;
+    background-color: transparent;
+    border: none;
+    color: var(--color-error, #d33);
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 0 8px;
+    line-height: 1;
+}
+
+.cbm-empty-state {
+    background-color: var(--background-color-base, #ffffff);
+    padding: 40px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color-base, #c8ccd1);
+    text-align: center;
+    color: #72777d;
+}
+
+.cbm-empty-state p {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+.cbm-selected-info {
+    margin-top: 15px;
+    border-top: 1px solid #c8ccd1;
+    padding: 10px;
+    background-color: var(--background-color-neutral, #eaecf0);
+    border-radius: 4px;
+}
+
+/* ==================== Mobile Responsive Styles ==================== */
+
+@media screen and (max-width: 768px) {
+    .cbm-files-list {
+        padding: 12px;
+    }
+
+    .cbm-files-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .cbm-header-buttons {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .cbm-files-scrollable {
+        max-height: 300px;
+    }
+
+    .cbm-file-row {
+        padding: 6px;
+        gap: 8px;
+    }
+
+    .cbm-file-row label {
+        font-size: 0.85em;
+    }
+
+    .cbm-empty-state {
+        padding: 30px 20px;
+    }
+
+    .cbm-empty-state p {
+        font-size: 1em;
+    }
+}
+
+/* Extra small devices */
+@media screen and (max-width: 480px) {
+    .cbm-file-row {
+        flex-wrap: wrap;
+    }
+
+    .cbm-file-row label {
+        width: 100%;
+        order: 3;
+        margin-top: 5px;
+    }
+
+    .cbm-files-scrollable {
+        max-height: 250px;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    .cbm-file-remove-btn {
+        padding: 8px 12px;
+        font-size: 1.8em;
+    }
+
+    .cbm-header-buttons .cdx-button {
+        min-height: 44px;
+    }
+}

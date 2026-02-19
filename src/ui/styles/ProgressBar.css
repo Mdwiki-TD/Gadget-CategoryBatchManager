@@ -1,0 +1,55 @@
+/* ==================== ProgressBar Styles ==================== */
+
+.cbm-progress-section {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--background-color-base, #ffffff);
+    border: 1px solid var(--border-color-base, #c8ccd1);
+    border-radius: 4px;
+}
+
+.cbm-progress-bar-bg {
+    width: 100%;
+    background-color: var(--background-color-neutral, #eaecf0);
+    border-radius: 2px;
+    height: 20px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.cbm-progress-bar-fill {
+    height: 100%;
+    background-color: var(--color-primary, #36c);
+    transition: width 0.3s ease;
+}
+
+.cbm-progress-text {
+    text-align: center;
+    font-weight: 500;
+}
+
+/* ==================== Mobile Responsive Styles ==================== */
+
+@media screen and (max-width: 768px) {
+    .cbm-progress-section {
+        margin-top: 15px;
+        padding: 10px;
+    }
+
+    .cbm-progress-bar-bg {
+        height: 16px;
+    }
+}
+
+/* Dark mode progress section overrides (uncomment to activate):
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .cbm-progress-section {
+        background-color: #212529;
+    }
+}
+@media screen {
+    html.skin-theme-clientpref-night .cbm-progress-section {
+        background-color: #212529;
+    }
+}
+*/
