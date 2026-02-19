@@ -44,90 +44,99 @@ function SearchPanel() {
         emits: ['show-warning-message', 'update:work-files', 'update:source-category', 'update:search-progress-percent', 'update:search-progress-text'],
 
         template: `
-            <div class="cbm-search-panel">
-                <div class="cbm-input-group cbm-two-column-row">
-                    <div class="cbm-input-group cbm-column-two-thirds">
-                        <cdx-label
-                            input-id="cbm-source-category"
-                            class="cbm-label">
-                            Source Category
-                        </cdx-label>
-                        <cdx-lookup
-                            id="cbm-source-category"
-                            v-model:input-value="sourceCategory"
-                            v-model:selected="selectedCategory"
-                            :menu-items="categoryMenuItems"
-                            :menu-config="categoryMenuConfig"
-                            :disabled="searchPattern.trim() !== ''"
-                            placeholder=""
-                            aria-label="Source Category"
-                            @input="onCategoryInput">
-                            <template #default="{ menuItem }">
-                                {{ menuItem.label }}
-                            </template>
-                            <template #no-results>
-                                No results found
-                            </template>
-                        </cdx-lookup>
-                    </div>
-                    <div class="cbm-input-group cbm-column-one-third">
-                        <cdx-label
-                            input-id="cbm-title-pattern"
-                            class="cbm-label">
-                            In-title pattern
-                        </cdx-label>
-                        <cdx-text-input
-                            id="cbm-title-pattern"
-                            v-model="titlePattern"
-                            :disabled="searchPattern.trim() !== ''"
-                            placeholder="e.g. ,BLR.svg" />
-                    </div>
-                </div>
-                <div class="cbm-input-group">
+    <div class="cbm-search-panel">
+        <div class="cbm-input-group cbm-two-column-row">
+            <div class="cbm-input-group cbm-column-two-thirds">
+                <cdx-label
+                    input-id="cbm-source-category"
+                    class="cbm-label">
+                    Source Category
+                </cdx-label>
+                <cdx-lookup
+                    id="cbm-source-category"
+                    v-model:input-value="sourceCategory"
+                    v-model:selected="selectedCategory"
+                    :menu-items="categoryMenuItems"
+                    :menu-config="categoryMenuConfig"
+                    :disabled="searchPattern.trim() !== ''"
+                    placeholder=""
+                    aria-label="Source Category"
+                    @input="onCategoryInput">
+                    <template #default="{ menuItem }">
+                        {{ menuItem.label }}
+                    </template>
+                    <template #no-results> No results found </template>
+                </cdx-lookup>
+            </div>
+            <div class="cbm-input-group cbm-column-one-third">
+                <cdx-label
+                    input-id="cbm-title-pattern"
+                    class="cbm-label">
+                    In-title pattern
+                </cdx-label>
+                <cdx-text-input
+                    id="cbm-title-pattern"
+                    v-model="titlePattern"
+                    :disabled="searchPattern.trim() !== ''"
+                    placeholder="e.g. ,BLR.svg" />
+            </div>
+        </div>
+        <div class="cbm-input-group">
+            <div class="cbm-input-button-group">
+                <div class="cbm-search-pattern-wrap">
                     <cdx-label
                         input-id="cbm-search-pattern"
                         class="cbm-label">
                         Or search pattern
                     </cdx-label>
                     <span class="cbm-help-text">
-                        (e.g., <code>
-                        incategory:"CC-BY-4.0" Our World in Data -incategory:"Uploaded by OWID importer tool"</code>)
+                        (e.g.,
+                        <code>
+                            incategory:"CC-BY-4.0" Our World in Data
+                            -incategory:"Uploaded by OWID importer tool"</code
+                        >)
                     </span>
-                    <div class="cbm-input-button-group">
-                        <div class="cbm-search-pattern-wrap">
-                            <cdx-text-input
-                                id="cbm-search-pattern"
-                                v-model="searchPattern"
-                                placeholder="" />
-                        </div>
-                        <div class="cbm-limit-wrap">
-                            <cdx-text-input
-                                id="cbm-search-limit"
-                                v-model.number="searchLimit"
-                                type="number"
-                                min="1"
-                                max="10000"
-                                placeholder="Limit default: max" />
-                        </div>
-                    </div>
-                    <div class="cbm-search-btn-wrap">
-                        <cdx-button
-                            v-if="!isSearching"
-                            action="progressive"
-                            weight="primary"
-                            @click="searchFiles">
-                            Search
-                        </cdx-button>
-                        <cdx-button
-                            v-if="isSearching"
-                            action="destructive"
-                            weight="primary"
-                            @click="stopSearch">
-                            Stop
-                        </cdx-button>
-                    </div>
+                    <cdx-text-input
+                        id="cbm-search-pattern"
+                        v-model="searchPattern"
+                        placeholder="" />
+                </div>
+                <div class="cbm-limit-wrap">
+                    <cdx-label
+                        input-id="cbm-search-limit"
+                        class="cbm-label">
+                        Limit
+                    </cdx-label>
+                    <span class="cbm-help-text">
+                        a
+                    </span>
+                    <cdx-text-input
+                        id="cbm-search-limit"
+                        v-model.number="searchLimit"
+                        type="number"
+                        min="1"
+                        max="10000"
+                        placeholder="Limit default: max" />
                 </div>
             </div>
+            <div class="cbm-search-btn-wrap">
+                <cdx-button
+                    v-if="!isSearching"
+                    action="progressive"
+                    weight="primary"
+                    @click="searchFiles">
+                    Search
+                </cdx-button>
+                <cdx-button
+                    v-if="isSearching"
+                    action="destructive"
+                    weight="primary"
+                    @click="stopSearch">
+                    Stop
+                </cdx-button>
+            </div>
+        </div>
+    </div>
         `,
 
         methods: {
