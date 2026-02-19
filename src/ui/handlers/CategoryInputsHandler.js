@@ -21,13 +21,13 @@ class CategoryInputsHandler {
     async onCategoryInput(value, CategoryInput, input_type = 'add') {
         // Clear menu items if the input was cleared.
         if (!value) {
-            console.warn(`${input_type} category input cleared, clearing menu items.`);
+            // console.warn(`${input_type} category input cleared, clearing menu items.`);
             return [];
         }
 
         // If empty, clear menu items
         if (!value || value.trim().length < 2) {
-            console.warn(`${input_type} category input too short, clearing menu items.`);
+            // console.warn(`${input_type} category input too short, clearing menu items.`);
             return [];
         }
 

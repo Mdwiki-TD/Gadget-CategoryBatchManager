@@ -94,7 +94,7 @@ Rate limiting is handled at TWO levels:
 
 3. **`BatchProcessor.processBatch()`** - Uses `RateLimiter.batch()` to process files in concurrent batches with inter-batch delays
 
-**Important:** Always use `BatchProcessor.processBatch()` for edits, never call `CategoryService.updateCategories()` directly in a loop.
+**Important:** Always use `BatchProcessor.processBatch()` for edits, never call `CategoryService.updateCategoriesOptimized()` directly in a loop.
 
 ### 4. Vue Component Pattern
 

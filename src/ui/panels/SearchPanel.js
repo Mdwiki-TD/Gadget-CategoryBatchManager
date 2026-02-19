@@ -14,6 +14,10 @@ function SearchPanel() {
             defaultCategory: {
                 type: String,
                 default: ''
+            },
+            api: {
+                type: Object,
+                required: true
             }
         },
         data() {
@@ -30,6 +34,11 @@ function SearchPanel() {
                 isSearching: false,
                 searchProgressText: '',
                 searchProgressPercent: 0,
+
+                // ── Category lookup state ───────────────────────────────
+                categoryMenuItems: [],
+                categoryMenuConfig: { boldLabel: true, visibleItemLimit: 10 },
+                selectedCategory: '',
             };
         },
         emits: ['show-warning-message', 'update:work-files', 'update:source-category', 'update:search-progress-percent', 'update:search-progress-text'],
@@ -43,11 +52,23 @@ function SearchPanel() {
                             class="cbm-label">
                             Source Category
                         </cdx-label>
-                        <cdx-text-input
+                        <cdx-lookup
                             id="cbm-source-category"
-                            v-model="sourceCategory"
+                            v-model:input-value="sourceCategory"
+                            v-model:selected="selectedCategory"
+                            :menu-items="categoryMenuItems"
+                            :menu-config="categoryMenuConfig"
                             :disabled="searchPattern.trim() !== ''"
-                            placeholder="Category:Our World in Data graphs of Austria" />
+                            placeholder=""
+                            aria-label="Source Category"
+                            @input="onCategoryInput">
+                            <template #default="{ menuItem }">
+                                {{ menuItem.label }}
+                            </template>
+                            <template #no-results>
+                                {{ sourceCategory.length < 2 ? 'Type at least 2 characters to search' : 'No results found' }}
+                            </template>
+                        </cdx-lookup>
                     </div>
                     <div class="cbm-input-group cbm-column-one-third">
                         <cdx-label
@@ -84,7 +105,7 @@ function SearchPanel() {
                             min="1"
                             max="10000"
                             class="cbm-limit-input"
-                            placeholder="Limit" />
+                            placeholder="Limit default: max" />
                         <cdx-button
                             v-if="!isSearching"
                             action="progressive"
@@ -106,11 +127,30 @@ function SearchPanel() {
 
         methods: {
             /**
+             * Handle category input for autocomplete.
+             */
+            async onCategoryInput(value) {
+                this.selectedCategory = '';
+                if (!value || value.length < 2) {
+                    this.categoryMenuItems = [];
+                    return;
+                }
+
+                try {
+                    const categories = await this.api.fetchCategories(value, { limit: 10 });
+                    this.categoryMenuItems = categories;
+                } catch (error) {
+                    this.categoryMenuItems = [];
+                }
+            },
+
+            /**
              * Initiate a file search.
              * Registers callbacks on the handler then delegates the work.
              */
             async searchFiles() {
-                if (!this.sourceCategory.trim() && !this.searchPattern.trim()) {
+                const hasCategory = this.selectedCategory || this.sourceCategory?.trim();
+                if (!hasCategory && !this.searchPattern?.trim()) {
                     this.$emit('show-warning-message', 'Please enter a source category or search pattern.');
                     return;
                 }
@@ -138,7 +178,7 @@ function SearchPanel() {
                 this.isSearching = true;
                 this.searchProgressText = '';
                 this.searchProgressPercent = 0;
-                this.$emit('update:source-category', this.sourceCategory);
+                this.$emit('update:source-category', this.selectedCategory || this.sourceCategory.trim());
                 this.$emit('update:search-progress-text', '');
                 this.$emit('update:search-progress-percent', 0);
 
@@ -147,7 +187,7 @@ function SearchPanel() {
                 this.$emit('update:work-files', this.workFiles);
 
                 await this.searchHandler.startSearch(
-                    this.sourceCategory,
+                    this.selectedCategory || this.sourceCategory.trim(),
                     this.titlePattern,
                     this.searchPattern,
                     this.searchLimit

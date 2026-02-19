@@ -93,7 +93,7 @@ class BatchProcessor {
             if (this.shouldStop) return;
 
             try {
-                const result = await this.category_service.updateCategories(
+                const result = await this.category_service.updateCategoriesOptimized(
                     file.title,
                     categoriesToAdd,
                     categoriesToRemove

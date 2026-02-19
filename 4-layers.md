@@ -513,7 +513,7 @@ class BatchOperationService {
                 await this.rateLimiter.wait(2000);
 
                 // Update categories
-                const result = await this.categoryService.updateCategories(
+                const result = await this.categoryService.updateCategoriesOptimized(
                     file.title,
                     categoriesToAdd,
                     categoriesToRemove

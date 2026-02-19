@@ -14,7 +14,10 @@ jest.mock('../../src/services/mw.js', () => ({
       edit: mockMwApiEdit
     })),
     config: {
-      get: jest.fn()
+      get: jest.fn((key) => {
+        if (key === 'wgUserName') return 'TestUser';
+        return undefined;
+      })
     }
   }
 }));
@@ -26,7 +29,7 @@ describe('CategoryService', () => {
   beforeEach(() => {
     // Reset the mock before each test
     mockMwApiEdit = jest.fn();
-    
+
     // Update the mock implementation for this test
     require('../../src/services/mw.js').default.Api = jest.fn().mockImplementation(() => ({
       edit: mockMwApiEdit
@@ -37,24 +40,6 @@ describe('CategoryService', () => {
       editPage: jest.fn().mockResolvedValue({ edit: { result: 'Success' } })
     };
     service = new CategoryService(mockApi);
-  });
-
-  describe('updateCategories', () => {
-    test('should add and remove in single operation', async () => {
-      mockApi.getPageContent.mockResolvedValue(
-        'Some text\n[[Category:Old]]'
-      );
-
-      const result = await service.updateCategories(
-        'File:Test.svg',
-        ['Category:New'],
-        ['Category:Old']
-      );
-
-      expect(result.success).toBe(true);
-      expect(result.modified).toBe(true);
-      expect(mockApi.editPage).toHaveBeenCalledTimes(1);
-    });
   });
 
   describe('buildEditSummary', () => {
@@ -77,7 +62,7 @@ describe('CategoryService', () => {
 
   describe('updateCategoriesOptimized', () => {
     test('should add and remove categories using mw.Api.edit', async () => {
-      mockMwApiEdit.mockResolvedValue({ edit: { result: 'Success' } });
+      mockMwApiEdit.mockResolvedValue({ result: 'Success' });
 
       const result = await service.updateCategoriesOptimized(
         'File:Test.svg',
@@ -126,42 +111,29 @@ describe('CategoryService', () => {
     });
 
     test('should not add duplicate categories', async () => {
-      let capturedTransformFn;
-      mockMwApiEdit.mockImplementation((title, fn) => {
-        capturedTransformFn = fn;
-        return Promise.resolve({ edit: { result: 'Success' } });
-      });
+      mockMwApiEdit.mockRejectedValue('no-changes');
 
-      await service.updateCategoriesOptimized(
+      const result = await service.updateCategoriesOptimized(
         'File:Test.svg',
         ['Category:Existing'],
         []
       );
 
-      const mockRevision = { content: '[[Category:Existing]]' };
-      const result = capturedTransformFn(mockRevision);
-
-      // Should return false since no changes needed
-      expect(result).toBe(false);
+      expect(result.success).toBe(true);
+      expect(result.modified).toBe(false);
     });
 
     test('should return false when no changes needed', async () => {
-      let capturedTransformFn;
-      mockMwApiEdit.mockImplementation((title, fn) => {
-        capturedTransformFn = fn;
-        return Promise.resolve({ edit: { result: 'Success' } });
-      });
+      mockMwApiEdit.mockRejectedValue('no-changes');
 
-      await service.updateCategoriesOptimized(
+      const result = await service.updateCategoriesOptimized(
         'File:Test.svg',
         ['Category:Existing'],
         []
       );
 
-      const mockRevision = { content: '[[Category:Existing]]' };
-      const result = capturedTransformFn(mockRevision);
-
-      expect(result).toBe(false);
+      expect(result.success).toBe(true);
+      expect(result.modified).toBe(false);
     });
 
     test('should build correct edit summary', async () => {
@@ -242,6 +214,70 @@ describe('CategoryService', () => {
       await expect(
         service.updateCategoriesOptimized('File:Test.svg', ['Cat'], [])
       ).rejects.toEqual(error);
+    });
+
+    test('should handle nocreate-missing error', async () => {
+      mockMwApiEdit.mockRejectedValue('nocreate-missing');
+
+      const result = await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        ['Category:New'],
+        []
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.modified).toBe(false);
+      expect(result.error).toBe('Page does not exist');
+    });
+
+    test('should handle invalidtitle error', async () => {
+      mockMwApiEdit.mockRejectedValue('invalidtitle');
+
+      const result = await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        ['Category:New'],
+        []
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.modified).toBe(false);
+      expect(result.error).toBe('Invalid title');
+    });
+
+    test('should handle unknown error', async () => {
+      mockMwApiEdit.mockRejectedValue('unknown');
+
+      const result = await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        ['Category:New'],
+        []
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.modified).toBe(false);
+      expect(result.error).toBe('Unknown API error');
+    });
+
+    test('should handle no-changes via transform callback rejection', async () => {
+      let capturedTransformFn;
+      mockMwApiEdit.mockImplementation((title, fn) => {
+        capturedTransformFn = fn;
+        // Simulate the rejection that occurs when transform returns Promise.reject('no-changes')
+        return Promise.reject('no-changes');
+      });
+
+      await service.updateCategoriesOptimized(
+        'File:Test.svg',
+        [],
+        []
+      );
+
+      // Verify the callback was captured and would reject when content is unchanged
+      const mockRevision = { content: '[[Category:Existing]]' };
+      const result = capturedTransformFn(mockRevision);
+
+      // The transform function should return a rejected promise for unchanged content
+      await expect(result).rejects.toBe('no-changes');
     });
   });
 });

@@ -141,15 +141,6 @@ describe('CategoryInputsHandler', () => {
       expect(mockApiService.fetchCategories).toHaveBeenCalledWith('test');
     });
 
-    test('should use custom input_type in console warnings', async () => {
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
-
-      await handler.onCategoryInput('', '', 'remove');
-
-      expect(consoleWarnSpy).toHaveBeenCalledWith('remove category input cleared, clearing menu items.');
-
-      consoleWarnSpy.mockRestore();
-    });
   });
 
   describe('onLoadMore', () => {

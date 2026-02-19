@@ -30,47 +30,17 @@ class CategoryService {
         return `${parts.join('; ')} (via Category Batch Manager)`;
     }
     /**
-     * Combined add and remove operation
+     * Combined add and remove operation using mw.Api.edit() for better conflict handling.
+     * Relies on mw.Api.edit internals:
+     *   - callback receives { timestamp, content } (content = revision.slots.main.content)
+     *   - callback must return { text, summary, minor } or a Promise resolving to one
+     *   - returning $.Deferred().reject() aborts the edit chain cleanly
+     *   - final resolved value is data.edit = { result: "Success", ... }
+     *
      * @param {string} fileTitle - File page title
      * @param {Array<string>} toAdd - Categories to add
      * @param {Array<string>} toRemove - Categories to remove
-     * @returns {Promise<{success: boolean, modified: boolean}>}
-     */
-    async updateCategories(fileTitle, toAdd, toRemove) {
-        const wikitext = await this.api.getPageContent(fileTitle);
-        if (!wikitext) {
-            return { success: false, modified: false };
-        }
-        let newWikitext = wikitext;
-
-        // Remove first
-        for (const category of toRemove) {
-            newWikitext = this.parser.removeCategory(newWikitext, category);
-        }
-
-        // Then add
-        for (const category of toAdd) {
-            if (!this.parser.hasCategory(newWikitext, category)) {
-                newWikitext = this.parser.addCategory(newWikitext, category);
-            }
-        }
-        let success = true;
-        if (newWikitext !== wikitext) {
-            const summary = this.buildEditSummary(toAdd, toRemove);
-            const result = await this.api.editPage(fileTitle, newWikitext, summary);
-            success = result && result.edit && result.edit.result === 'Success';
-        }
-
-        return { success: success, modified: newWikitext !== wikitext };
-    }
-
-    /**
-     * TODO: use it in the workflow
-     * Combined add and remove operation using mw.Api.edit() for better conflict handling
-     * @param {string} fileTitle - File page title
-     * @param {Array<string>} toAdd - Categories to add
-     * @param {Array<string>} toRemove - Categories to remove
-     * @returns {Promise<{success: boolean, modified: boolean}>}
+     * @returns {Promise<{success: boolean, modified: boolean, error?: string}>}
      */
     async updateCategoriesOptimized(fileTitle, toAdd, toRemove) {
         const api = new mw.Api();
@@ -78,7 +48,8 @@ class CategoryService {
         const buildEditSummary = this.buildEditSummary.bind(this);
 
         try {
-            await api.edit(fileTitle, function (revision) {
+            const editResult = await api.edit(fileTitle, function (revision) {
+                // revision.content = revision.slots.main.content (mapped by mw.Api.edit)
                 let newWikitext = revision.content;
 
                 // Remove categories first
@@ -93,28 +64,50 @@ class CategoryService {
                     }
                 }
 
-                // Only save if changed
+                // Abort cleanly if no changes — returning false would stringify to "false"
+                // and overwrite the page, so we reject the promise chain instead.
                 if (newWikitext === revision.content) {
-                    return false; // No changes needed
+                    return Promise.reject('no-changes');
                 }
-
                 const summary = buildEditSummary(toAdd, toRemove);
                 return {
                     text: newWikitext,
                     summary: summary,
-                    minor: false
+                    minor: false,
+                    assert: mw.config.get('wgUserName') ? 'user' : undefined,
+                    nocreate: true
                 };
             });
 
-            return { success: true, modified: true };
+            // editResult = data.edit = { result: "Success", pageid, title, ... }
+            return {
+                success: editResult.result === 'Success',
+                modified: true
+            };
+
         } catch (error) {
-            if (error.message && error.message.includes('no changes')) {
+
+            // Handle specific error codes from mw.Api
+            if (error === 'nocreate-missing') {
+                return { success: false, modified: false, error: 'Page does not exist' };
+            }
+            if (error === 'invalidtitle') {
+                return { success: false, modified: false, error: 'Invalid title' };
+            }
+            if (error === 'unknown') {
+                return { success: false, modified: false, error: 'Unknown API error' };
+            }
+            // Thrown by our $.Deferred().reject('no-changes') above
+            if (error === 'no-changes') {
+                return { success: true, modified: false };
+            }
+            // MediaWiki API "no changes" error (edge case from server side)
+            if (error && error.message && error.message.includes('no changes')) {
                 return { success: true, modified: false };
             }
             throw error;
         }
     }
-
     categoryLink(category) {
         const catName = category.startsWith('Category:') ? category.slice(9) : category;
         return `[[Category:${catName}]]`;

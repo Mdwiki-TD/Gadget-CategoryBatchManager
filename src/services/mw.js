@@ -118,7 +118,7 @@ class Api {
 const config = {
     get: (key) => {
         const configData = {
-            wgPageName: 'Category:Our World in Data graphs of Austria',
+            wgPageName: '',
             wgUserName: 'ExampleUser',
             wgCanonicalNamespace: 'Category',
             wgUserGroups: ['*'],
