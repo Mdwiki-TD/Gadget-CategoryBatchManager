@@ -107,9 +107,7 @@ function SearchPanel() {
                         class="cbm-label">
                         Limit
                     </cdx-label>
-                    <span class="cbm-help-text">
-                        a
-                    </span>
+                    <span class="cbm-help-text"> </span>
                     <cdx-text-input
                         id="cbm-search-limit"
                         v-model.number="searchLimit"

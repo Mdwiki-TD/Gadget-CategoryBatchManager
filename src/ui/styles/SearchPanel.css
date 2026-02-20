@@ -1,5 +1,20 @@
 /* ==================== SearchPanel Styles ==================== */
 
+.cdx-fields {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    @media screen and (min-width: 768px) {
+        flex-direction: row;
+    }
+    /* Disable margin-top on all nested fields. */
+    .cdx-field {
+        margin-top: 0;
+    }
+}
+
 .cbm-input-group {
     margin-bottom: 15px;
 }
