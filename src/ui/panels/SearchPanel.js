@@ -27,7 +27,7 @@ function SearchPanel() {
                 sourceCategory: this.defaultCategory,
                 titlePattern: '',
                 searchPattern: '',
-                searchLimit: 5000,
+                searchLimit: 50,
 
                 workFiles: [],
                 // ── UI state (mirrors handler state via callbacks) ────────

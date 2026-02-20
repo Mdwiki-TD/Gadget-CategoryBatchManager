@@ -23,6 +23,24 @@
     margin-bottom: 20px;
 }
 
+/* Tabs header with layout toggle - used by BatchManagerWrappers */
+.cbm-tabs-header {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+}
+
+.cbm-tabs-header .cdx-tabs {
+    flex: 1;
+}
+
+.cbm-layout-toggle-btn {
+    margin-left: 8px;
+    margin-top: 6px;
+    font-family: monospace;
+    white-space: nowrap;
+}
+
 /* ==================== Mobile Responsive Styles ==================== */
 
 @media screen and (max-width: 768px) {

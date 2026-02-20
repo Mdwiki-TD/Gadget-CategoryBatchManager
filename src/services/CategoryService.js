@@ -102,10 +102,6 @@ class CategoryService {
             if (error === 'no-changes') {
                 return { success: true, modified: false };
             }
-            // Tag not defined/active on this wiki — treat as a soft config error
-            if (error === 'tags-apply-not-allowed-one' || error === 'tags-apply-not-allowed') {
-                return { success: false, modified: false, error: 'Change tag "CategoryBatchManager" is not defined on this wiki. Please create it via Special:Tags.' };
-            }
             // MediaWiki API "no changes" error (edge case from server side)
             if (error && error.message && error.message.includes('no changes')) {
                 return { success: true, modified: false };

@@ -148,6 +148,24 @@ function ExecutePanel() {
                                 `Processing ${results.processed} of ${results.total}... ` +
                                 `(${results.successful} successful, ${results.skipped} skipped, ${results.failed} failed)`
                             );
+                        },
+
+                        /**
+                         * File completion callback
+                         * @param {Object} file - Processed file
+                         * @param {boolean} success - Whether processing succeeded
+                         */
+                        onFileComplete: (file, success) => {
+                            console.log(`[CBM-E] ${success ? '✓' : '⊘'} ${file.title}`);
+                        },
+
+                        /**
+                         * Error callback
+                         * @param {Object} file - File that failed
+                         * @param {Error} error - Error object
+                         */
+                        onError: (file, error) => {
+                            console.error(`[CBM-E] ✗ ${file.title}:`, error?.message || error);
                         }
                     };
 
