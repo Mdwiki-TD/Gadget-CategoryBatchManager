@@ -29,4 +29,3 @@ dist-ssr
 /demo
 package-lock.json
 .claude/settings.json
-src/ui/panels/SearchPanel.vue

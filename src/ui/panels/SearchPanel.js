@@ -45,15 +45,17 @@ function SearchPanel() {
 
         template: `
     <div class="cbm-search-panel">
-        <div class="cbm-input-group cbm-two-column-row">
-            <div class="cbm-input-group cbm-column-two-thirds">
-                <cdx-label
-                    input-id="cbm-source-category"
-                    class="cbm-label">
+        <div class="cdx-fields ">
+            <!-- :status="weightStatus"
+                :messages="weightMessages" -->
+            <cdx-field
+                class="cbm-column-two-thirds"
+                >
+                <template #label>
                     Source Category
-                </cdx-label>
+                </template>
+                <template #description></template>
                 <cdx-lookup
-                    id="cbm-source-category"
                     v-model:input-value="sourceCategory"
                     v-model:selected="selectedCategory"
                     :menu-items="categoryMenuItems"
@@ -67,56 +69,51 @@ function SearchPanel() {
                     </template>
                     <template #no-results> No results found </template>
                 </cdx-lookup>
-            </div>
-            <div class="cbm-input-group cbm-column-one-third">
-                <cdx-label
-                    input-id="cbm-title-pattern"
-                    class="cbm-label">
-                    In-title pattern
-                </cdx-label>
+            </cdx-field>
+            <cdx-field
+                class="cbm-column-one-third"
+            >
+                <template #label> In-title pattern </template>
+                <template #description></template>
+                <template #help-text> </template>
                 <cdx-text-input
-                    id="cbm-title-pattern"
                     v-model="titlePattern"
                     :disabled="searchPattern.trim() !== ''"
                     placeholder="e.g. ,BLR.svg" />
-            </div>
+            </cdx-field>
+        </div>
+
+        <div class="cdx-fields cdx-fields-second-set">
+            <cdx-field
+                class="cbm-column-two-thirds"
+                >
+                <template #label> Or search pattern </template>
+                <template #description></template>
+                <cdx-text-input
+                    id="cbm-search-pattern"
+                    v-model="searchPattern"
+                    placeholder="" />
+                <template #help-text>
+                (e.g., <code> incategory:"CC-BY-4.0" intitle:/Fair/</code >)
+                </template>
+            </cdx-field>
+            <cdx-field
+                class="cbm-column-one-third"
+            >
+                <template #label> Limit </template>
+                <template #description> </template>
+                <template #help-text></template>
+
+                <cdx-text-input
+                    id="cbm-search-limit"
+                    v-model.number="searchLimit"
+                    type="number"
+                    min="1"
+                    max="10000"
+                    placeholder="Limit default: max" />
+            </cdx-field>
         </div>
         <div class="cbm-input-group">
-            <div class="cbm-input-button-group">
-                <div class="cbm-search-pattern-wrap">
-                    <cdx-label
-                        input-id="cbm-search-pattern"
-                        class="cbm-label">
-                        Or search pattern
-                    </cdx-label>
-                    <span class="cbm-help-text">
-                        (e.g.,
-                        <code>
-                            incategory:"CC-BY-4.0" Our World in Data
-                            -incategory:"Uploaded by OWID importer tool"</code
-                        >)
-                    </span>
-                    <cdx-text-input
-                        id="cbm-search-pattern"
-                        v-model="searchPattern"
-                        placeholder="" />
-                </div>
-                <div class="cbm-limit-wrap">
-                    <cdx-label
-                        input-id="cbm-search-limit"
-                        class="cbm-label">
-                        Limit
-                    </cdx-label>
-                    <span class="cbm-help-text"> </span>
-                    <cdx-text-input
-                        id="cbm-search-limit"
-                        v-model.number="searchLimit"
-                        type="number"
-                        min="1"
-                        max="10000"
-                        placeholder="Limit default: max" />
-                </div>
-            </div>
             <div class="cbm-search-btn-wrap">
                 <cdx-button
                     v-if="!isSearching"

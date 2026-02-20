@@ -23,11 +23,6 @@
     margin-bottom: 20px;
 }
 
-.cbm-two-column-row {
-    display: flex;
-    gap: 16px;
-}
-
 .cbm-column-two-thirds {
     flex: 2;
 }
@@ -39,12 +34,6 @@
 /* ==================== Mobile Responsive Styles ==================== */
 
 @media screen and (max-width: 768px) {
-    /* Two column row: Stack on mobile */
-    .cbm-two-column-row {
-        flex-direction: column;
-        gap: 12px;
-    }
-
     .cbm-column-two-thirds,
     .cbm-column-one-third {
         flex: none;
