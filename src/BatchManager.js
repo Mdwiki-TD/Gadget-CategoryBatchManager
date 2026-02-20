@@ -39,7 +39,7 @@ function BatchManager() {
 
     // ── Template ─────────────────────────────────────────────────────────
     const template = `
-        <div class="cbm-main-layout-grid">
+        <div :class="filesIsCollapsed ? 'cbm-main-layout-expandable' : 'cbm-main-layout-grid'">
             <!-- Left Panel: Search and Actions -->
             <div class="cbm-left-panel-grid">
                 <!-- Search Section -->
@@ -52,6 +52,12 @@ function BatchManager() {
                     @update:source-category="sourceCategory = $event"
                     @update:search-progress-percent="searchProgressPercent = $event"
                     @update:search-progress-text="searchProgressText = $event" />
+
+                <!-- Search Progress Section -->
+                <ProgressBar v-if="filesIsCollapsed"
+                    :visible="searchProgressPercent > 0"
+                    :percent="searchProgressPercent"
+                    :text="searchProgressText" />
 
                 <!-- Actions Section -->
                 <div>
@@ -97,8 +103,10 @@ function BatchManager() {
             </div>
 
             <!-- Right Panel: File List -->
-            <div class="cbm-right-panel-grid">
-                <FilesListPanel :work-files="workFiles" />
+            <div class="cbm-right-panel-grid" v-if="!filesIsCollapsed">
+                <FilesListPanel
+                    :work-files="workFiles"
+                />
 
                 <!-- Search Progress Section -->
                 <ProgressBar
@@ -136,6 +144,16 @@ function BatchManager() {
 
     // ── App definition ────────────────────────────────────────────────────
     const app = {
+        props: {
+            filesIsCollapsed: {
+                type: Boolean,
+                default: false
+            },
+            workFiles: {
+                type: Array,
+                default: () => []
+            }
+        },
         data() {
             return {
                 api: api,
@@ -148,7 +166,7 @@ function BatchManager() {
                 // Category state (owned by parent)
                 addCategory: createLookupModel(),
                 removeCategory: createLookupModel(),
-                workFiles: [],
+                // workFiles: [],
 
                 // Execution progress state (for ProgressBar)
                 isProcessing: false,

@@ -4,6 +4,7 @@
  */
 
 import BatchManager from './BatchManager.js';
+import { FilesListPanel } from './ui/panels/index.js';
 import ReportsPanel from './ui/panels/ReportsPanel.js';
 import { DEFAULT_EXECUTION_SUMMARY } from './utils/Constants.js';
 
@@ -19,7 +20,16 @@ function BatchManagerDialog(portletLink) {
     const innerTemplate = `
         <cdx-tabs v-model:active="activeTab" :framed="true">
             <cdx-tab name="manager" label="Batch Manager">
-                <BatchManager @execution-complete="handleExecutionComplete" />
+                <BatchManager
+                    @execution-complete="handleExecutionComplete"
+                    :filesIsCollapsed="filesIsCollapsed"
+                    :work-files="workFiles"
+                />
+            </cdx-tab>
+            <cdx-tab name="files" label="Files" v-if="filesIsCollapsed">
+                <FilesListPanel
+                    :work-files="workFiles"
+                />
             </cdx-tab>
             <cdx-tab name="reports" label="Reports">
                 <ReportsPanel
@@ -51,6 +61,8 @@ function BatchManagerDialog(portletLink) {
                 showMainDialog: false,
                 activeTab: 'manager',
                 fileResults: [],
+                workFiles: [],
+                filesIsCollapsed: false,
                 executionSummary: { ...DEFAULT_EXECUTION_SUMMARY }
             };
         },
@@ -76,7 +88,8 @@ function BatchManagerDialog(portletLink) {
         },
         components: {
             BatchManager: BatchManager(),
-            ReportsPanel: ReportsPanel()
+            ReportsPanel: ReportsPanel(),
+            FilesListPanel: FilesListPanel(),
         },
     };
 
