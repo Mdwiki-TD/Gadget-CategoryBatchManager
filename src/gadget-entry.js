@@ -13,6 +13,9 @@ async function initApp(require) {
     if (!mountPoint) {
         if (mw.config.get('wgCanonicalNamespace') !== 'Category') return;
 
+        // work only in Desktop view
+        if (!document.getElementById('p-cactions') || document.getElementById('footer-places-desktop-toggle')) return;
+
         portletLink = mw.util.addPortletLink(
             'p-cactions',
             '#',
