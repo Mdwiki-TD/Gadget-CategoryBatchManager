@@ -69,9 +69,23 @@
     white-space: nowrap;
 }
 
+.cbm-column-two-thirds {
+    flex: 2;
+}
+
+.cbm-column-one-third {
+    flex: 1;
+}
+
 /* ==================== Mobile Responsive Styles ==================== */
 
 @media screen and (max-width: 768px) {
+    .cbm-column-two-thirds,
+    .cbm-column-one-third {
+        flex: none;
+        width: 100%;
+    }
+
     /* Input button group */
     .cbm-input-button-group {
         flex-direction: column;
