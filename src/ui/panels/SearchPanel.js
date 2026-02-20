@@ -45,11 +45,11 @@ function SearchPanel() {
 
         template: `
     <div class="cbm-search-panel">
-        <div class="cdx-fields ">
+        <div class="cdx-fields-3by4">
             <!-- :status="weightStatus"
                 :messages="weightMessages" -->
             <cdx-field
-                class="cbm-column-two-thirds"
+                class="cdx-field-3by4-3"
                 >
                 <template #label>
                     Source Category
@@ -71,7 +71,7 @@ function SearchPanel() {
                 </cdx-lookup>
             </cdx-field>
             <cdx-field
-                class="cbm-column-one-third"
+                class="cdx-field-3by4-1"
             >
                 <template #label> In-title pattern </template>
                 <template #description></template>
@@ -113,7 +113,7 @@ function SearchPanel() {
                     placeholder="Limit default: max" />
             </cdx-field>
         </div>
-        <div class="cbm-input-group">
+        <div class="cbm-search-btn">
             <div class="cbm-search-btn-wrap">
                 <cdx-button
                     v-if="!isSearching"

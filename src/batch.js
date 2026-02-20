@@ -60,7 +60,7 @@ const App = {
         BatchManagerComponent,
     },
     template: `
-        <div class="cbm-container cbm-container2">
+        <div class="cbm-container2">
             <h2 class="cbm-title">Category Batch Manager</h2>
             <BatchManagerComponent />
         </div>

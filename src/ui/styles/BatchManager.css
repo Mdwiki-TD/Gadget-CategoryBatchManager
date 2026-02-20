@@ -30,6 +30,15 @@
 /* ── Main Layout: Two Column ── */
 .cbm-main-layout {
     display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+    margin-top: 1rem;
+}
+
+.cbm-main-layout-grid {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
     gap: 20px;
     height: 100%;
     margin-top: 1rem;
@@ -39,16 +48,31 @@
     flex: 2;
     display: flex;
     flex-direction: column;
+    min-width: 0;
     /* gap: 15px; */
     /* overflow-y: auto; */
-    min-width: 0;
 }
 
+.cbm-left-panel-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
 .cbm-right-panel {
     flex: 1;
     min-width: 0;
     display: flex;
     flex-direction: column;
+    border: 1px solid var(--border-color-base, #eaecf0);
+    border-radius: 2px;
+    background-color: var(--background-color-base, #f8f9fa);
+}
+
+.cbm-right-panel-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
     border: 1px solid var(--border-color-base, #eaecf0);
     border-radius: 2px;
     background-color: var(--background-color-base, #f8f9fa);
@@ -96,7 +120,11 @@
         flex-direction: column;
         gap: 15px;
     }
-
+    .cbm-main-layout-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
     .cbm-left-panel,
     .cbm-right-panel {
         flex: none;

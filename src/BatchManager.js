@@ -39,9 +39,9 @@ function BatchManager() {
 
     // ── Template ─────────────────────────────────────────────────────────
     const template = `
-        <div class="cbm-main-layout">
+        <div class="cbm-main-layout-grid">
             <!-- Left Panel: Search and Actions -->
-            <div class="cbm-left-panel">
+            <div class="cbm-left-panel-grid">
                 <!-- Search Section -->
                 <SearchPanel
                     :search-handler="search_handler"
@@ -97,7 +97,7 @@ function BatchManager() {
             </div>
 
             <!-- Right Panel: File List -->
-            <div class="cbm-right-panel">
+            <div class="cbm-right-panel-grid">
                 <FilesListPanel :work-files="workFiles" />
 
                 <!-- Search Progress Section -->

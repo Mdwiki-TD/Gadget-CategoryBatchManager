@@ -14,36 +14,12 @@
         margin-top: 0;
     }
 }
-
 .cdx-fields-second-set {
     margin-top: 1rem;
 }
 
-.cbm-input-group {
+.cbm-search-btn {
     margin-bottom: 15px;
-}
-
-.cbm-help-text {
-    display: block;
-    font-size: 0.875em;
-    margin-bottom: 5px;
-}
-
-.cbm-input-button-group {
-    display: flex;
-    gap: 8px;
-    align-items: stretch;
-}
-
-/* 80% pattern | 10% limit | 10% search button  (flex-grow ratio 8:1:1) */
-.cbm-search-pattern-wrap {
-    flex: 8 1 0;
-    min-width: 0;
-}
-
-.cbm-limit-wrap {
-    flex: 1 1 0;
-    min-width: 0;
 }
 
 .cbm-search-btn-wrap {
@@ -53,22 +29,21 @@
     align-items: stretch;
 }
 
-/* Make inputs fill their wrapper fully */
-.cbm-search-pattern-wrap .cdx-text-input,
-.cbm-limit-wrap .cdx-text-input {
-    width: 100%;
-}
-
-.cbm-limit-wrap .cdx-text-input .cdx-text-input__input {
-    width: 30%;
-}
-
 /* Make button fill its wrapper fully */
 .cbm-search-btn-wrap .cdx-button {
     width: 100%;
     white-space: nowrap;
 }
 
+.cdx-fields-3by4 {
+    gap: 0.5rem;
+    grid-template-columns: 3fr 1fr;
+    display: grid;
+}
+.cdx-fields-3by4 .cdx-field {
+    flex: auto;
+    margin-top: 0;
+}
 .cbm-column-two-thirds {
     flex: 2;
 }
@@ -80,30 +55,23 @@
 /* ==================== Mobile Responsive Styles ==================== */
 
 @media screen and (max-width: 768px) {
+    .cdx-fields-3by4 {
+        display: flex;
+        flex-direction: column;
+    }
     .cbm-column-two-thirds,
     .cbm-column-one-third {
         flex: none;
         width: 100%;
     }
 
-    /* Input button group */
-    .cbm-input-button-group {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .cbm-search-pattern-wrap,
-    .cbm-limit-wrap,
     .cbm-search-btn-wrap {
+        width: 100%;
         flex: 1 1 100%;
         min-width: 0;
     }
 
     .cbm-search-btn-wrap .cdx-button {
-        width: 100%;
-    }
-
-    .cbm-limit-wrap .cdx-text-input .cdx-text-input__input {
         width: 100%;
     }
 }
