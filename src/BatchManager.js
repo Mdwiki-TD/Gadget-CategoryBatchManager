@@ -148,10 +148,6 @@ function BatchManager() {
             filesIsCollapsed: {
                 type: Boolean,
                 default: false
-            },
-            workFiles: {
-                type: Array,
-                default: () => []
             }
         },
         data() {
@@ -166,7 +162,7 @@ function BatchManager() {
                 // Category state (owned by parent)
                 addCategory: createLookupModel(),
                 removeCategory: createLookupModel(),
-                // workFiles: [],
+                workFiles: [],
 
                 // Execution progress state (for ProgressBar)
                 isProcessing: false,

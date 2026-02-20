@@ -23,7 +23,6 @@ function BatchManagerDialog(portletLink) {
                 <BatchManager
                     @execution-complete="handleExecutionComplete"
                     :filesIsCollapsed="filesIsCollapsed"
-                    :work-files="workFiles"
                 />
             </cdx-tab>
             <cdx-tab name="files" label="Files" v-if="filesIsCollapsed">
