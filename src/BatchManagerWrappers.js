@@ -18,21 +18,15 @@ import { DEFAULT_EXECUTION_SUMMARY } from './utils/Constants.js';
 function BatchManagerDialog(portletLink) {
 
     const innerTemplate = `
-        <cdx-tabs v-model:active="activeTab" :framed="true">
-            <cdx-tab name="manager" label="Batch Manager">
-                <div class="cbm-layout-toggle">
-                    <cdx-toggle-switch
-                        v-model="filesIsCollapsed"
-                        :align-switch="true">
-                        Collapse files to separate tab
-                    </cdx-toggle-switch>
-                </div>
-                <BatchManager
-                    @execution-complete="handleExecutionComplete"
-                    @update:work-files="workFiles = $event"
-                    :filesIsCollapsed="filesIsCollapsed"
-                />
-            </cdx-tab>
+        <div class="cbm-tabs-header">
+            <cdx-tabs v-model:active="activeTab" :framed="true">
+                <cdx-tab name="manager" label="Batch Manager">
+                    <BatchManager
+                        @execution-complete="handleExecutionComplete"
+                        @update:work-files="workFiles = $event"
+                        :filesIsCollapsed="filesIsCollapsed"
+                    />
+                </cdx-tab>
             <cdx-tab name="files" label="Files" v-if="filesIsCollapsed">
                 <FilesListPanel
                     :work-files="workFiles"
@@ -45,6 +39,15 @@ function BatchManagerDialog(portletLink) {
                 />
             </cdx-tab>
         </cdx-tabs>
+        <cdx-button
+            class="cbm-layout-toggle-btn"
+            @click="filesIsCollapsed = !filesIsCollapsed"
+            action="default"
+            weight="quiet"
+            size="small">
+            {{ filesIsCollapsed ? '▦' : '☰' }}
+        </cdx-button>
+        </div>
         `;
     const template = portletLink
         ? `<cdx-dialog
