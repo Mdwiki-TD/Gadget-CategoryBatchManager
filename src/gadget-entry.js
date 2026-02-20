@@ -45,6 +45,7 @@ async function initApp(require) {
         .component('cdx-tab', Codex.CdxTab)
         .component('cdx-tabs', Codex.CdxTabs)
         .component('cdx-field', Codex.CdxField)
+        .component('cdx-toggle-switch', Codex.CdxToggleSwitch)
         .mount('#category-batch-manager2');
 }
 

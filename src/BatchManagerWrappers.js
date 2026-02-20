@@ -20,6 +20,13 @@ function BatchManagerDialog(portletLink) {
     const innerTemplate = `
         <cdx-tabs v-model:active="activeTab" :framed="true">
             <cdx-tab name="manager" label="Batch Manager">
+                <div class="cbm-layout-toggle">
+                    <cdx-toggle-switch
+                        v-model="filesIsCollapsed"
+                        :align-switch="true">
+                        Collapse files to separate tab
+                    </cdx-toggle-switch>
+                </div>
                 <BatchManager
                     @execution-complete="handleExecutionComplete"
                     @update:work-files="workFiles = $event"

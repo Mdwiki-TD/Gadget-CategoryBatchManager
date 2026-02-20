@@ -23,6 +23,11 @@
     margin-bottom: 20px;
 }
 
+/* Layout toggle - used by BatchManagerWrappers */
+.cbm-layout-toggle {
+    padding: 10px 0;
+}
+
 /* ==================== Mobile Responsive Styles ==================== */
 
 @media screen and (max-width: 768px) {
