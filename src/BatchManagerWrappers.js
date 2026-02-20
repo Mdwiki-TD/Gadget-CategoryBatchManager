@@ -61,7 +61,7 @@ function BatchManagerDialog(portletLink) {
                 activeTab: 'manager',
                 fileResults: [],
                 workFiles: [],
-                filesIsCollapsed: false,
+                filesIsCollapsed: true,
                 executionSummary: { ...DEFAULT_EXECUTION_SUMMARY }
             };
         },
