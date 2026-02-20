@@ -48,6 +48,9 @@ class SearchHandler {
      * @return {string} - The constructed search pattern
      */
     createPattern(categoryName, titlePattern) {
+        if (!categoryName) {
+            return '';
+        }
         // Normalize category name
         // Replace spaces with underscores in category name for search API
         const searchCategoryName = categoryName.replace(/^Category:/i, '').replace(/\s+/g, '_');
