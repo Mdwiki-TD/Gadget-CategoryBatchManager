@@ -28,6 +28,7 @@ async function initApp(require) {
 
     const app = BatchManagerDialog(portletLink);
 
+    // @ts-ignore
     Vue.createMwApp(app)
         .component('cdx-text-input', Codex.CdxTextInput)
         .component('cdx-textarea', Codex.CdxTextArea)
@@ -43,6 +44,7 @@ async function initApp(require) {
         .component('cdx-lookup', Codex.CdxLookup)
         .component('cdx-tab', Codex.CdxTab)
         .component('cdx-tabs', Codex.CdxTabs)
+        .component('cdx-field', Codex.CdxField)
         .mount('#category-batch-manager2');
 }
 

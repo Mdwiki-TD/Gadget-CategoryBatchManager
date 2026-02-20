@@ -56,7 +56,6 @@ function ExecutePanel() {
         },
         emits: ['display-message', 'update:is-processing', 'update:progress-percent', 'update:progress-text', 'show-warning-message', 'show-success-message', 'show-error-message', 'execution-complete'],
         template: `
-            <div>
                 <cdx-button
                     v-if="!isProcessing"
                     @click="executeOperation"
@@ -81,7 +80,6 @@ function ExecutePanel() {
                     @default="openConfirmDialog = false">
                     <p>{{ confirmMessage }}</p>
                 </cdx-dialog>
-            </div>
         `,
         methods: {
             /**
