@@ -43,6 +43,11 @@
     height: 100%;
     margin-top: 1rem;
 }
+.cbm-main-layout-expandable {
+    gap: 20px;
+    height: 100%;
+    margin-top: 1rem;
+}
 
 .cbm-left-panel {
     flex: 2;

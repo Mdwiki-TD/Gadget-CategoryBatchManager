@@ -165,7 +165,7 @@ function ExecutePanel() {
                          * @param {Error} error - Error object
                          */
                         onError: (file, error) => {
-                            console.error(`[CBM-E] ✗ ${file.title}:`, error.message);
+                            console.error(`[CBM-E] ✗ ${file.title}:`, error?.message || error);
                         }
                     };
 
