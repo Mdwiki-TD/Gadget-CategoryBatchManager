@@ -48,7 +48,7 @@ function BatchManager() {
                     :default-category="defaultCategory"
                     :api="api"
                     @show-warning-message="showWarningMessage"
-                    @update:work-files="workFiles = $event"
+                    @update:work-files="onWorkFilesUpdate"
                     @update:source-category="sourceCategory = $event"
                     @update:search-progress-percent="searchProgressPercent = $event"
                     @update:search-progress-text="searchProgressText = $event" />
@@ -189,10 +189,16 @@ function BatchManager() {
             }
         },
 
-        emits: ['execution-complete'],
+        emits: ['execution-complete', 'update:work-files'],
 
         methods: {
             ...message_display_panel.methods,
+
+            // Handle work files update - emit to parent
+            onWorkFilesUpdate(files) {
+                this.workFiles = files;
+                this.$emit('update:work-files', files);
+            },
 
             // Helper for CategoryInputsPanel
             displayCategoryMessage(text, type = 'error', target = 'add') {

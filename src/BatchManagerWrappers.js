@@ -22,6 +22,7 @@ function BatchManagerDialog(portletLink) {
             <cdx-tab name="manager" label="Batch Manager">
                 <BatchManager
                     @execution-complete="handleExecutionComplete"
+                    @update:work-files="workFiles = $event"
                     :filesIsCollapsed="filesIsCollapsed"
                 />
             </cdx-tab>
