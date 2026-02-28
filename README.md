@@ -4,29 +4,32 @@ A Vue.js-based MediaWiki gadget for batch category management on Wikimedia Commo
 
 ## Features
 
-- **Search Files in Categories**
-  - Search by source category
-  - Filter by title pattern (regex support)
-  - Advanced search pattern support
-  - Configurable result limit (up to 10,000 files)
+-   **Search Files in Categories**
 
-- **Batch Category Operations**
-  - Add multiple categories at once
-  - Remove multiple categories at once
-  - Preview changes before execution
-  - Progress tracking with real-time updates
+    -   Search by source category
+    -   Filter by title pattern (regex support)
+    -   Advanced search pattern support
+    -   Configurable result limit (up to 10,000 files)
 
-- **Smart Features**
-  - Category autocomplete with live suggestions
-  - Circular category detection
-  - Duplicate category prevention
-  - Automatic rate limiting (discovers user limits from API)
+-   **Batch Category Operations**
 
-- **User Interface**
-  - Built with Vue.js 3
-  - Wikimedia Codex design system
-  - Dialog-based interface for Category pages
-  - Responsive layout
+    -   Add multiple categories at once
+    -   Remove multiple categories at once
+    -   Preview changes before execution
+    -   Progress tracking with real-time updates
+
+-   **Smart Features**
+
+    -   Category autocomplete with live suggestions
+    -   Circular category detection
+    -   Duplicate category prevention
+    -   Automatic rate limiting (discovers user limits from API)
+
+-   **User Interface**
+    -   Built with Vue.js 3
+    -   Wikimedia Codex design system
+    -   Dialog-based interface for Category pages
+    -   Responsive layout
 
 ## Preview at Wikimedia Commons
 
@@ -38,8 +41,8 @@ To install this tool on Wikimedia Commons:
 2. Add the following lines:
 
 ```javascript
-mw.loader.load('https://commons.wikimedia.org/wiki/User:Mr._Ibrahem/Gadget-CategoryBatchManager.js?action=raw&ctype=text/javascript');
-mw.loader.load('https://commons.wikimedia.org/wiki/User:Mr._Ibrahem/Gadget-CategoryBatchManager.css?action=raw&ctype=text/css', 'text/css');
+importScript("User:Mr._Ibrahem/Gadget-CategoryBatchManager.js");
+importStylesheet("User:Mr._Ibrahem/Gadget-CategoryBatchManager.css");
 ```
 
 3. Save the page.
@@ -60,39 +63,45 @@ node build.js
 ```
 
 This creates:
-- `dist/test3.js` - JavaScript bundle
-- `dist/test3.css` - CSS bundle
+
+-   `dist/test3.js` - JavaScript bundle
+-   `dist/test3.css` - CSS bundle
 
 #### 2. Create/Edit Gadget Pages on Wikimedia Commons
 
 Navigate to each page below, click "Edit source", and paste the contents:
 
 **JavaScript File:**
-- Go to: https://commons.wikimedia.org/wiki/MediaWiki:Gadget-CategoryBatchManager.js
-- Paste contents of `dist/test3.js`
-- Add summary: `Update Category Batch Manager to v1.1.1`
-- Click "Publish changes"
+
+-   Go to: https://commons.wikimedia.org/wiki/MediaWiki:Gadget-CategoryBatchManager.js
+-   Paste contents of `dist/test3.js`
+-   Add summary: `Update Category Batch Manager to v1.1.1`
+-   Click "Publish changes"
 
 **CSS File:**
-- Go to: https://commons.wikimedia.org/wiki/MediaWiki:Gadget-CategoryBatchManager.css
-- Paste contents of `dist/test3.css`
-- Add summary: `Update Category Batch Manager styles to v1.1.1`
-- Click "Publish changes"
+
+-   Go to: https://commons.wikimedia.org/wiki/MediaWiki:Gadget-CategoryBatchManager.css
+-   Paste contents of `dist/test3.css`
+-   Add summary: `Update Category Batch Manager styles to v1.1.1`
+-   Click "Publish changes"
 
 #### 3. Register the Gadget
 
 Edit the gadget definition file:
-- Go to: https://commons.wikimedia.org/wiki/MediaWiki:Gadgets-definition
-- Add the following line:
+
+-   Go to: https://commons.wikimedia.org/wiki/MediaWiki:Gadgets-definition
+-   Add the following line:
+
 ```
 * CategoryBatchManager[ResourceLoader|dependencies=@wikimedia/codex,mediawiki.api,vue|type=general|default]|CategoryBatchManager.js|CategoryBatchManager.css
 ```
 
 **Explanation of parameters:**
-- `ResourceLoader` - Uses ResourceLoader for efficient loading
-- `dependencies` - Required MediaWiki modules
-- `type=general` - Available for all users
-- `default` - Enabled by default for logged-in users
+
+-   `ResourceLoader` - Uses ResourceLoader for efficient loading
+-   `dependencies` - Required MediaWiki modules
+-   `type=general` - Available for all users
+-   `default` - Enabled by default for logged-in users
 
 #### 4. Enable and Test
 
@@ -125,19 +134,19 @@ npm run build
 
 ### Troubleshooting Deployment
 
-| Problem | Solution |
-|----------|----------|
-| Gadget doesn't appear | Check Gadgets-definition syntax, ensure dependencies are correct |
-| Console errors | Verify all files were copied correctly, check for syntax errors |
-| Styles not applied | Ensure CSS file name matches in Gadgets-definition |
-| Vue not loading | Check that `vue` is in dependencies list |
-| Codex components broken | Verify `@wikimedia/codex` is in dependencies |
+| Problem                 | Solution                                                         |
+| ----------------------- | ---------------------------------------------------------------- |
+| Gadget doesn't appear   | Check Gadgets-definition syntax, ensure dependencies are correct |
+| Console errors          | Verify all files were copied correctly, check for syntax errors  |
+| Styles not applied      | Ensure CSS file name matches in Gadgets-definition               |
+| Vue not loading         | Check that `vue` is in dependencies list                         |
+| Codex components broken | Verify `@wikimedia/codex` is in dependencies                     |
 
 ## Development
 
 ### Prerequisites
 
-- Node.js 16+ and npm
+-   Node.js 16+ and npm
 
 ### Setup
 
@@ -169,8 +178,9 @@ node build.js
 ### Build Output
 
 The `node build.js` command creates:
-- `dist/test3.js` - Concatenated JavaScript bundle
-- `dist/test3.css` - Concatenated CSS bundle
+
+-   `dist/test3.js` - Concatenated JavaScript bundle
+-   `dist/test3.css` - Concatenated CSS bundle
 
 **Note:** This project uses a custom build system (`build.js`) that concatenates source files in a specific order, stripping ES6 import/export statements for MediaWiki compatibility. Vite is used only for local development.
 
@@ -186,31 +196,33 @@ Handlers (orchestration + state management)
 Panels (pure UI - templates + v-model bindings)
 ```
 
-- **Services** (`src/services/`) - API interactions, business logic
-  - `APIService` - MediaWiki API wrapper with rate limiting
-  - `CategoryService` - Category operations
-  - `BatchProcessor` - Batch execution with rate limiting
-  - `SearchService` - File search operations
+-   **Services** (`src/services/`) - API interactions, business logic
 
-- **Handlers** (`src/ui/handlers/`) - Orchestration layer
-  - `SearchHandler` - Manages search workflow
-  - `ExecuteHandler` - Manages batch execution
-  - `CategoryInputsHandler` - Category input management
-  - `ProgressHandler` - Progress tracking
+    -   `APIService` - MediaWiki API wrapper with rate limiting
+    -   `CategoryService` - Category operations
+    -   `BatchProcessor` - Batch execution with rate limiting
+    -   `SearchService` - File search operations
 
-- **Panels** (`src/ui/panels/`) - Vue UI components
-  - `SearchPanel` - Search interface
-  - `CategoryInputsPanel` - Category selection
-  - `PreviewPanel` - Change preview
-  - `ExecutePanel` - Execution controls
-  - `FilesListPanel` - File list display
+-   **Handlers** (`src/ui/handlers/`) - Orchestration layer
+
+    -   `SearchHandler` - Manages search workflow
+    -   `ExecuteHandler` - Manages batch execution
+    -   `CategoryInputsHandler` - Category input management
+    -   `ProgressHandler` - Progress tracking
+
+-   **Panels** (`src/ui/panels/`) - Vue UI components
+    -   `SearchPanel` - Search interface
+    -   `CategoryInputsPanel` - Category selection
+    -   `PreviewPanel` - Change preview
+    -   `ExecutePanel` - Execution controls
+    -   `FilesListPanel` - File list display
 
 ### Key Patterns
 
-- **Factory functions** - All Vue components use factory pattern for fresh instances
-- **Dependency injection** - `BatchManager.js` is the composition root
-- **Category normalization** - Handles space/underscore equivalence (MediaWiki treats them identically)
-- **Rate limiting** - Dynamically discovers user limits and enforces concurrency
+-   **Factory functions** - All Vue components use factory pattern for fresh instances
+-   **Dependency injection** - `BatchManager.js` is the composition root
+-   **Category normalization** - Handles space/underscore equivalence (MediaWiki treats them identically)
+-   **Rate limiting** - Dynamically discovers user limits and enforces concurrency
 
 ## Testing
 
@@ -234,8 +246,9 @@ Tests use Jest and aim for 90%+ coverage.
 2. **Click "Batch Manager"** in the top menu (portlet link)
 
 3. **Search for files**:
-   - Enter a source category, or
-   - Use an advanced search pattern
+
+    - Enter a source category, or
+    - Use an advanced search pattern
 
 4. **Select categories** to add/remove using the autocomplete inputs
 
@@ -248,8 +261,9 @@ Tests use Jest and aim for 90%+ coverage.
 ## Debug Mode
 
 Add `?debug=1` to the URL to enable debug mode:
-- Console logging for API calls
-- Simulated edits (no actual changes made)
+
+-   Console logging for API calls
+-   Simulated edits (no actual changes made)
 
 ## Contributing
 
@@ -262,11 +276,11 @@ Add `?debug=1` to the URL to enable debug mode:
 
 ### Code Style
 
-- Use JSDoc for function documentation
-- Follow existing patterns (Service-Handler-Panel)
-- Use factory functions for Vue components
-- Normalize category names before comparisons
-- Always use `APIService` for API calls
+-   Use JSDoc for function documentation
+-   Follow existing patterns (Service-Handler-Panel)
+-   Use factory functions for Vue components
+-   Normalize category names before comparisons
+-   Always use `APIService` for API calls
 
 ## Known Issues
 
@@ -277,5 +291,6 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and resolved issues.
 MIT License - See LICENSE file for details
 
 ## Links
-- [Gadget page at Wikimedia Commons](https://commons.wikimedia.org/wiki/User:Mr._Ibrahem/Gadget-CategoryBatchManager)
-- [Wikimedia Codex Design System](https://doc.wikimedia.org/codex/latest/)
+
+-   [Gadget page at Wikimedia Commons](https://commons.wikimedia.org/wiki/User:Mr._Ibrahem/Gadget-CategoryBatchManager)
+-   [Wikimedia Codex Design System](https://doc.wikimedia.org/codex/latest/)
