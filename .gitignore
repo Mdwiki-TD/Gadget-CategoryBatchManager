@@ -11,7 +11,6 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
 dist-ssr
 *.local
 
@@ -25,7 +24,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-/dist
 /demo
 package-lock.json
 .claude/settings.json
+dist/*
+!dist/Gadget-CategoryBatchManager.js
+!dist/Gadget-CategoryBatchManager.css
