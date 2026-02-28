@@ -31,6 +31,7 @@ import {
     CdxTable,
     CdxLookup,
     CdxField,
+    CdxToggleSwitch,
 } from "@wikimedia/codex";
 import BatchManager from "./BatchManager";
 
@@ -87,4 +88,5 @@ createApp(App)
     .component('cdx-table', CdxTable)
     .component('cdx-lookup', CdxLookup)
     .component('cdx-field', CdxField)
+    .component('cdx-toggle-switch', CdxToggleSwitch)
     .mount('#app')

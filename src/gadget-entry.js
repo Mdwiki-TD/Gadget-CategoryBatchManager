@@ -13,6 +13,9 @@ async function initApp(require) {
     if (!mountPoint) {
         if (mw.config.get('wgCanonicalNamespace') !== 'Category') return;
 
+        // work only in Desktop view
+        if (!document.getElementById('p-cactions') || document.getElementById('footer-places-desktop-toggle')) return;
+
         portletLink = mw.util.addPortletLink(
             'p-cactions',
             '#',
@@ -45,6 +48,7 @@ async function initApp(require) {
         .component('cdx-tab', Codex.CdxTab)
         .component('cdx-tabs', Codex.CdxTabs)
         .component('cdx-field', Codex.CdxField)
+        .component('cdx-toggle-switch', Codex.CdxToggleSwitch)
         .mount('#category-batch-manager2');
 }
 
