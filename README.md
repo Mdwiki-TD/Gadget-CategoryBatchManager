@@ -59,7 +59,7 @@ importStylesheet("User:Mr._Ibrahem/Gadget-CategoryBatchManager.css");
 npm test
 
 # Build production files
-node build.js
+node build
 ```
 
 This creates:
@@ -172,12 +172,12 @@ npm test
 npm run test:coverage
 
 # Build for production
-node build.js
+node build
 ```
 
 ### Build Output
 
-The `node build.js` command creates:
+The `node build` command creates:
 
 -   `dist/Gadget-CategoryBatchManager.js` - Concatenated JavaScript bundle
 -   `dist/Gadget-CategoryBatchManager.css` - Concatenated CSS bundle
