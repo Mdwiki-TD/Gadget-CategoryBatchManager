@@ -29,7 +29,7 @@ The build process:
 - Strips `/* global ... */` comments
 - Concatenates with file marker comments (`// === path/to/file ===`)
 - Wraps in `<nowiki>` tags for MediaWiki
-- Outputs to `dist/test3.js` and `dist/test3.css`
+- Outputs to `dist/Gadget-CategoryBatchManager.js` and `dist/Gadget-CategoryBatchManager.css`
 
 ### Development Mode
 
@@ -223,7 +223,7 @@ npm test -- tests/unit/Validator.test.js  # Single test file
 
 ```bash
 npm run build
-# Outputs: dist/test3.js, dist/test3.css
+# Outputs: dist/Gadget-CategoryBatchManager.js, dist/Gadget-CategoryBatchManager.css
 ```
 
 ### Adding a New Service Method

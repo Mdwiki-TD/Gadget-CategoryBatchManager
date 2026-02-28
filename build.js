@@ -60,11 +60,8 @@ const CSS_SOURCES = [
 ];
 
 const DIST_DIR = 'dist';
-// const OUTPUT_JS = 'dist/test3.js';
-// const OUTPUT_CSS = 'dist/test3.css';
-
-const OUTPUT_JS = 'dist/test4.js';
-const OUTPUT_CSS = 'dist/test4.css';
+const OUTPUT_JS = 'dist/Gadget-CategoryBatchManager.js';
+const OUTPUT_CSS = 'dist/Gadget-CategoryBatchManager.css';
 
 /**
  * Strip module.exports blocks from JavaScript code

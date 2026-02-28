@@ -64,8 +64,8 @@ node build.js
 
 This creates:
 
--   `dist/test3.js` - JavaScript bundle
--   `dist/test3.css` - CSS bundle
+-   `dist/Gadget-CategoryBatchManager.js` - JavaScript bundle
+-   `dist/Gadget-CategoryBatchManager.css` - CSS bundle
 
 #### 2. Create/Edit Gadget Pages on Wikimedia Commons
 
@@ -74,14 +74,14 @@ Navigate to each page below, click "Edit source", and paste the contents:
 **JavaScript File:**
 
 -   Go to: https://commons.wikimedia.org/wiki/MediaWiki:Gadget-CategoryBatchManager.js
--   Paste contents of `dist/test3.js`
+-   Paste contents of `dist/Gadget-CategoryBatchManager.js`
 -   Add summary: `Update Category Batch Manager to v1.1.1`
 -   Click "Publish changes"
 
 **CSS File:**
 
 -   Go to: https://commons.wikimedia.org/wiki/MediaWiki:Gadget-CategoryBatchManager.css
--   Paste contents of `dist/test3.css`
+-   Paste contents of `dist/Gadget-CategoryBatchManager.css`
 -   Add summary: `Update Category Batch Manager styles to v1.1.1`
 -   Click "Publish changes"
 
@@ -128,8 +128,8 @@ npm run build
 
 # Copy dist files to clipboard or use a tool to upload
 # Files to upload:
-# - dist/test3.js   → MediaWiki:Gadget-CategoryBatchManager.js
-# - dist/test3.css  → MediaWiki:Gadget-CategoryBatchManager.css
+# - dist/Gadget-CategoryBatchManager.js   → MediaWiki:Gadget-CategoryBatchManager.js
+# - dist/Gadget-CategoryBatchManager.css  → MediaWiki:Gadget-CategoryBatchManager.css
 ```
 
 ### Troubleshooting Deployment
@@ -179,8 +179,8 @@ node build.js
 
 The `node build.js` command creates:
 
--   `dist/test3.js` - Concatenated JavaScript bundle
--   `dist/test3.css` - Concatenated CSS bundle
+-   `dist/Gadget-CategoryBatchManager.js` - Concatenated JavaScript bundle
+-   `dist/Gadget-CategoryBatchManager.css` - Concatenated CSS bundle
 
 **Note:** This project uses a custom build system (`build.js`) that concatenates source files in a specific order, stripping ES6 import/export statements for MediaWiki compatibility. Vite is used only for local development.
 

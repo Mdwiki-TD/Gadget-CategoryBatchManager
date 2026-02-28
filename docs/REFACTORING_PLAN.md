@@ -416,7 +416,7 @@ npm run test:coverage
 npm test -- tests/services/BatchProcessor.test.js
 
 # Build and verify output
-npm run build && head -100 dist/test3.js
+npm run build && head -100 dist/Gadget-CategoryBatchManager.js
 ```
 
 ---
