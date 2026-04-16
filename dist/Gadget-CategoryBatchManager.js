@@ -598,7 +598,7 @@ class APIService {
         try {
             this.mwApi = new mw.Api();
         } catch {
-            
+
             this.mwApi = new Api(); // local-dev shim
         }
     }
@@ -2252,7 +2252,7 @@ function ReportsPanel() {
             },
 
             tableData: function () {
-                
+
                 return this.filteredResults.map((r, index) => ({
                     index: index + 1,
                     file: r.file,
@@ -3528,7 +3528,7 @@ async function initApp(require) {
 
     const app = BatchManagerDialog(portletLink);
 
-    
+
     Vue.createMwApp(app)
         .component('cdx-text-input', Codex.CdxTextInput)
         .component('cdx-textarea', Codex.CdxTextArea)
